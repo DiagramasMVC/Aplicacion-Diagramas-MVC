@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-.
+
+DEPENDENCIAS: es necesario instalarlas para correr la aplicacion.
+	Flask==0.10.1
+	Flask-Migrate==1.1.0
+	Flask-SQLAlchemy==1.0
+	Flask-Script==0.6.6
+
+	Se puden instalar automaticamente usando:
+	(venv) $ pip freeze >requerimientos.txt
+
+
+APLICACION: para probar la aplicacion correr el archivo manage.py
+    python3 manage.py runserver
+
+
+PRUEBAS UNITARIAS: para correr todas las pruebas usar
+    python3 manage.py test
+
+
+MIGRACION: python3 manage.py db upgrade
+
+

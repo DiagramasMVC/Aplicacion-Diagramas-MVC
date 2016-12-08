@@ -1,0 +1,83 @@
+<!-- Agrega la barra de navegacion -->
+  <nav id="header-nav" class="navbar navbar-default"> 
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <!-- Se aplica a el logo o titulo de la marca -->
+            <div class="navbar-brand">
+                <a href=""><span>Diagramas MVC</span></a>
+            </div>      
+            <button type="button" 
+                    class="navbar-toggle collapsed" 
+                    data-toggle="collapse" 
+                    data-target="#contenido-plegable"
+                    aria-expanded="false">
+            <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>   
+        </div><!-- .navbar-header -->
+
+        <div class="collapse navbar-collapse" id="contenido-plegable">
+            <ul id="nav-list-left" class="nav navbar-nav navbar-left">
+                
+            </ul>
+            <ul id="nav-list-right" class="nav navbar-nav navbar-right">
+                <li><a>Manual</a></li>
+                <li><a>Recuperar Contraseña</a></li>
+                <li><a ng-click="VRegistro1()">Registrarse</a></li>
+            </ul>
+        </div>
+    </div><!-- .container-fluid -->
+</nav><!-- #header-nav -->
+
+<flash:messages></flash:messages>
+
+<div class="row">
+    <div id="info" class="col-xs-11 col-sm-7">
+        <span>Diagramas MVC</span>
+        <p>Aplicación web para la edición de diagramas MVC.</p>
+    </div>
+    <div id="login" class="col-xs-12 col-sm-5">
+        <form name="fLoginForm" 
+              ng-submit="AIdentificar1(fLoginForm.$valid)" novalidate="">
+            <div class="form-group" 
+                 ng-class="{'has-error': fLoginSubmitted && 
+                             fLoginForm.usuario.$invalid &&
+                             fLoginForm.usuario.$pristine &&
+                             fLoginSubmitted}">
+                <label for="fLogin_usuario">Usuario</label>
+                <input id="fLogin_usuario" 
+                       type="text" 
+                       name="usuario" 
+                       class="form-control" 
+                       ng-model="fLogin.usuario" 
+                       placeholder="Usuario" required ng-minlegth="1">
+                    <p ng-show="fLoginSubmitted && fLoginForm.usuario.$invalid"
+                       class="help-block">
+                        Error en campo usuario.       
+                    </p>                    
+            </div>
+            <div class="form-group"
+                 ng-class="{'has-error': fLoginSubmitted &&
+                             fLoginForm.clave.$invalid &&
+                             fLoginForm.clave$pristine &&
+                             fLoginSubmitted}">
+                <label for="fLogin_clave">Clave</label>
+                <input id="fLogin_clave" 
+                       type="password" 
+                       name="clave"
+                       class="form-control"
+                       ng-model="fLogin.clave"
+                       placeholder="Clave" required ng-minLength="1">
+                    <p ng-show="fLoginSubmitted && fLoginForm.clave.$invalid"
+                       class="help-block">
+                        Error en campo clave.       
+                    </p>
+            </div> 
+            <button type="submit" class="btn btn-primary btn-lg sharp">
+                Iniciar Sesión
+            </button>   
+        </form>
+    </div>
+</div>

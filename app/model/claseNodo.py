@@ -8,15 +8,20 @@ from modelo import *
 
 # Declaracion de constantes.
 NUM_MIN_ID = 1
-TAM_MAX_NOMBRE = 60
+TAM_MAX_NOMBRE = 64
+
+TIPO_VISTA     = 1
+TIPO_ACCION    = 2
+TIPO_OPERACION = 3
+TIPO_EXTERNO   = 4
 
 
 class Nodo(object):
     """Interfaz que provee funciones relacionadas con los nodos"""
- 
 
-    def crearNodo(self, nombre, tipo, propiedades, idDiagrama):
-        """Permite insertar un nuevo nodo en la base de datos.
+
+    def crearNodoVista(self, nombre, propiedades, idDiagrama):
+        """Permite insertar un nuevo nodo de tipo vista en la base de datos.
 
            Recibe:
            nombre         -- nombre del nodo a crear.
@@ -24,34 +29,65 @@ class Nodo(object):
            idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
     
            Devuelve:
-           bool -- confirma si se realizo o no la insercion.
+           bool -- confirma si se realizó o no la inserción.
         """
-        if nombre != None and tipo != None and propiedades != None and idDiagrama != None:
-
-            tipo = tipo.lower()
+        if nombre != None and propiedades != None and idDiagrama != None:
 
             if idDiagrama >= NUM_MIN_ID:
 
                 if len(nombre) <= TAM_MAX_NOMBRE:
-
-                    if tipo == 'vista':
-                        nuevoNodo = clsVista(nombre, tipo, propiedades, idDiagrama) 
-                    elif tipo == 'accion':
-                        nuevoNodo = clsAccion(nombre, tipo, propiedades, idDiagrama)
-                    elif tipo == 'operacion':
-                        nuevoNodo = clsOperacion(nombre, tipo, propiedades, idDiagrama)   
-                    else:
-                        nuevoNodo = clsNodo(nombre, tipo, propiedades, idDiagrama)
-                    
-                    db.session.add(nuevoNodo)
+                    nuevaVista = clsVista(nombre, TIPO_VISTA, propiedades, idDiagrama)
+                    db.session.add(nuevaVista)
                     db.session.commit()
                     return True
+        return False
 
+
+    def crearNodoAccion(self, nombre, propiedades, idDiagrama):
+        """Permite insertar un nuevo nodo de tipo acción en la base de datos.
+
+           Recibe:
+           nombre         -- nombre del nodo a crear.
+           propiedades    -- archivo .json con las propiedades.
+           idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
+    
+           Devuelve:
+           bool -- confirma si se realizó o no la inserción.
+        """
+        if nombre != None and propiedades != None and idDiagrama != None:
+
+            if idDiagrama >= NUM_MIN_ID:
+
+                if len(nombre) <= TAM_MAX_NOMBRE:
+                    nuevaAccion = clsAccion(nombre, TIPO_ACCION, propiedades, idDiagrama)
+                    db.session.add(nuevaAccion)
+                    db.session.commit()
+                    return True
         return False
 
 
     def crearNodoOperacion(self, nombre, propiedades, idDiagrama, idEntidad):
-        pass
+        """Permite insertar un nuevo nodo de tipo operaciño en la base de datos.
+
+           Recibe:
+           nombre      -- nombre del nodo a crear.
+           propiedades -- archivo .json con las propiedades.
+           idDiagrama  -- identificador del diagrama al cual pertenece el nodo.
+           idEntidad   -- entidad a la cual esta asociada.
+    
+           Devuelve:
+           bool -- confirma si se realizó o no la inserción.
+        """
+        if nombre != None and propiedades != None and idDiagrama != None and idEntidad:
+
+            if idDiagrama >= NUM_MIN_ID and idEntidad >= NUM_MIN_ID:
+
+                if len(nombre) <= TAM_MAX_NOMBRE:
+                    nuevaOperacion = clsOperacion(nombre, TIPO_OPERACION, propiedades, idDiagrama, idEntidad)
+                    db.session.add(nuevaOperacion)
+                    db.session.commit()
+                    return True
+        return False
 
 
     def crearNodoExterno(self, nombre, propiedades, idDiagrama, idNodoExt):
@@ -64,43 +100,24 @@ class Nodo(object):
            idNodoExt   -- nodo al que representa.
     
            Devuelve:
-           bool -- confirma si se realizo o no la insercion.
+           bool -- confirma si se realizó o no la inserción.
         """
-        tipo = 'externo'
-
         if nombre != None and propiedades != None and idDiagrama != None and idNodoExt != None:
         
             if idDiagrama >= NUM_MIN_ID and idNodoExt >= NUM_MIN_ID:
 
                 if len(nombre) <= TAM_MAX_NOMBRE:
 
-                    nuevoNodo = clsExterno(nombre, tipo, propiedades, idDiagrama, idNodoExt)
+                    nuevoNodo = clsExterno(nombre, TIPO_EXTERNO, propiedades, idDiagrama, idNodoExt)
                     db.session.add(nuevoNodo)
                     db.session.commit()
                     return True
-
         return False
 
 
-    def obtenerNodos(self):
-        """Permite obtener todos los nodos almacenados en la base de datos.
-           
-           Recibe:
-           Ningun argumento.
-
-           Devuelve: 
-           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
-           correspondientes a clsNodo. En caso de no existir nodos devuelve 
-           lista vacia.
-        """
-        nodos = clsNodo.query.all()
-
-        return nodos
-
-
-    def obtenerNodosVista(self):
-        """Permite obtener todos los nodos de tipo vista almacenados en la base
-           de datos.
+    def obtenerNodosVistaPorDiagrama(self, idDiagrama):
+        """Permite obtener los nodos de tipo vista almacenados en la base
+           de datos para un diagrama dado.
            
            Recibe:
            Ningun argumento.
@@ -110,14 +127,36 @@ class Nodo(object):
            correspondientes a clsVista. En caso de no existir nodos devuelve 
            lista vacia.
         """
-        vistas = clsVista.query.all()
+        vistas = clsVista.query.filter_by(idDiagrama=idDiagrama).all()
 
         return vistas
 
 
-    def obtenerNodosAccion(self):
-        """Permite obtener todos los nodos de tipo accion almacenados en la base
-           de datos.
+    def obtenerNodosVistaPorDiseno(self, idDiseno):
+        """Permite obtener los nodos de tipo vista almacenados en la base
+           de datos para un diagrama dado.
+           
+           Recibe:
+           Ningun argumento.
+
+           Devuelve: 
+           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
+           correspondientes a clsVista. En caso de no existir nodos devuelve 
+           lista vacia.
+        """
+        diagramas = clsDiagrama.query.filter_by(idDiseno=idDiseno).all()
+       
+        vistas = [] 
+        for d in diagramas:
+            listaVistas = clsVista.query.filter_by(idDiagrama=d.idDiagrama).all()
+            vistas += listaVistas
+
+        return vistas
+
+
+    def obtenerNodosAccionPorDiagrama(self, idDiagrama):
+        """Permite obtener los nodos de tipo accion almacenados en la base
+           de datos para un diagrama dado.
            
            Recibe:
            Ningun argumento.
@@ -127,14 +166,36 @@ class Nodo(object):
            correspondientes a clsAccion. En caso de no existir nodos devuelve 
            lista vacia.
         """
-        acciones = clsAccion.query.all()
+        acciones = clsAccion.query.filter_by(idDiagrama=idDiagrama).all()
 
         return acciones
 
 
-    def obtenerNodosOperacion(self):
-        """Permite obtener todos los nodos de tipo operacion almacenados en la base
-           de datos.
+    def obtenerNodosAccionPorDiseno(self, idDiseno):
+        """Permite obtener los nodos de tipo accion almacenados en la base
+           de datos para un diagrama dado.
+           
+           Recibe:
+           Ningun argumento.
+
+           Devuelve: 
+           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
+           correspondientes a clsAccion. En caso de no existir nodos devuelve 
+           lista vacia.
+        """
+        diagramas = clsDiagrama.query.filter_by(idDiseno=idDiseno).all()
+       
+        acciones = [] 
+        for d in diagramas:
+            listaAcciones = clsAccion.query.filter_by(idDiagrama=d.idDiagrama).all()
+            acciones += listaAcciones
+
+        return acciones
+
+
+    def obtenerNodosOperacionPorDiagrama(self, idDiagrama):
+        """Permite obtener los nodos de tipo operacion almacenados en la base
+           de datos para un diagrama dado.
            
            Recibe:
            Ningun argumento.
@@ -144,14 +205,14 @@ class Nodo(object):
            correspondientes a clsOperacion. En caso de no existir nodos devuelve 
            lista vacia.
         """
-        operaciones = clsOperacion.query.all()
+        operaciones = clsOperacion.query.filter_by(idDiagrama=idDiagrama).all()
 
         return operaciones
 
 
-    def obtenerNodosExterno(self):
-        """Permite obtener todos los nodos de tipo externo almacenados en la base
-           de datos.
+    def obtenerNodosExternoPorDiagrama(self, idDiagrama):
+        """Permite obtener los nodos de tipo externo almacenados en la base
+           de datos para un diagrama dado.
            
            Recibe:
            Ningun argumento.
@@ -161,50 +222,34 @@ class Nodo(object):
            correspondientes a clsExterno. En caso de no existir nodos devuelve 
            lista vacia.
         """
-        externos = clsExterno.query.all()
+        externos = clsExterno.query.filter_by(idDiagrama=idDiagrama).all()
 
         return externos
 
 
-    def existeNodo(self, idNodo):
-        """Permite saber si un nodo se encuentra almacenado en la base de 
-           datos o no.
+    def obtenerNodoExternoAsociadoAlDiagrama(self, idDiagrama, idNodoReal):
+        """Permite obtener el nodo externo de un diagrama dado que representa a
+           un nodo de otro diagrama"""
+        print('idDiagrama', 'idNodoReal', idDiagrama, idNodoReal)
+        nodo = clsExterno.query.filter_by(idDiagrama=idDiagrama, idNodoExterno=idNodoReal).first()
 
-           Recibe:
-           idNodo -- identificador del nodo en la tabla nodos.
-
-           Devuelve:
-           bool -- confirma si existe o no el elemento.
-        """
-        existeNodo = None
-
-        if idNodo != None:
-
-            if idNodo >= NUM_MIN_ID:
-                existeNodo = clsNodo.query.filter_by(idNodo=idNodo).first()
-
-        return (existeNodo != None)
+        return nodo
     
 
-    def obtenerNodoPorID(self):
-        """"""
-        pass
-
-
-    def obtenerNodosPorNombre(self, nombre):
-        """Permite obtener nodos por su nombre. El nombre no es unico.
+    def obtenerNodoPorID(self, idNodo):
+        """Permite obtener nodos por su identificador único.
            
            Recibe:
-           nombre -- nombre del nodo a buscar.
+           idNOdo -- identificador del nodo a buscar.
 
            Devuelve:
-           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
-           correspondientes a clsNodo. En caso de no existir disenos devuelve 
-           lista vacia.
+           <idNodo, nombre, tipo, propiedades, idDiagrama>] -- tuplas
+           correspondiente a clsNodo. En caso de no existir nodo devuelve 
+           None.
         """
-        nodos = clsNodo.query.filter_by(nombre=nombre).all()
+        nodo = clsNodo.query.filter_by(idNodo=idNodo).first()
 
-        return nodos  
+        return nodo
 
 
     def obtenerNodosPorDiagrama(self, idDiagrama):
@@ -247,20 +292,18 @@ class Nodo(object):
         return nodos
 
 
-    def actualizarNodo(self, idNodo, nuevoNombre, nuevoTipo, nuevasPropiedades, nuevoIdDiagrama):
-        """Permite actualizar el valor de los campos de un nodo.
+    def actualizarNodoVista(self, idNodo, nuevoNombre, nuevasPropiedades):
+        """Permite actualizar el valor de los campos de un nodo vista.
             
            Recibe:
            idNodo            -- identificador del nodo en la tabla de nodos.
            nuevoNombre       -- nuevo nombre a actualizar.
-           nuevoTipo         -- nuevo tipo a actualizar.
            nuevasPropiedades -- archivo .json con las propiedades a actualizar.
-           nuevoIdDiagrama   -- identificador del diagrama al cual pertenece el nodo.
     
            Devuelve:
            bool -- confirma si se actualizo o no el elemento.
         """
-        if idNodo != None and nuevoNombre != None and nuevoTipo != None and nuevasPropiedades != None and nuevoIdDiagrama != None:
+        if idNodo != None and nuevoNombre != None and nuevasPropiedades != None:
 
           if idNodo >= NUM_MIN_ID:
 
@@ -271,9 +314,59 @@ class Nodo(object):
                 if len(nuevoNombre) <= TAM_MAX_NOMBRE:
                 
                   viejoNodo.nombre      = nuevoNombre
-                  viejoNodo.nuevoTipo   = nuevoTipo
+                  viejoNodo.nuevoTipo   = TIPO_VISTA
                   viejoNodo.propiedades = nuevasPropiedades
-                  viejoNodo.nuevoIdDiagrama = nuevoIdDiagrama
+                  db.session.commit()
+                  return True
+
+        return False
+
+
+    def actualizarNodoAccion(self, idNodo, nuevoNombre, nuevasPropiedades):
+        """Permite actualizar el valor de los campos de un nodo vista.
+            
+           Recibe:
+           idNodo            -- identificador del nodo en la tabla de nodos.
+           nuevoNombre       -- nuevo nombre a actualizar.
+           nuevasPropiedades -- archivo .json con las propiedades a actualizar.
+    
+           Devuelve:
+           bool -- confirma si se actualizo o no el elemento.
+        """
+        if idNodo != None and nuevoNombre != None and nuevasPropiedades != None:
+
+          if idNodo >= NUM_MIN_ID:
+
+            viejoNodo = clsNodo.query.filter_by(idNodo=idNodo).first()
+
+            if viejoNodo != None:
+
+                if len(nuevoNombre) <= TAM_MAX_NOMBRE:
+                
+                  viejoNodo.nombre      = nuevoNombre
+                  viejoNodo.nuevoTipo   = TIPO_ACCION
+                  viejoNodo.propiedades = nuevasPropiedades
+                  db.session.commit()
+                  return True
+
+        return False
+
+
+    def actualizarNodoOperacion(self, idNodo, nuevoNombre, nuevasPropiedades):
+        """"""
+        if idNodo != None and nuevoNombre != None and nuevasPropiedades != None:
+
+          if idNodo >= NUM_MIN_ID:
+
+            viejoNodo = clsNodo.query.filter_by(idNodo=idNodo).first()
+
+            if viejoNodo != None:
+
+                if len(nuevoNombre) <= TAM_MAX_NOMBRE:
+                
+                  viejoNodo.nombre      = nuevoNombre
+                  viejoNodo.nuevoTipo   = TIPO_OPERACION
+                  viejoNodo.propiedades = nuevasPropiedades
                   db.session.commit()
                   return True
 
@@ -303,17 +396,17 @@ class Nodo(object):
 
                 if len(nuevoNombre) <= TAM_MAX_NOMBRE:
                 
-                  viejoNodo.nombre      = nuevoNombre
-                  viejoNodo.propiedades = nuevasPropiedades
-                  viejoNodo.nuevoIdDiagrama = nuevoIdDiagrama
-                  viejoNodo.nuevoIdNodoExt  = nuevoIdNodoExt
+                  viejoNodo.nombre        = nuevoNombre
+                  viejoNodo.propiedades   = nuevasPropiedades
+                  viejoNodo.idDiagrama    = nuevoIdDiagrama
+                  viejoNodo.idNodoExterno = nuevoIdNodoExt
                   db.session.commit()
                   return True
 
         return False
 
 
-    def eliminarNodo(self, idNodo):
+    def eliminarNodoPorId(self, idNodo):
         """Permite eliminar un nodo almacenado
            
                Recibe:

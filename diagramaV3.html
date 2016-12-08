@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Nodo Vista</title>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+      svg {
+        background: #CCCCCC;
+      }
+      .nodo { /* Nodos del diagrama (Vista, Acción, Operación, Externo) */
+        fill: #FFF;     
+        stroke: #000;         
+        stroke-width: 1.5px;   
+      }
+      g.nodo text { /* Texto dentro del nodo */
+        font-family: "courier", "Times New Roman", "Serif";
+        font-size: 15px;
+        cursor: default;
+      }
+      .nodo .seleccionado {
+        stroke: red;         /* Color de circulo seleccionado */
+      }
+      .enlaceVA {                
+        stroke: #000;        /* Color de las relaciones*/
+        stroke-width: 1.5px;
+        fill: none;
+        marker-start: url(#marcadorCirculoEnCirculo);
+        marker-end: url(#marcadorFlechaEnRombo);
+      }
+      .enlaceAE {                
+        stroke: #000;        /* Color de las relaciones*/
+        stroke-width: 1.5px;
+        fill: none;
+        marker-end: url(#marcadorFlechaEnCirculo);
+      }
+      .enlaceEA {                
+        stroke: #000;        /* Color de las relaciones*/
+        stroke-width: 1.5px;
+        fill: none;
+        marker-end: url(#marcadorFlechaEnRombo);
+      }
+      .enlaceAO {
+        stroke: #000;        /* Color de las relaciones*/
+        stroke-width: 1.5px;
+        fill: none;
+      }
+      marker path {
+        fill: #000;
+      }
+    </style>
+    </head>
+    <body>
+
+      <div id="example"></div>
+
+      <script>
+
+        //Tamano estimado que ocupa cada letra del texto de los nodos. 
+        //Viene dado por la regla CSS g.nodo text {font-size: 15px;} 
+
+        const ANCHO_FUENTE  = 13;    //Espacio en ancho que ocupa una letra.
+        const ALTURA_FUENTE = 20;    //Espacio en altura que ocupa una letra.
+        const MARGEN        = 15;
+        const CANT_LETRAS_LINEA = 15;
+
+        const ANCHO_MIN_VISTA  = 12;  //Ancho minimo con el que se crean las vistas.
+        const ALTURA_MIN_VISTA = 3; //Altura minima con el que se crean las vistas.
+        const RADIO_MIN_EXTERNO = 50;
+
+        var anchoSVG = 1200;
+        var altoSVG  = 800;
+
+        var ANCHO_MIN_OP  = 80;
+        var ALTURA_MIN_OP = 30;
+
+        var shiftKey;
+
+        var json = {"nodos":
+                      [{"vistas":
+                         [{"id":1, "nombre":"VRegistrar", "x":120,"y":80,
+                            "elementos":
+                              [{"id":1,"nombre":"Entrada1"},
+                               {"id":2,"nombre":"Salida1"},
+                               {"id":3,"nombre":"Entrada2"},
+                               {"id":4,"nombre":"Salida2"}]
+                          },
+                          {"id":2, "nombre":"VIniciar", "x":120,"y":520,
+                            "elementos":
+                              [{"id":1,"nombre":"Entrada1"},
+                               {"id":2,"nombre":"Salida1"},
+                               {"id":3,"nombre":"Entrada2"}]
+                          }, 
+                          {"id":3, "nombre":"VLogin", "x":380,"y":80,
+                          "elementos":
+                              [{"id":1,"nombre":"Entrada1"},
+                               {"id":2,"nombre":"SalidaSuperHiperLarga"},
+                               {"id":3,"nombre":"Entrada2"},
+                               {"id":4,"nombre":"Salida2"}]
+                          }, 
+                          {"id":4, "nombre":"VEjemplo", "x":380,"y":290,
+                            "elementos":
+                              [{"id":1,"nombre":"Entrada1"},
+                               {"id":2,"nombre":"Salida1"},
+                               {"id":3,"nombre":"Entrada2"},
+                               {"id":4,"nombre":"Salida2"}]
+                          },  
+                          {"id":5, "nombre":"VCrear", "x":600,"y":520,
+                            "elementos":
+                              [{"id":1,"nombre":"Entrada1"},
+                               {"id":2,"nombre":"Salida1"},
+                               {"id":3,"nombre":"Entrada2"},
+                               {"id":4,"nombre":"Salida2"}]
+                          },
+                          {"id":6, "nombre":"VEspecial", "x":600,"y":80,
+                            "elementos":
+                              []
+                          }
+                         ]}, 
+                      {"acciones":
+                        [{"id":21, "nombre":"ARegistrar", "x":120,"y":300},
+                         {"id":22, "nombre":"ALogin", "x":380,"y":650},  
+                         {"id":23, "nombre":"ACrear", "x":600,"y":300}
+                        ]},
+                      {"operaciones":
+                        [{"id":31, "nombre":"Operacion1", "x":250,"y":390},
+                         {"id":32, "nombre":"Operacion2", "x":85,"y":390},
+                         {"id":33, "nombre":"Operacion3", "x":280,"y":750},
+                         {"id":34, "nombre":"Operacion4", "x":460,"y":750}
+                        ]},
+                      {"externos":
+                        [{"id":41, "nombre":"Externo1", "x":380,"y":430},
+                         {"id":42, "nombre":"Externo2", "x":800,"y":80}
+                        ]}
+                     ], 
+                    "enlaces":
+                      [{"visAcc":
+                        [{"origen":1,"destino":21,"puerto":1},
+                         {"origen":1,"destino":21,"puerto":3},
+                         {"origen":1,"destino":21,"puerto":2},
+                         {"origen":1,"destino":21,"puerto":4},
+                         {"origen":2,"destino":22,"puerto":1},
+                         {"origen":2,"destino":22,"puerto":3},
+                         {"origen":2,"destino":22,"puerto":2},
+                         {"origen":5,"destino":23,"puerto":4},
+                         {"origen":5,"destino":23,"puerto":3},
+                         {"origen":5,"destino":23,"puerto":1},
+                         {"origen":5,"destino":22,"puerto":4},
+                         {"origen":5,"destino":22,"puerto":2}
+                        ]},
+                      {"accVis":
+                        [{"origen":22,"destino":5,"puerto":225},
+                         {"origen":21,"destino":2,"puerto":212}
+                        ]},
+                      {"accExt":
+                        [{"origen":22,"destino":41}
+                        ]},
+                      {"extAcc":
+                        [{"origen":42,"destino":23}
+                        ]},
+                      {"accOp":
+                        [{"origen":21,"destino":31},
+                         {"origen":21,"destino":32},
+                         {"origen":22,"destino":33},
+                         {"origen":22,"destino":34}
+                        ]}
+                      ]
+                  };
+
+
+      //Interpretamos los datos que estan en formato json.
+      var datos = JSON.stringify(json);
+      var nodos = JSON.parse(datos);
+
+      //Hacemos que origen y destino referencien al id de los nodos.
+      nodos.enlaces.forEach(function(d) {
+          var enlaces = d.visAcc||d.accVis||d.accExt||d.accOp||d.extAcc;
+          
+          for (var i = 0; i < enlaces.length; i++) {
+
+              enlaces[i].origen = nodos.nodos[0].vistas.filter(function(n) { return n.id === enlaces[i].origen; })[0]      || 
+                         nodos.nodos[1].acciones.filter(function(n) { return n.id === enlaces[i].origen; })[0]    || 
+                         nodos.nodos[2].operaciones.filter(function(n) { return n.id === enlaces[i].origen; })[0] ||
+                         nodos.nodos[3].externos.filter(function(n) { return n.id === enlaces[i].origen; })[0];
+
+              enlaces[i].destino = nodos.nodos[0].vistas.filter(function(n) { return n.id === enlaces[i].destino; })[0]      || 
+                          nodos.nodos[1].acciones.filter(function(n) { return n.id === enlaces[i].destino; })[0]    || 
+                          nodos.nodos[2].operaciones.filter(function(n) { return n.id === enlaces[i].destino; })[0] ||
+                          nodos.nodos[3].externos.filter(function(n) { return n.id === enlaces[i].destino; })[0];
+          }
+      });
+
+
+      //Obtenemos los strings mas largos de cada vista. Esto para calcular posteriormente el ancho de la misma.
+      var nombreMasLargo = {};
+
+      nodos.nodos[0].vistas.forEach(function(d) {
+          nombreMasLargo[d.id] = obtenerNombreMasLargo(d.nombre, d.elementos);
+      });
+
+
+      //Creamos el recuadro donde se muestra el diagrama.
+      var svg = d3.select("#example")
+                    .append("svg")
+                    .attr("width", anchoSVG)
+                    .attr("height", altoSVG)
+                    .selectAll("g");
+
+      //Permite realizar definiciones para reusar elementos.
+      var defs = svg
+                    .data([""]).enter()
+                    .append("defs");
+
+
+      //ENLACES AGRUPADOS.
+
+      //Enlaces dirigidos de vista-accion agrupados.
+      var relacionVA = svg
+                    .data(nodos.enlaces[0].visAcc).enter()
+                    .append("g")
+                    .attr("id", function(d,i) {return "va"+i;});
+
+      //Enlaces dirigidos de accion-vista agrupados.
+      var relacionAV = svg
+                    .data(nodos.enlaces[1].accVis).enter()
+                    .append("g")
+                    .attr("id", function(d,i) {return "av"+i;});
+
+      //Enlaces dirigidos de accion-externo agrupados.
+      var relacionAE = svg
+                    .data(nodos.enlaces[2].accExt).enter()
+                    .append("g")
+                    .attr("id", function(d,i) {return "ae"+i;});
+
+      //Enlaces dirigidos de externo-accion agrupados.
+      var relacionEA = svg
+                    .data(nodos.enlaces[3].extAcc).enter()
+                    .append("g")
+                    .attr("id", function(d,i) {return "ea"+i;});
+
+      //Enlaces no dirigidos de accion-operacion agrupados.
+      var relacionAO = svg
+                    .data(nodos.enlaces[4].accOp).enter()
+                    .append("g")
+                    .attr("id", function(d,i) {return "ao"+i;});
+
+
+      //Nodos de tipo vista agrupados.
+      var vista = svg
+                    .data(nodos.nodos[0].vistas).enter()
+                    .append("g")
+                    .attr("class", "nodo")
+                    .attr("id", function(d,i) {return "v"+i;})
+                    .attr("transform", function(d) {
+                        return "translate("+d.x+","+d.y+")";
+                    })
+                    .on("mousedown", function(d) {
+                        d.selected = true;
+                    })
+                    .on("mouseup", function(d) {
+                        d.selected = false;
+                    })
+                    .call(d3.behavior.drag()
+                        .on("drag", function(d) { 
+                            mover(d3.event.dx, d3.event.dy); 
+                        })
+                    );
+
+      //Nodos de tipo accion agrupados.
+      var accion = svg
+                    .data(nodos.nodos[1].acciones).enter()
+                    .append("g")
+                    .attr("class", "nodo")
+                    .attr("id", function(d,i) {return "a"+i;})
+                    .attr("transform", function(d) {
+                        return "translate("+d.x+","+d.y+")";
+                    })
+                    .on("mousedown", function(d) {
+                        d.selected = true;
+                    })
+                    .on("mouseup", function(d) {
+                        d.selected = false;
+                    })
+                    .call(d3.behavior.drag()
+                        .on("drag", function(d) { 
+                            mover(d3.event.dx, d3.event.dy); 
+                        })
+                    );
+
+      //Nodos de tipo operacion agrupados.
+      var operacion = svg
+                    .data(nodos.nodos[2].operaciones).enter()
+                    .append("g")
+                    .attr("class", "nodo")
+                    .attr("id", function(d,i) {return "o"+i;})
+                    .attr("transform", function(d) {
+                        return "translate("+d.x+","+d.y+")";
+                    })
+                    .on("mousedown", function(d) {
+                        d.selected = true;
+                    })
+                    .on("mouseup", function(d) {
+                        d.selected = false;
+                    })
+                    .call(d3.behavior.drag()
+                        .on("drag", function(d) { 
+                            mover(d3.event.dx, d3.event.dy); 
+                        })
+                    );
+
+      //Nodos de tipo externo agrupados.
+      var externo = svg
+                    .data(nodos.nodos[3].externos).enter()
+                    .append("g")
+                    .attr("class", "nodo")
+                    .attr("id", function(d,i) {return "e"+i;})
+                    .attr("transform", function(d) {
+                        return "translate("+d.x+","+d.y+")";
+                    })
+                    .on("mousedown", function(d) {
+                        d.selected = true;
+                    })
+                    .on("mouseup", function(d) {
+                        d.selected = false;
+                    })
+                    .call(d3.behavior.drag()
+                        .on("drag", function(d) { 
+                            mover(d3.event.dx, d3.event.dy); 
+                        })
+                    );
+
+
+      //DEFINIMOS LOS MARCADORES.
+
+      //Establecemos los marcadores para los extremos de los enlaces.
+      var marcadores = defs
+                    .each(function(d){
+                        var marcadores = d3.select(this)
+                            .selectAll("marker")
+                            .data(["marcadorFlechaEnCirculo","marcadorFlechaEnRombo","marcadorCirculoEnCirculo"]).enter()
+                            .append("marker")
+                            .attr("id", function(d){return d;});
+                    });
+
+      //Figura que se ubica en el extremo de destino en los enlaces 
+      //cuyo nodo destino es un rombo.
+      var marcFlechaEnRomb = marcadores.select("marker#marcadorFlechaEnRombo")
+                    .attr("markerWidth", 20)
+                    .attr("markerHeight", 20)
+                    .attr("refX", function(d) {
+                        var x;
+                        accion.each(function(d,i) {
+
+                            var tamNombre = d.nombre.length;
+                            var cantlineas  = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                            var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+
+                            var cant_letras_linea = CANT_LETRAS_LINEA;
+
+                            if (tamNombre <= cant_letras_linea) {
+                                x = 80-12;
+                            } else {
+                                if (cantlineas > 4) {
+                                    cant_letras_linea += 10; 
+                                    cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                                    restoLineas = tamNombre%cant_letras_linea;
+                                }
+
+                                if (restoLineas > 0) {
+                                    cantlineas += 1;
+                                }
+                                x = cant_letras_linea*ANCHO_FUENTE/2+MARGEN-12;
+                            }
+                        })
+                        return x;
+                    })
+                    .attr("refY", 8)
+                    .attr("orient", "auto")
+                    .attr("strokeWidth", 0)
+                    .append("path")
+                    .attr("d", "M0,0 L0,16 L16,8 L0,0");
+
+      //Figura que se ubica en el extremo de fuente en los enlaces cuyo nodo fuente es un rectangulo.
+      var marcCirculoEnRect = marcadores.select("marker#marcadorCirculoEnCirculo")
+                    .attr("markerWidth", 8)
+                    .attr("markerHeight", 8)
+                    .attr("refX", 5)
+                    .attr("refY", 5)
+                    .attr("strokeWidth", 0)
+                    .append("circle")
+      				.attr("r", 3)
+      				.attr("cx", 5)
+      				.attr("cy", 5);
+
+      //Figura que se ubica en el extremo de destino en los enlaces 
+      //cuyo nodo destino es un circulo.
+      var marcFlechaEnCirc = marcadores.select("marker#marcadorFlechaEnCirculo")
+                    .attr("markerWidth", 16)
+                    .attr("markerHeight", 16)
+                    .attr("refX", function(d) {
+
+                        var x; 
+                        externo.each(function(d,i){
+                                                  
+                            var tamNombre  = d.nombre.length;
+                            var cantlineas = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                            var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                            
+                            var cant_letras_linea = CANT_LETRAS_LINEA-2;
+
+                            if (tamNombre <= cant_letras_linea) {
+                                x = RADIO_MIN_EXTERNO;
+                            } else {
+
+                                if (restoLineas > 0) {
+                                    cantlineas += 1;
+                                }
+
+                                if (cantlineas > 3) {
+                                    cantlineas = Math.floor(tamNombre/cant_letras_linea);
+                                    restoLineas = tamNombre%cant_letras_linea;
+                                }
+
+                                x = cant_letras_linea*ANCHO_FUENTE/2; 
+                            }                            
+                        });
+
+                        return x-2;
+                    })
+                    .attr("refY", 8)
+                    .attr("orient", "auto")
+                    .attr("strokeWidth", 0)
+                    .append("path")
+                    .attr("d", "M0,0 L0,16 L16,8 L0,0");
+
+
+      //DIBUJANDO ENLACES.
+
+      //Enlaces dirigidos de tipo vista-accion.
+      var enlaceVA = relacionVA
+                    .append("path")
+                    .attr("class", "enlaceVA")
+                    .attr("d", function(d, i) { 
+
+                    	var puerto_salida = d.puerto;
+                    	var cantElementos = d.origen.elementos.length+1;
+                    	var xOrig, xDest;
+                    	var yOrig, yDest;
+                    	var elem;
+                    	var num;
+
+                    	for (var j = 0; j < d.origen.elementos.length; j++) {
+                    	
+                    		if (d.origen.elementos[j].id === puerto_salida) {
+                    			elem = d.origen.elementos[j];
+                    			num  = j;
+                    		}
+                    	}
+
+                    	if (cantElementos < 2) {
+                    		cantElementos = ALTURA_MIN_VISTA;
+                    	}
+
+                    	//Posicion de salida del enlace en y.
+                    	yOrig = d.origen.y - cantElementos*ALTURA_FUENTE/2 + (num+1)*ALTURA_FUENTE+13; 
+
+                    	//Posicion de salida del enlace en x.
+                  		var nombre    = nombreMasLargo[d.origen.id];
+                  		var tamNombre = nombre.length;
+
+                  		if (tamNombre < 12) {
+                      		tamNombre = ANCHO_MIN_VISTA;
+                  		}
+                  		
+                  		xOrig = d.origen.x + (tamNombre*ANCHO_FUENTE*0.8 + MARGEN)/2;
+
+                  		//Guardamos la posicion donde parte el enlace.
+                        d.origen.elementos[num]["x1"]=xOrig;
+                        d.origen.elementos[num]["y1"]=yOrig;
+
+                        var tamLineaHoriz = 50*0.3*(d.origen.elementos.length-num+1);
+      		
+      					//Posicion de llegada del enlace.
+			      		//Obtenemos el ancho y altura de la accion.
+			      		var tamNombre   = d.destino.nombre.length;
+			      		var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+			      		var cant_letras_linea = CANT_LETRAS_LINEA;
+			      		var ancho, alto;
+			      		var linea;
+
+			      		if (tamNombre <= cant_letras_linea) {
+			                ancho = 80;
+			                alto  = 50;        
+			            } else {
+			            	if (cantlineas > 4) {
+			                    cant_letras_linea += 10; 
+			                    cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+			                    restoLineas = tamNombre%cant_letras_linea;
+			                }
+
+			                if (restoLineas > 0) {
+			                    cantlineas += 1;
+			                }
+
+			                ancho = cant_letras_linea*ANCHO_FUENTE/2;
+			                alto  = cantlineas*ALTURA_FUENTE+1.2*MARGEN;
+			            }
+
+			            var espaciado = 2*alto/d.origen.elementos.length;
+
+						if ((elem.x1 + tamLineaHoriz) >= (d.destino.x - ancho) && (elem.x1 + tamLineaHoriz) <= (d.destino.x + ancho)) {
+
+								xDest = xOrig + tamLineaHoriz;
+						    	yDest = d.destino.y;
+
+			   					linea = "M"+xOrig+","+yOrig+
+			   				       		" L"+(xOrig + tamLineaHoriz)+","+yOrig+
+			   				       		" L"+(xOrig + tamLineaHoriz)+","+yDest;
+				      		} else {
+
+				      			if (elem.x1 > d.destino.x) {
+				      				xDest = d.destino.x;
+				      				yDest = (d.destino.y-alto) + (d.origen.elementos.length-num)*espaciado;
+				      			} else {
+				      				xDest = d.destino.x;
+				      				yDest = (d.destino.y-alto) + (num)*espaciado;
+				      			}
+
+				      			linea = "M"+xOrig+","+yOrig+
+				      			       " L"+(xOrig + tamLineaHoriz)+","+yOrig+
+				      			       " L"+(xOrig + tamLineaHoriz)+","+yDest+
+				      			       " L"+xDest+","+yDest;
+				      		}
+
+			      		//Guardamos la posicion donde llega el enlace.
+                        d.origen.elementos[num]["x2"]=xDest;
+                        d.origen.elementos[num]["y2"]=yDest;
+
+			      		return linea;
+                    });
+
+      //Enlaces dirigidos de tipo accion-externo.
+      var enlaceAE = relacionAE
+                    .append("line")
+                    .attr("class", "enlaceAE")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+
+      //Enlaces dirigidos de tipo externo-accion.
+      var enlaceEA = relacionEA
+                    .append("line")
+                    .attr("class", "enlaceEA")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+
+      //Enlaces no dirigidos de tipo accion-operacion.
+      var enlaceAO = relacionAO
+                    .append("line")
+                    .attr("class", "enlaceAO")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+
+      
+      //DIBUJANDO LAS VISTAS.
+
+      //Figura que representa a las vistas.
+      var rectV = vista
+              .append("rect")
+              .attr("x", function(d) { 
+                  var nombre    = nombreMasLargo[d.id];
+                  var tamNombre = nombre.length;
+
+                  if (tamNombre < 12) {
+                      tamNombre = ANCHO_MIN_VISTA;
+                  }
+
+                  return -tamNombre*ANCHO_FUENTE*0.8/2 - MARGEN/2;
+              })
+              .attr("y", function(d) {
+
+                  var tamVertical = d.elementos.length+1;
+
+                  if (tamVertical < 2) {
+                      tamVertical = ALTURA_MIN_VISTA;
+                  }
+
+                  return -((tamVertical)*ALTURA_FUENTE + 1.8*MARGEN)/2;
+              }) 
+              .attr("rx", 20)
+              .attr("ry", 20)
+              .attr("width", function(d) { 
+                  var nombre    = nombreMasLargo[d.id];
+                  var tamNombre = nombre.length;
+
+                  if (tamNombre < 12) {
+                      tamNombre = ANCHO_MIN_VISTA;
+                  }
+                  return tamNombre*ANCHO_FUENTE*0.8 + MARGEN;
+              })
+              .attr("height", function(d) {
+                    
+                  var tamVertical = d.elementos.length+1;
+
+                  if (tamVertical < 2) {
+                      tamVertical = ALTURA_MIN_VISTA;
+                  }
+
+                  return tamVertical*ALTURA_FUENTE + 1.8*MARGEN;
+              });
+
+
+      //Nnombre de la vista.
+      var nombreV = vista
+              .append("text")
+              .text(function(d) {return d.nombre;})
+              .attr("x", 0)
+              .attr("y", function(d) {
+                  var tamVertical = d.elementos.length+1;
+
+                  if (tamVertical < 2) {
+                      tamVertical = ALTURA_MIN_VISTA;
+                  }
+
+                  return -(tamVertical*ALTURA_FUENTE + 1.5*MARGEN)/2;})
+              .attr("text-anchor", "middle")
+              .attr("dy", ANCHO_FUENTE+2);
+
+
+      //Linea bajo el nombre de la vista.
+      var lineaV = vista
+              .append("line")
+              .attr("x1", function(d) {
+                  var nombre    = nombreMasLargo[d.id];
+                  var tamNombre = nombre.length;
+
+                  if (tamNombre < 12) {
+                      tamNombre = ANCHO_MIN_VISTA;
+                  }
+
+                  return -tamNombre*ANCHO_FUENTE*0.8/2 - MARGEN/2;
+              })
+              .attr("y1", function(d) {
+                  var tamVertical = d.elementos.length+1;
+
+                  if (tamVertical < 2) {
+                      tamVertical = ALTURA_MIN_VISTA;
+                  }
+
+                  return -(tamVertical*ALTURA_FUENTE + 1.8*MARGEN)/2+ALTURA_FUENTE*1.4;
+              })
+              .attr("x2", function(d) {
+                  var nombre    = nombreMasLargo[d.id];
+                  var tamNombre = nombre.length;
+
+                  if (tamNombre < 12) {
+                      tamNombre = ANCHO_MIN_VISTA;
+                  }
+
+                  return (tamNombre*ANCHO_FUENTE*0.8 + MARGEN)/2;
+              })
+              .attr("y2", function(d) {
+                  var tamVertical = d.elementos.length+1;
+
+                  if (tamVertical < 2) {
+                      tamVertical = ALTURA_MIN_VISTA;
+                  }
+
+                  return -(tamVertical*ALTURA_FUENTE + 1.8*MARGEN)/2 + ALTURA_FUENTE*1.4;
+              });
+
+      //Nombres de las salidas y entradas.
+      var elementosV = vista
+              .each(function(d, i) {
+                  var items = d3.select(this)
+                      .selectAll("g")
+                      .data(d.elementos).enter()
+                      .append("text")
+                      .text(function(e) {return e.nombre;})
+                      .attr("x", function(e,i) {
+                          var nombre    = nombreMasLargo[d.id];
+                          var tamNombre = nombre.length;
+
+                          if (tamNombre < 12) {
+                              tamNombre = ANCHO_MIN_VISTA;
+                          }
+
+                          return -tamNombre*ANCHO_FUENTE*0.8/2 +MARGEN/2;
+                      })
+                      .attr("y", function(e,i) {
+                          return -((d.elementos.length+1)*ALTURA_FUENTE + 1.8*MARGEN)/2 + ALTURA_FUENTE*2.5 + i*ALTURA_FUENTE;})
+                      .attr("text-anchor", "start");
+              });
+
+
+      //DIBUJANDO LAS VISTAS.
+
+      //Figura que representa a las acciones.
+      var romboA = accion
+              .append("polygon")
+              .attr("points", function(d) {
+                  var tamNombre   = d.nombre.length;
+                  var cantlineas  = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                  var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                  var puntos;
+
+                  var cant_letras_linea = CANT_LETRAS_LINEA;
+
+                  if (tamNombre <= cant_letras_linea) {
+                        puntos = 80+" "+0+", "+0+" "+50+", "+(-80)+" "+0+", "+0+" "+(-50);
+                  } else {
+
+                      if (cantlineas > 4) {
+                          cant_letras_linea += 10; 
+                          cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                          restoLineas = tamNombre%cant_letras_linea;
+                      }
+
+                      if (restoLineas > 0) {
+                          cantlineas += 1;
+                      }
+
+                      puntos = (cant_letras_linea*ANCHO_FUENTE/2+MARGEN)+" "+(0)+", "+(0)+" "+(cantlineas*ALTURA_FUENTE+1.2*MARGEN)+", "+(-cant_letras_linea*ANCHO_FUENTE/2-1.2*MARGEN)+" "+(0)+", "+(0)+" "+(-cantlineas*ALTURA_FUENTE-MARGEN);
+                  }
+
+                  return puntos;
+              });
+
+      //Nombre de la accion.
+      var nombreA = accion
+              .append("g")
+              .each(function(d,i){
+                  var tamNombre   = d.nombre.length; 
+                  var cantlineas  = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                  var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                  var arregloText = [];
+
+                  var cant_letras_linea = CANT_LETRAS_LINEA;
+
+                  if (cantlineas > 4) {
+                      cant_letras_linea += 10; 
+                      cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                      restoLineas = tamNombre%cant_letras_linea;
+                  }
+
+                  if (tamNombre > cant_letras_linea) {
+
+                      if (restoLineas > 0) {
+                          cantlineas += 1;
+                      }
+                              
+                      for (var i = 0; i < cantlineas; i++) {
+
+                          var tmp = d.nombre.slice(i*cant_letras_linea, (i+1)*cant_letras_linea);
+
+                          arregloText.push(tmp);
+                      }
+                  } else {
+                      arregloText.push(d.nombre);
+                  }
+
+                  var lineas = d3.select(this)
+                      .selectAll("text")
+                      .data(arregloText).enter()
+                      .append("text")
+                      .text(function(d) {return d;})
+                      .attr("x", 0)
+                      .attr("y", function(d, i) {
+                          return -ALTURA_FUENTE*0.3*cantlineas + i*ALTURA_FUENTE;
+                      })
+                      .attr("text-anchor", "middle");
+              });
+
+
+      //DIBUJANDO LOS NODOS OPERACIONES.
+
+      //Figura que representa las operaciones.
+      var ovaloO = operacion
+                    .append("ellipse")
+                    .attr("cx", 0)
+                    .attr("cy", 0)
+                    .attr("rx", function(d) {
+
+                        var tamNombre  = d.nombre.length;
+                        var cantlineas = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                        var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                        var ancho; 
+
+                        var cant_letras_linea = CANT_LETRAS_LINEA;
+
+                        if (tamNombre <= cant_letras_linea) {
+                            ancho = ANCHO_MIN_OP;
+                        } else {
+                            if (cantlineas > 4) {
+                                cant_letras_linea +=10;
+                                cantlineas = Math.floor(tamNombre/cant_letras_linea);
+                                restoLineas = tamNombre%cant_letras_linea;
+                            }
+
+                            if (restoLineas > 0) {
+                                cantlineas += 1;
+                            }
+
+                            ancho = cant_letras_linea*ANCHO_FUENTE/2+MARGEN*1.2; 
+                        }
+
+                        return ancho;
+                    })
+                    .attr("ry", function(d) {
+                        var tamNombre  = d.nombre.length;
+                        var cantlineas = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                        var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                        var altura; 
+
+                        var cant_letras_linea = CANT_LETRAS_LINEA;
+
+                        if (tamNombre <= cant_letras_linea) {
+                            altura = ALTURA_MIN_OP;
+                        } else {
+                          if (cantlineas > 4) {
+                            cant_letras_linea += 10;
+                            cantlineas = MAsth.floor(tamNombre/cant_letras_linea);
+                            restoLineas = tamNombre%cant_letras_linea;
+                          }
+
+                          if (restoLineas > 0) {
+                            cantlineas += 1;
+                          }
+                          altura = cantlineas*ALTURA_FUENTE*0.7;
+                        }
+                        return altura; 
+                    });
+
+
+      //Nombre de las operaciones.
+      var nombreO = operacion
+              .append("g")
+              .each(function(d,i){
+                  var tamNombre   = d.nombre.length; 
+                  var cantlineas  = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                  var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                  var arregloText = [];
+
+                  var cant_letras_linea = CANT_LETRAS_LINEA - 5;
+
+                  if (cantlineas > 4) {
+                      cant_letras_linea += 10; 
+                      cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                      restoLineas = tamNombre%cant_letras_linea;
+                  }
+
+                  if (tamNombre > cant_letras_linea) {
+
+                      if (restoLineas > 0) {
+                          cantlineas += 1;
+                      }
+                              
+                      for (var i = 0; i < cantlineas; i++) {
+
+                          var tmp = d.nombre.slice(i*cant_letras_linea, (i+1)*cant_letras_linea);
+
+                          arregloText.push(tmp);
+                      }
+                  } else {
+                      arregloText.push(d.nombre);
+                  }
+
+                  var lineas = d3.select(this)
+                      .selectAll("text")
+                      .data(arregloText).enter()
+                      .append("text")
+                      .text(function(d) {return d;})
+                      .attr("x", 0)
+                      .attr("y", function(d, i) {
+                          return -ALTURA_FUENTE*0.3*cantlineas + i*ALTURA_FUENTE;
+                      })
+                      .attr("text-anchor", "middle");
+              });
+
+
+      //DIBUJANDO LOS NODOS EXTERNOS.
+
+      //Figura que representa a los nodos externos.
+      var circuloE = externo
+                    .append("circle")
+                    .attr("r", function(d) {
+
+                        var tamNombre  = d.nombre.length;
+                        var cantlineas = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                        var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                        var ancho; 
+
+                        var cant_letras_linea = CANT_LETRAS_LINEA-2;
+
+                        if (tamNombre <= cant_letras_linea) {
+                            ancho = RADIO_MIN_EXTERNO;
+                        } else {
+
+                            if (restoLineas > 0) {
+                                cantlineas += 1;
+                            }
+
+                            if (cantlineas > 3) {
+                                cantlineas = Math.floor(tamNombre/cant_letras_linea);
+                                restoLineas = tamNombre%cant_letras_linea;
+                            }
+
+                            ancho = cant_letras_linea*ANCHO_FUENTE/2; 
+                        }
+
+                        return ancho;
+                    })
+                    .attr("cx", 0)
+                    .attr("cy", 0);
+
+      //Nombre del nodo externo.
+      var nombreE = externo
+              .append("g")
+              .each(function(d,i){
+                  var tamNombre   = d.nombre.length; 
+                  var cantlineas  = Math.floor(tamNombre/CANT_LETRAS_LINEA);
+                  var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+                  var arregloText = [];
+
+                  var cant_letras_linea = CANT_LETRAS_LINEA ;
+
+                  if (cantlineas > 3) {
+                      cant_letras_linea += 5; 
+                      cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                      restoLineas = tamNombre%cant_letras_linea;
+                  }
+
+                  if (tamNombre > cant_letras_linea) {
+
+                      if (restoLineas > 0) {
+                          cantlineas += 1;
+                      }
+                              
+                      for (var i = 0; i < cantlineas; i++) {
+
+                          var tmp = d.nombre.slice(i*cant_letras_linea, (i+1)*cant_letras_linea);
+
+                          arregloText.push(tmp);
+                      }
+                  } else {
+                      arregloText.push(d.nombre);
+                  }
+
+                  var lineas = d3.select(this)
+                      .selectAll("text")
+                      .data(arregloText).enter()
+                      .append("text")
+                      .text(function(d) {return d;})
+                      .attr("x", 0)
+                      .attr("y", function(d, i) {
+                          return -ALTURA_FUENTE*0.3*cantlineas + i*ALTURA_FUENTE;
+                      })
+                      .attr("text-anchor", "middle");
+              });
+
+
+    //Funcion para obtener el nombre mas largo de los elementos 
+    //de una vista.
+    function obtenerNombreMasLargo(nombre, elementos){
+      var max = nombre.length;
+      var nombreMasLargo = nombre;
+
+      for (var i = 0; i < elementos.length; i++) {
+        if (elementos[i].nombre.length > max) {
+          max = elementos[i].nombre.length;
+          nombreMasLargo = elementos[i].nombre;
+        }
+      }
+
+      return nombreMasLargo;
+    }
+
+
+    //Funcion que permite desplazar los elementos.
+    function mover(dx, dy) {
+
+      vista.filter(function(d) {return d.selected;})
+            .attr("transform", function(d) {
+                return "translate("+(d.x+=dx)+","+(d.y+=dy)+")"
+            });
+            
+      accion.filter(function(d) {return d.selected;})
+            .attr("transform", function(d) {
+                return "translate("+(d.x+=dx)+","+(d.y+=dy)+")";
+            });
+
+      operacion.filter(function(d) {return d.selected;})
+            .attr("transform", function(d) {
+                return "translate("+(d.x+=dx)+","+(d.y+=dy)+")";
+            });
+
+      externo.filter(function(d) {return d.selected;})
+            .attr("transform", function(d) {
+                return "translate("+(d.x+=dx)+","+(d.y+=dy)+")";
+            });
+
+
+      enlaceVA.filter(function(d) {return d.origen.selected;})
+      	.attr("d", function(d) {
+      		var elem;
+      		var num;
+      		for (var i = 0; i < d.origen.elementos.length; i++) {
+      			if (d.puerto === d.origen.elementos[i].id) {
+      				elem = d.origen.elementos[i];
+      				num  = i;
+      			}
+      		}
+
+      		var tamLineaHoriz = 50*0.3*(d.origen.elementos.length-num+1);
+
+      		return "M"+(elem.x1+=dx)+","+(elem.y1+=dy)+
+      		      " L"+(elem.x1 + tamLineaHoriz)+","+elem.y1+
+      		      " L"+(elem.x1 + tamLineaHoriz)+","+elem.y2+
+      		      " L"+elem.x2+","+elem.y2;
+      	});
+
+      enlaceVA.filter(function(d) {return d.destino.selected;})
+      	.attr("d", function(d, i) {
+			var puerto_salida = d.puerto;
+            var cantElementos = d.origen.elementos.length+1;
+            var xOrig, xDest;
+            var yOrig, yDest;
+            var elem;
+            var num;
+
+            for (var j = 0; j < d.origen.elementos.length; j++) {
+                  	
+              	if (d.origen.elementos[j].id === puerto_salida) {
+            		elem = d.origen.elementos[j];
+            		num  = j;
+            	}
+            }
+
+            if (cantElementos < 2) {
+            	cantElementos = ALTURA_MIN_VISTA;
+            }
+
+            //Posicion de salida del enlace en y.
+            yOrig = d.origen.y - cantElementos*ALTURA_FUENTE/2 + (num+1)*ALTURA_FUENTE+13; 
+
+            //Posicion de salida del enlace en x.
+            var nombre    = nombreMasLargo[d.origen.id];
+            var tamNombre = nombre.length;
+
+            if (tamNombre < 12) {
+            	tamNombre = ANCHO_MIN_VISTA;
+            }
+                  		
+            xOrig = d.origen.x + (tamNombre*ANCHO_FUENTE*0.8 + MARGEN)/2;
+
+            //Guardamos la posicion donde parte el enlace.
+            // d.origen.elementos[num]["x1"]=xOrig;
+            // d.origen.elementos[num]["y1"]=yOrig;
+
+      		var tamLineaHoriz = 50*0.3*(d.origen.elementos.length-num+1);
+      		
+      		//Obtenemos el ancho y altura de la accion.
+      		var tamNombre   = d.destino.nombre.length;
+      		var restoLineas = tamNombre%CANT_LETRAS_LINEA;
+      		var cant_letras_linea = CANT_LETRAS_LINEA;
+      		var ancho, alto;
+      		var linea;
+
+      		if (tamNombre <= cant_letras_linea) {
+                ancho = 80;
+                alto  = 50;        
+            } else {
+            	if (cantlineas > 4) {
+                    cant_letras_linea += 10; 
+                    cantlineas  = Math.floor(tamNombre/cant_letras_linea);
+                    restoLineas = tamNombre%cant_letras_linea;
+                }
+
+                if (restoLineas > 0) {
+                    cantlineas += 1;
+                }
+
+                ancho = cant_letras_linea*ANCHO_FUENTE/2;
+                alto  = cantlineas*ALTURA_FUENTE+1.2*MARGEN;
+            }
+
+            var espaciado = 2*alto/d.origen.elementos.length;
+            var xOrig, xDest;
+            var yOrig, yDest;
+
+			if ((elem.x1 + tamLineaHoriz) >= (d.destino.x - ancho) && (elem.x1 + tamLineaHoriz) <= (d.destino.x + ancho)) {
+
+					xDest = xOrig + tamLineaHoriz;
+			    	yDest = d.destino.y;
+
+   					linea = "M"+xOrig+","+yOrig+
+   				       		" L"+(xOrig + tamLineaHoriz)+","+yOrig+
+   				       		" L"+(xOrig + tamLineaHoriz)+","+yDest;
+	      		} else {
+
+	      			if (elem.x1 > d.destino.x) {
+	      				xDest = d.destino.x;
+	      				yDest = (d.destino.y-alto) + (d.origen.elementos.length-num)*espaciado;
+	      			} else {
+	      				xDest = d.destino.x;
+	      				yDest = (d.destino.y-alto) + (num)*espaciado;
+	      			}
+
+	      			linea = "M"+xOrig+","+yOrig+
+	      			       " L"+(xOrig + tamLineaHoriz)+","+yOrig+
+	      			       " L"+(xOrig + tamLineaHoriz)+","+yDest+
+	      			       " L"+xDest+","+yDest;
+	      		}
+
+	      	//Guardamos la posicion donde llega el enlace.
+            // d.origen.elementos[num]["x2"]=xDest;
+            // d.origen.elementos[num]["y2"]=yDest;
+
+      		return linea;
+      	});
+
+
+      enlaceAE.filter(function(d) {return d.origen.selected;})
+        .attr("x1", function(d) {return d.origen.x;})
+        .attr("y1", function(d) {return d.origen.y;});
+
+      enlaceAE.filter(function(d) {return d.destino.selected;})
+        .attr("x2", function(d) {return d.destino.x;})
+        .attr("y2", function(d) {return d.destino.y;});
+
+
+      enlaceEA.filter(function(d) {return d.origen.selected;})
+        .attr("x1", function(d) {return d.origen.x;})
+        .attr("y1", function(d) {return d.origen.y;});
+
+      enlaceEA.filter(function(d) {return d.destino.selected;})
+        .attr("x2", function(d) {return d.destino.x;})
+        .attr("y2", function(d) {return d.destino.y;});
+
+
+      enlaceAO.filter(function(d) {return d.origen.selected;})
+        .attr("x1", function(d) {return d.origen.x;})
+        .attr("y1", function(d) {return d.origen.y;});
+
+      enlaceAO.filter(function(d) {return d.destino.selected;})
+        .attr("x2", function(d) {return d.destino.x;})
+        .attr("y2", function(d) {return d.destino.y;});
+    }
+
+    </script>
+
+  </body>
+</html>

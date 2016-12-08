@@ -1,0 +1,278 @@
+body {
+	background-color: #FFF;
+}
+
+/** HEADER **/
+#header-nav {
+  background-color: #F5F5F5;
+  border-radius: 0;          
+  border: 0;  
+  border-bottom: 2px solid #008EB7;               
+}
+.navbar-brand {
+  padding-top: 15px;
+}
+.navbar-brand span {
+  color: #555;
+  text-transform: uppercase;
+}
+.navbar-brand a:hover, .navbar-brand a:focus {
+  text-decoration: none;
+  cursor: pointer;
+}
+#nav-list-left a, #nav-list-right a {
+  color: #333;
+  text-align: center;
+}
+#nav-list-left a:hover, #nav-list-right a:hover{
+  background: #F0F0F2;
+  color: #008EB7;
+  cursor: pointer;
+}
+.navbar-default .navbar-text {
+  color: #555;
+}
+
+
+/** MAIN CONTENT **/
+#login { 
+  padding-top: 20px;
+  padding-left: 60px;
+  padding-right: 60px;
+  border-left: 1px solid #999;
+  height: 450px;
+}
+#info {
+  padding-top: 20px;
+  padding-left: 50px;
+}
+/* Formularios */
+.form-group input, .form-group textarea, .form-group select {
+  border-radius: 0;
+}
+/* Botones */
+.btn-primary {
+    background: #008EB7;
+    color: #F0F8FF;
+}
+.sharp {
+  border-radius:0;
+  border: 0;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+  background: #33A6CC;
+}
+
+#contenido {   
+  padding-top: 20px;
+  padding-left: 50px;
+}
+
+/** FOOTER **/
+/*.panel-footer {
+  color: #F0F8FF;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #008EB7;
+  width:100%;
+  position:absolute;
+  bottom:0;
+  left:0;
+  border-radius: 0;
+}*/
+
+/******************************* DIAGRAMA ************************************/
+#dibujo {
+  overflow: auto;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+svg {
+  background: #F1F1F1;
+}
+.nodo { /* Nodos del diagrama (Vista, Acción, Operación, Externo) */
+    fill: #FFF;     
+    stroke: #000;         
+    stroke-width: 1.5px;   
+}
+.nodo .seleccionado {
+    stroke: red;         /* Color de circulo seleccionado */
+}
+
+svg text { /* Texto dentro del nodo */
+    font-family: "Helvetica Neue", Helvetica, Arial,sans-serif;
+    font-size: 15px;
+    cursor: default;
+    fill: black;
+    stroke-width: 0.5px;
+}
+
+.enlaceVA, .enlaceAV {                
+    stroke: #000;        /* Color de las relaciones*/
+    stroke-width: 1.5px;
+    fill: none;
+}
+.enlaceEV, .enlaceVE {
+    stroke: #000;        /* Color de las relaciones*/
+    stroke-width: 1.5px;
+    fill: none;
+}
+.enlaceAE {                
+    stroke: #000;        /* Color de las relaciones*/
+    stroke-width: 1.5px;
+    fill: none;
+    marker-end: url(#marcadorFlechaEnCirculo);
+}
+.enlaceEA {                
+    stroke: #000;        /* Color de las relaciones*/
+    stroke-width: 1.5px;
+    fill: none;
+    marker-end: url(#marcadorFlechaEnRombo);
+}
+.enlaceAO {
+    stroke: #000;        /* Color de las relaciones*/
+    stroke-width: 1.5px;
+    fill: none;
+}
+
+
+
+/* TABS
+-------------------------------------------------- */
+ul.tab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    border-style: none;
+}
+ul.tab li { /* Float the list items side by side */
+    float: left;
+    display: table-cell;
+    margin-top: 16px;
+    width: 50%;
+}
+ul.tab li a { /* Style the links inside the list items */
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 13.5px 19px;
+    text-decoration: none;
+    transition: 0.3s
+    font-size: 14px;
+}
+ul.tab li a:hover { /* Change background color of links on hover */
+    background-color: #F1F1F1;
+}
+ul.tab li a:focus, .active { /* Create an active/current tablink class */
+    border-bottom: 6px solid #008EB7;
+    outline: none;
+}
+ul.tab li a {
+    border-bottom: 6px solid #DDD;
+    outline: none;
+}
+.tablinks.active {
+    border-bottom: 6px solid #008EB7;
+    outline: none;
+}
+#tab-menu {
+    padding-top: 25px;
+}
+.tabcontent {
+    padding: 20px 0 20px 0;
+}
+
+
+/* MODALS
+-------------------------------------------------- */
+.modal-header {
+    padding: 15px;
+    margin: 0 15px 0 15px;
+    border-bottom: 6px solid #008EB7;
+}
+.modal-body {
+    margin: 0 15px 0 15px;
+}
+.modal-content {
+    border-radius: 0;
+}
+.eliminar {
+    text-align: center;
+}
+
+
+
+/* CONTENIDO PAGINA
+-------------------------------------------------- */
+#contenido {
+    padding: 30px 15px 0;
+}
+.page-header {
+    margin: 40px 0 0;
+    padding-bottom: 1.2px;
+    padding-left: 0;
+    padding-right: 0;
+    border-bottom: 6px solid #008EB7;
+}
+.page-header div h3 {
+    margin-top: 10px;
+}
+#cambiarDiagrama {
+    float:right;
+    clear:both;
+}
+#titulo{
+    padding-left: 0;
+    margin-bottom: 3px;
+}
+#dropdownCambiarDiagrama {
+    padding-right: 0;
+}
+/* Lista de atributos del tab de edicion de la vista */
+#nombre {
+  padding-right: 5px;
+  width: 400px;
+}
+#enlazar, #eliminar { 
+    padding-left: 5px;
+}
+
+/* STICKY FOOTER
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #F5F5F5;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,418 @@
+<!-- Agrega la barra de navegacion Fixed navbar-->
+<nav id="header-nav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" 
+                    class="navbar-toggle collapsed" 
+                    data-toggle="collapse" 
+                    data-target="#contenido-plegable" 
+                    aria-expanded="false" 
+                    aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Diagramas MVC</a>
+        </div><!-- .navbar-header -->
+
+        <div id="contenido-plegable" class="collapse navbar-collapse">
+            <ul id="nav-list-left" class="nav navbar-nav navbar-left">
+            </ul>
+            <ul id="nav-list-right" class="nav navbar-nav navbar-right">
+                <li class="navbar-text" 
+                    ng-show="usuario.nombre" 
+                    ng-bind="usuario.nombre"></li>  
+                <li><a ng-click="VDiseno3(idDiseno)">Regresar</a></li>
+                <li><a ng-click="VLogin3()">Salir</a></li>
+            </ul>
+        </div><!-- .collapse navbar-collapse -->
+    </div><!-- .container -->
+</nav><!-- #header-nav -->
+
+    <!-- Begin page content -->
+<div id="contenido" class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="tab-menu">
+                <ul class="tab" id="myTab">
+                    <li><a ng-class="{ active: isSet(2) }"
+                           href ng-click="setTab(2)"
+                           class="tablinks">Elemento</a></li>
+                    <li><a ng-class="{ active: isSet(1) }"
+                           href ng-click="setTab(1)"
+                           class="tablinks">Crear</a></li>
+                </ul>
+
+                <div ng-show="isSet(1)" class="tabcontent">
+                    <form name="fElementoForm" 
+                          ng-submit="ACrearElemento1(fElementoForm.$valid)" novalidate>
+                        <div class="form-group"
+                             ng-class="{'has-error': fElementoSubmitted &&
+                                                     fElementoForm.nombre.$invalid &&
+                                                     fElementoForm.nombre.$pristine &&
+                                                     fElementoSubmitted}">
+                            <label for="fElemento_nombre">Nombre</label>
+                            <input id="fElemento_nombre" 
+                                   type="text" 
+                                   name="nombre"
+                                   class="form-control"
+                                   ng-model="fElemento.nombre"
+                                   placeholder="Nombre del elemento"
+                                   required="" />
+                            <p ng-show="fElementoSubmitted && fElementoForm.nombre.$invalid"
+                               class="help-block">
+                                Error en campo Nombre.                    
+                            </p>
+                        </div>
+                        <div class="form-group" 
+                             ng-class="{'has-error': fElementoSubmitted && 
+                                                     fElementoForm.tipo.$invalid && 
+                                                     fElementoForm.tipo.$pristine && 
+                                                     fElementoSubmitted}" >
+                            <label for="fElemento_tipo">Tipo</label>
+                            <select id="fElemento_tipo" 
+                                    class="form-control"
+                                    ng-model="fElemento.tipo" required 
+                                    ng-options="item.key as item.value for item in fElemento_opcionesTipo">
+                            </select>
+                        </div>
+                        <div class="form-group form-inline" 
+                             ng-if="fElemento.tipo == 1">
+                            <label for="fElemento_nombre_atributo">Atributos</label><br>
+                            <input id="fElemento_nombre_atributo"
+                                   type="text" 
+                                   name="atributos"
+                                   class="form-control" 
+                                   ng-model="fElemento.nombre_atributo" 
+                                   placeholder="Nombre del atributo">
+                            <button type="button" 
+                                    class="btn btn-primary btn-md sharp"
+                                    ng-click="agregar1()">
+                                +
+                            </button>
+                            <br><br>
+                            <div ng-repeat="atr in fElemento.atributos">           
+                                {{atr.nombre}}
+                            </div>
+                        </div>
+
+                        <div id="accion" 
+                             ng-if="fElemento.tipo == 2">
+                        </div>
+
+                        <div class="form-group" 
+                             ng-if="fElemento.tipo == 3">
+                            <label for="fElemento_entidad">Entidad</label>
+                            <select id="fElemento_entidad" 
+                                    class="form-control"
+                                    ng-model="fElemento.idEntidad" 
+                                    ng-options="item.key as item.value for item in fElemento_opcionesEntidad" required>
+                            </select>
+                        </div>
+
+                        <input id="fElemento_idElemento" 
+                               type="hidden" 
+                               name="idElemento" 
+                               ng-model="fElemento.idElemento"/>                        
+                        <button type="submit" class="btn btn-primary btn-lg sharp">
+                            Crear
+                        </button>
+                    </form>
+                </div><!-- ng-show="isSet(1)" .tabcontent -->
+
+                <div ng-show="isSet(2)" class="tabcontent">
+                    <h5 ng-show="seleccionado==0"> 
+                        No hay ningun elemento seleccionado 
+                    </h5>
+                    <div ng-show="seleccionado==1">
+                        <form name="fVistaForm" 
+                              ng-submit="AModificarVista1(fVistaForm.$valid)" novalidate>
+                            <div class="form-group"
+                                 ng-class="{'has-error': fVistaSubmitted &&
+                                                         fVistaForm.nombre.$invalid &&
+                                                         fVistaForm.nombre.$pristine &&
+                                                         fVistaSubmitted}">
+                                <label for="fVista_nombre">Nombre</label>
+                                <input id="fVista_nombre" 
+                                       type="text" 
+                                       name="nombre"
+                                       class="form-control"
+                                       ng-model="fVista.nombre"
+                                       placeholder="Nombre de la vista" required/>
+                                <p ng-show="fVistaSubmitted && fVistaForm.nombre.$invalid"
+                                   class="help-block">
+                                    Error en campo Nombre.                    
+                                </p>
+                            </div>
+
+                            <div class="form-group form-inline">
+                                <label for="fVista_nombre_atributo">Atributos</label><br>
+                                <input id="fVista_nombre_atributo" 
+                                        type="text" 
+                                        name="atributos"
+                                        class="form-control"
+                                        ng-model="fVista.nombre_atributo"
+                                        placeholder="Nombre del atributo">
+                                <button type="button" 
+                                        class="btn btn-primary btn-md sharp"
+                                        ng-click="agregar2()">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                                <br><br>
+                                <table>
+                                    <tr ng-repeat="atr in fVista.atributos">
+                                        <td id="nombre">{{atr.nombre}}</td>
+                                        <td id="enlazar">
+                                            <a data-toggle="modal" 
+                                               data-target="#modal-atributo"
+                                               ng-click="setAtributo(atr.id)">
+                                               <span class="glyphicon glyphicon-edit"></span>
+                                            </a>
+                                        </td>
+                                        <td id="eliminar">
+                                        	<a ng-click="eliminarAtributo2(atr.id)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <input id="fVista_idVista" 
+                                   type="hidden" 
+                                   name="idVista" 
+                                   ng-model="fVista.idDiagrama" />
+                            <button type="submit" class="btn btn-primary btn-lg sharp">
+                                Modificar
+                            </button>
+                            <button type="button" 
+                                    data-toggle="modal" 
+                                    data-target="#modal-eliminar-vista"
+                                    class="btn btn-primary btn-lg sharp">
+                                Eliminar
+                            </button>
+                        </form>
+
+                        <!-- Modal Edicion de atributos -->
+                        <div id="modal-atributo" class="modal fade" role="dialog">
+                          	<div class="modal-dialog">
+
+                            	<!-- Modal content-->
+                            	<div class="modal-content">
+                              		<div class="modal-header">
+                                		<button type="button" class="close" 
+                                        		data-dismiss="modal">&times;</button>
+                                		<h4 class="modal-title">Detalles del atributo</h4>
+                              		</div>
+	                              	<div class="modal-body">
+	                                	<form>
+				                            <div class="form-group">
+				                                <label for="fVista_nombre_atr">Nombre</label>
+				                                <input id="fVista_nombre_atr" 
+				                                       type="text" 
+				                                       name="nombre"
+				                                       class="form-control"
+				                                       ng-model="fVista.nombre_atr"
+				                                       placeholder="Nombre del atributo" required/>
+				                            </div>
+											<div class="form-group">	
+												<label for="fVista_nombre_accion_interna">
+													Acción interna asociada
+												</label>	
+												<select id="fVista_nombre_accion_interna" 
+	                                        			class="form-control"
+	                                        			ng-model="fVista.accion_interna"
+	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionInterna">
+	                                			</select>
+	                                			<label for="fVista_nombre_Accion_externa">
+													Acción externa asociada
+												</label>	
+	                                			<select id="fVista_nombre_accion_externa" 
+	                                        			class="form-control"
+	                                        			ng-model="fVista.accion_externa"
+	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionExterna">
+	                                			</select>
+											</div>
+											<button type="button" 
+											        class="btn btn-primary btn-lg sharp"
+											        ng-click="asociar1()"
+											        data-dismiss="modal">
+                                					Asociar
+                            				</button>
+										</form>
+	                                </div>
+                                </div>
+                            </div>
+                        </div><!-- modal-atributo -->
+
+                        <!-- Modal Edicion de atributos -->
+                        <div id="modal-eliminar-vista" class="modal fade eliminar" role="dialog">
+                          	<div class="modal-dialog">
+
+                            	<!-- Modal content-->
+                            	<div class="modal-content">
+                              		<div class="modal-header">
+                                		<button type="button" class="close" 
+                                        		data-dismiss="modal">&times;</button>
+                                		<h4 class="modal-title">Eliminar Vista</h4>
+                              		</div>
+	                              	<div class="modal-body">
+	                                	<p>¿Esta seguro que desea eliminar la vista seleccionada?</p>
+	                                	<button type="button" 
+											    class="btn btn-primary btn-lg sharp"
+											    ng-click="AEliminarElemento1(fVista.idNodo)"
+											    data-dismiss="modal">Si</button>
+	                                	<button type="button" 
+											    class="btn btn-primary btn-lg sharp"
+											    data-dismiss="modal">No</button>
+	                                </div>
+                                </div>
+                            </div>
+                        </div><!-- modal-eliminar-vista -->
+                    </div><!-- seleccionado==1 -->
+                    
+                    <div ng-show="seleccionado==2">
+                        <form name="fAccionForm"
+                              ng-submit="AModificarAccion1(fAccionForm.$valid)" novalidate>
+                            <div class="form-group"
+                                 ng-class="{'has-error': fAccionSubmitted &&
+                                                         fAccionForm.nombre.$invalid &&
+                                                         fAccionForm.nombre.$pristine &&
+                                                         fAccionSubmitted}">
+                                <label for="fAccion_nombre">Nombre</label>
+                                <input id="fAccion_nombre" 
+                                       type="text" 
+                                       name="nombre"
+                                       class="form-control"
+                                       ng-model="fAccion.nombre"
+                                       placeholder="Nombre de la acción" required/>
+                                <p ng-show="fAccionSubmitted && fAccionForm.nombre.$invalid"
+                                   class="help-block"> 
+                                    Error en campo Nombre.
+                                </p>
+                            </div>
+
+                            <div class="form-group form-inline">
+                                <label for="fAccion_nombre_vista_interna">Vistas internas asociadas</label><br>
+                                <select id="fAccion_nombre_vista_interna" 
+                                        class="form-control"
+                                        ng-model="fAccion.vista_interna"
+                                        ng-options="item.key as item.value for item in fAccion_opcionesVistaInterna">
+                                </select>
+                                <button type="button" 
+                                        class="btn btn-primary btn-md sharp"
+                                        ng-click="agregar3()">
+                                    +
+                                </button>
+                                <br><br>
+                                <div ng-repeat="atr in fAccion.relaciones_internas">
+                                    {{atr.nombre}}
+                                </div>
+                            </div>
+
+                            <div class="form-group form-inline">
+                                <label for="fAccion_nombre_vista_externa">Vistas externas asociadas</label><br>
+                                <select id="fAccion_nombre_vista_externa" 
+                                        class="form-control"
+                                        ng-model="fAccion.vista_externa"
+                                        ng-options="item.key as item.value for item in fAccion_opcionesVistaExterna">
+                                </select>
+                                <button type="button" 
+                                        class="btn btn-primary btn-md sharp"
+                                        ng-click="agregar4()">
+                                    +
+                                </button>
+                                <br><br>
+                                <div ng-repeat="atr in fAccion.relaciones_externas">
+                                    {{atr.nombre}}
+                                </div>
+                            </div>
+
+                            <input id="fAccion_idAccion" 
+                                   type="hidden" 
+                                   name="idAccion" 
+                                   ng-model="fAccion.idDiagrama" />
+                            <button type="submit" class="btn btn-primary btn-lg sharp">
+                                Modificar
+                            </button>
+                        </form>
+                    </div>
+                    <div ng-show="seleccionado==3">
+
+                        <form name="fOPeracionForm"
+                              ng-submit="AModificarOperacion1(fOPeracionForm.$valid)" novalidate>
+                            <div class="form-group"
+                                 ng-class="{'has-error': fOperacionSubmitted &&
+                                                         fOperacionForm.nombre.$invalid &&
+                                                         fOperacionForm.nombre.$pristine &&
+                                                         fOperacionSubmitted}">
+                                <label for="fOperacion_nombre">Nombre</label>
+                                <input id="fOperacion_nombre" 
+                                       type="text" 
+                                       name="nombre"
+                                       class="form-control"
+                                       ng-model="fOperacion.nombre"
+                                       placeholder="Nombre de la operación" required/>
+                                <p ng-show="fOperacionSubmitted && fOperacionForm.nombre.$invalid"
+                                   class="help-block">
+                                    Error en campo Nombre.                    
+                                </p>
+                            </div>
+                            <div class="form-group">
+                                <label for="fOperacion_accion">Acción asociada</label>
+                                <select id="fOperacion_accion"
+                                        class="form-control"
+                                        ng-model="fOperacion.idAccion"
+                                        ng-options="item.key as item.value for item in fOperacion_opcionesAccion">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fOperacion_entidad">Entidad asociada</label>
+                                <select id="fOperacion_entidad"
+                                        class="form-control"
+                                        ng-model="fOperacion.idEntidad"
+                                        ng-options="item.key as item.value for item in fOperacion_opcionesEntidad" required>
+                                </select>
+                            </div>
+                            <input id="fOperacion_idOperacion" 
+                                   type="hidden" 
+                                   name="idOperacion" 
+                                   ng-model="fOperacion.idDiagrama" />
+                            <button type="submit" class="btn btn-primary btn-lg sharp">
+                                Modificar
+                            </button>
+                        </form>
+                    </div>
+                    <div ng-show="seleccionado==4">
+                        Este elemento no pertenece a este diagrama
+                    </div>
+                </div><!-- ng-show="isSet(2)" .tabcontent -->
+            </div><!-- #tab-menu -->
+        </div>
+        <div class="col-sm-9 dibujo">
+            <div class="page-header container col-sm-12">
+                <div class="col-sm-8" id="tituloDiagrama"><h3>Diagrama</h3></div>
+                <div class="col-sm-4" id="dropdownCambiarDiagrama">
+                    <div class="form-group form-inline" id="cambiarDiagrama">
+                        <select id="fDiagrama_cambiarDiagrama" 
+                                class="form-control"
+                                ng-model="fDiagrama.idDiagrama"
+                                ng-options="item.key as item.value for item in fDiagrama_opcionesDiagrama">
+                        </select>
+                        <button type="submit" 
+                                class="btn btn-primary btn-md sharp"
+                                ng-click="ACambiarDiagrama1(fDiagrama.idDiagrama)">
+                            Cambiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Seccion donde se dibuja el diagrama -->
+            <div class="container col-sm-12" id="dibujo"></div> 
+        </div>
+    </div><!-- .row -->
+</div><!-- #contenido .container -->
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+    </div>
+</footer>

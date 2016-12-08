@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" ng-app="mvc">
+  <head>
+    <meta charset="UTF-8">
+    <!-- Hacemos que sea compatible con internet explorer 9 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Elimina el zoom en dispositivos moviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MVC</title>
+    <link rel="shortcut icon" href="static/img/favicon.ico">
+    <!-- Cargamos bootstrap -->
+    <link rel="stylesheet" href="static/libs/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/libs/css/style.css">
+  </head>
+  <body ng-controller="mvcController">
+
+    <flash:messages></flash:messages>  
+    <!-- Muestra el contenido de la vista parcial adecuada -->
+    <div ng-view></div>
+
+<!--     <footer class="panel-footer">
+        <div class="container">
+            <div class="text-center">{{title}}</div>
+        </div>
+    </footer> -->
+
+    <!-- Cargamos los archivos javaScript de jQuery, d3 y bootstrap -->
+    <script src="static/libs/js/jquery.min.js"></script>
+    <script src="static/libs/js/d3.v3.min.js"></script>
+    <script src="static/libs/js/bootstrap.min.js"></script>
+    <!-- Cargamos angular -->
+    <script src="static/libs/js/angular.min.js"></script>
+    <script src="static/libs/js/angular-route.min.js"></script>
+    <script src="static/libs/js/ng-flash.js"></script>
+    <script src="static/libs/js/ng-table.min.js"></script>
+
+<!--     <script src="js/angular/angular-animate.min.js"></script>
+    <script src="js/angular/angular-resource.min.js"></script>
+    <script src="js/angular/angular-sanitize.js"></script>
+    <script src="js/angular/textAngular.min.js"></script>
+    <script src="js/jquery.layout-latest.min.js"></script> -->
+    <script src="static/libs/js/jquery-ui.min.js"></script>
+    
+
+    <!-- Cargamos la aplicacion -->
+    <script src="static/controllers/app.js"></script>
+    <script src="static/controllers/identificar/IdentificarController.js"></script>
+    <script src="static/controllers/identificar/IdentificarService.js"></script>   
+    <script src="static/controllers/diseno/DisenoController.js"></script>
+    <script src="static/controllers/diseno/DisenoService.js"></script> 
+    <script src="static/controllers/entidad/EntidadController.js"></script>
+    <script src="static/controllers/entidad/EntidadService.js"></script>
+    <script src="static/controllers/diagrama/DiagramaController.js"></script>
+    <script src="static/controllers/diagrama/DiagramaService.js"></script> 
+    <script src="static/controllers/elemento/ElementoController.js"></script>
+    <script src="static/controllers/elemento/ElementoService.js"></script>
+  </body>
+</html>

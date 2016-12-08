@@ -14,12 +14,12 @@ from flask import current_app
 from app   import create_app, db
 
 
-# Configuracion de la base de datos de prueba.
-app = create_app('pruebas')
-app_context = app.app_context()
-app_context.push()
-db.drop_all()
-db.create_all()
+# # Configuracion de la base de datos de prueba.
+# app = create_app('pruebas')
+# app_context = app.app_context()
+# app_context.push()
+# db.drop_all()
+# db.create_all()
 
 
 

@@ -1,0 +1,200 @@
+<!-- Agrega la barra de navegacion Fixed navbar-->
+<nav id="header-nav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" 
+                    class="navbar-toggle collapsed" 
+                    data-toggle="collapse" 
+                    data-target="#contenido-plegable" 
+                    aria-expanded="false" 
+                    aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+
+            <!-- Se aplica a el logo o titulo de la marca -->
+          <div class="navbar-brand">
+            <a href=""><span>Diagramas MVC</span></a>
+          </div>
+        </div><!-- .navbar-header -->
+
+        <div id="contenido-plegable" class="collapse navbar-collapse">
+            <ul id="nav-list-left" class="nav navbar-nav navbar-left"></ul>
+            <ul id="nav-list-right" class="nav navbar-nav navbar-right">
+                <li class="navbar-text" 
+                    ng-show="usuario.nombre" 
+                    ng-bind="usuario.nombre"></li>  
+                <li><a ng-click="VDisenos1()">Regresar</a></li>
+                <li><a ng-click="VLogin2()">Salir</a></li>
+            </ul>
+        </div><!-- .collapse navbar-collapse -->
+    </div><!-- .container -->
+</nav><!-- #header-nav -->
+
+<div id="contenido" class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="tab-menu">
+                <ul class="tab">
+                    <li><a ng-class="{ active: isSet(1) }"
+                           href ng-click="setTab(1)"
+                           class="tablinks">Detalles</a></li>
+                    <li><a ng-class="{ active: isSet(2) }"
+                           href ng-click="setTab(2)"
+                           class="tablinks">Crear</a></li>
+                </ul>
+
+                <div ng-show="isSet(1)" class="tabcontent">
+                    <form name="fDiagramaForm" 
+                          ng-submit="AModificarDiagrama1(fDiagramaForm.$valid)" novalidate>
+                        <div class="form-group"
+                             ng-class="{'has-error': fDiagramaSubmitted &&
+                                                     fDiagramaForm.nombre.$invalid &&
+                                                     fDiagramaForm.nombre.$pristine &&
+                                                     fDiagramaSubmitted}">
+                            <label for="fDiagrama_nombre">Nombre</label>
+                            <input id="fDiagrama_nombre" 
+                                   type="text" 
+                                   name="nombre"
+                                   class="form-control"
+                                   ng-model="fDiagrama.nombre"
+                                   placeholder="Nombre del diagrama o entidad"
+                                   required/>
+                            <p ng-show="fDiagramaSubmitted && fDiagramaForm.nombre.$invalid"
+                               class="help-block">
+                                Error en campo Nombre.                    
+                            </p>
+                        </div>
+                        <div class="form-group" 
+                             ng-class="{'has-error': fDiagramaSubmitted && 
+                                                     fDiagramaForm.descripcion.$invalid && fDiagramaForm.descripcion.$pristine && 
+                                                     fDiagramaSubmitted}">
+                            <label for="fDiagrama_descripcion">Descripción</label>
+                            <textarea id="fDiagrama_descripcion" 
+                                      name="descripcion" 
+                                      class="form-control" 
+                                      ng-model="fDiagrama.descripcion" 
+                                      placeholder="Descripción del diagrama o entidad" required>
+                            </textarea>
+                            <p ng-show="fDiagramaSubmitted && 
+                                        fDiagramaForm.descripcion.$invalid" 
+                                        class="help-block">
+                                Error en campo Descripción.
+                            </p>
+                        </div>
+                        <input id="fDiagrama_idDiagrama" type="hidden" name="idDiagrama" 
+                               ng-model="fDiagrama.idDiagrama" />
+                        <button type="submit" class="btn btn-primary btn-lg sharp">
+                            <span>Modificar</span>
+                        </button>
+                    </form>
+                </div><!-- ng-show="isSet(1)" .tabcontent -->
+
+                <div ng-show="isSet(2)" class="tabcontent">
+                    <h4>Crear Diagrama</h4>
+                    <br>
+                    <form name="fDiagramaForm" 
+                          ng-submit="ACrearDiagrama1(fDiagramaForm.$valid)" novalidate>
+                        <div class="form-group"
+                             ng-class="{'has-error': fDiagramaSubmitted &&
+                                                     fDiagramaForm.nombre.$invalid &&
+                                                     fDiagramaForm.nombre.$pristine &&
+                                                     fDiagramaSubmitted}">
+                            <label for="fDiagrama_nombre">Nombre</label>
+                            <input id="fDiagrama_nombre" 
+                                   type="text" 
+                                   name="nombre"
+                                   class="form-control"
+                                   ng-model="fDiagrama.nombre"
+                                   placeholder="Nombre del diagrama"/>
+                            <p ng-show="fDiagramaSubmitted && fDiagramaForm.nombre.$invalid"
+                               class="help-block">
+                                Error en campo Nombre.                    
+                            </p>
+                        </div>
+                        <div class="form-group" 
+                             ng-class="{'has-error': fDiagramaSubmitted && 
+                                                     fDiagramaForm.descripcion.$invalid && fDiagramaForm.descripcion.$pristine && 
+                                                     fDiagramaSubmitted}">
+                            <label for="fDiagrama_descripcion">Descripción</label>
+                            <textarea id="fDiagrama_descripcion" 
+                                      name="descripcion" 
+                                      class="form-control" 
+                                      ng-model="fDiagrama.descripcion" 
+                                      placeholder="Descripción del diagrama" required>
+                            </textarea>
+                            <p ng-show="fDiagramaSubmitted && fDiagramaForm.descripcion.$invalid" 
+                               class="help-block">
+                                Error en campo Descripción.
+                            </p>
+                        </div>
+                        <input id="fDiagrama_idDiagrama" 
+                               type="hidden" 
+                               name="idDiagrama" 
+                               ng-model="fDiagrama.idDiagrama"/>
+                        <button type="submit" class="btn btn-primary btn-lg sharp">
+                            Crear
+                        </button>
+                    </form>
+                    <hr>
+
+                    <h4>Crear Entidad</h4>
+                    <br>
+                    <form name="fEntidadForm" 
+                          ng-submit="ACrearEntidad1(fEntidadForm.$valid)" novalidate>
+                        <div class="form-group"
+                             ng-class="{'has-error': fEntidadSubmitted &&
+                                                     fEntidadForm.nombre.$invalid &&
+                                                     fEntidadForm.nombre.$pristine &&
+                                                     fEntidadSubmitted}">
+                            <label for="fEntidad_nombre">Nombre</label>
+                            <input id="fEntidad_nombre" 
+                                   type="text" 
+                                   name="nombre"
+                                   class="form-control"
+                                   ng-model="fEntidad.nombre"
+                                   placeholder="Nombre de la entidad"/>
+                            <p ng-show="fEntidadSubmitted && fEntidadForm.nombre.$invalid"
+                               class="help-block">
+                                Error en campo Nombre.                    
+                            </p>
+                        </div>
+                        <input id="fEntidad_idEntidad" 
+                               type="hidden" 
+                               name="idEntidad" 
+                               ng-model="fEntidad.idEntidad"/>
+                        <button type="submit" class="btn btn-primary btn-lg sharp">
+                            Crear
+                        </button>
+                    </form>
+                </div><!-- ng-show="isSet(2)" .tabcontent -->
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="page-header container col-sm-12">
+                <div id="titulo"><h3>Diagramas</h3></div>
+            </div>  
+            <div class="container col-sm-12">
+                <table ng-table="tableParams1" template-pagination="pager.html" class="table">
+                    <tr ng-repeat="row in $data">
+                        <td data-title="'Nombre'">{{row['nombre']}}</td>
+                        <td data-title="'Descripción'">{{row['descripcion']}}</td>
+                        <td><a ng-click="VDiagrama1(row['idDiagrama'])">Ver</a></td>
+                    </tr>
+                </table>
+            </div> 
+            <div class="page-header container col-sm-12">
+                <div id="titulo"><h3>Entidades</h3></div>
+            </div>
+            <div class="container col-sm-12">
+                <table ng-table="tableParams2" template-pagination="pager.html" class="table">
+                    <tr ng-repeat="row in $data">
+                        <td data-title="'Nombre'">{{row['nombre']}}</td>
+                    </tr>
+                </table>  
+            </div>  
+        </div>
+    </div>
+</div>

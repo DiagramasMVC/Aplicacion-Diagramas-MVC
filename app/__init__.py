@@ -13,7 +13,6 @@ def create_app(nombre_config):
 	   modo que indique nombre_config (desarrollador, produccion, pruebas)
 	'''
 	app = Flask(__name__)
-
 	app.config.from_object(config[nombre_config]) #Importa la configuracion adecuada.
 	config[nombre_config].init_app(app)
 	db.init_app(app)

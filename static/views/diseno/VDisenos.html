@@ -1,0 +1,157 @@
+<!-- Agrega la barra de navegacion Fixed navbar-->
+<nav id="header-nav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" 
+                    class="navbar-toggle collapsed" 
+                    data-toggle="collapse" 
+                    data-target="#contenido-plegable" 
+                    aria-expanded="false" 
+                    aria-controls="navbar">
+            	<span class="sr-only">Toggle navigation</span>
+            	<span class="icon-bar"></span>
+            	<span class="icon-bar"></span>
+            	<span class="icon-bar"></span>
+          	</button>
+
+            <!-- Se aplica a el logo o titulo de la marca -->
+         	<div class="navbar-brand">
+            	<a href="">Diagramas MVC</a>
+          	</div>
+        </div><!-- .navbar-header -->
+
+        <div id="contenido-plegable" class="collapse navbar-collapse">
+            <ul id="nav-list-left" class="nav navbar-nav navbar-left"></ul>
+            <ul id="nav-list-right" class="nav navbar-nav navbar-right">
+                <li class="navbar-text" 
+                    ng-show="usuario.nombre" 
+                    ng-bind="usuario.nombre"></li>  
+                <li><a ng-click="VLogin1()">Regresar</a></li>
+                <li><a ng-click="VLogin1()">Salir</a></li>
+            </ul>
+        </div><!-- .collapse navbar-collapse -->
+    </div><!-- .container -->
+</nav><!-- #header-nav -->
+
+<!-- Begin page content -->
+<div id="contenido" class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <div id="tab-menu">
+                <ul class="tab" id="myTab">
+                    <li><a ng-class="{ active: isSet(1) }"
+                           href ng-click="setTab(1)"
+                           class="tablinks">Detalles</a></li>
+                    <li><a ng-class="{ active: isSet(2) }"
+                           href ng-click="setTab(2)"
+                           class="tablinks">Crear</a></li>
+                </ul>
+
+				<div ng-show="isSet(1)" class="tabcontent">
+				    <form name="fDisenoForm" 
+				          ng-submit="AModificarDiseno1(fDisenoForm.$valid)" novalidate>
+				        <div class="form-group"
+				             ng-class="{'has-error': fDisenoSubmitted &&
+				                                     fDisenoForm.nombre.$invalid &&
+				                                     fDisenoForm.nombre.$pristine &&
+				                                     fDisenoSubmitted}">
+				            <label for="fDiseno_nombre">Nombre</label>
+				            <input id="fDiseno_nombre" 
+				                   type="text" 
+				                   name="nombre"
+				                   class="form-control"
+				                   ng-model="fDiseno.nombre"
+				                   placeholder="Nombre del diseño"/>
+				            <p ng-show="fDisenoSubmitted && fDisenoForm.nombre.$invalid"
+				               class="help-block">
+				                Error en campo Nombre.                    
+				            </p>
+				        </div>
+				        <div class="form-group" 
+				             ng-class="{'has-error': fDisenoSubmitted && 
+				                                     fDisenoForm.descripcion.$invalid && fDisenoForm.descripcion.$pristine && 
+				                                     fDisenoSubmitted}">
+				            <label for="fDiseno_descripcion">Descripción</label>
+				            <textarea id="fDiseno_descripcion" 
+				                      name="descripcion" 
+				                      class="form-control" 
+				                      ng-model="fDiseno.descripcion" 
+				                      placeholder="Descripción del diseño" required>
+				            </textarea>
+				            <p ng-show="fDisenoSubmitted && 
+				                        fDisenoForm.descripcion.$invalid" 
+				                        class="help-block">
+				                Error en campo Descripción.
+				            </p>
+				        </div>
+				        <input id="fDiseno_idDiseno" type="hidden" name="idDiseno" 
+				               ng-model="fDiseno.idDiseno" />
+				        <button type="submit" class="btn btn-primary btn-lg sharp">
+				            <span>Modificar</span>
+				        </button>
+				    </form>
+                </div><!-- ng-show="isSet(1)" .tabcontent -->
+
+                <div ng-show="isSet(2)" class="tabcontent">
+				    <form name="fDisenoForm" 
+				          ng-submit="ACrearDiseno1(fDisenoForm.$valid)" novalidate>
+				        <div class="form-group"
+				             ng-class="{'has-error': fDisenoSubmitted &&
+				                                     fDisenoForm.nombre.$invalid &&
+				                                     fDisenoForm.nombre.$pristine &&
+				                                     fDisenoSubmitted}">
+				            <label for="fDiseno_nombre">Nombre</label>
+				            <input id="fDiseno_nombre" 
+				                   type="text" 
+				                   name="nombre"
+				                   class="form-control"
+				                   ng-model="fDiseno.nombre"
+				                   placeholder="Nombre del diseño"/>
+				            <p ng-show="fDisenoSubmitted && fDisenoForm.nombre.$invalid"
+				               class="help-block">
+				                Error en campo Nombre del diseño.                    
+				            </p>
+				        </div>
+				        <div class="form-group" 
+				             ng-class="{'has-error': fDisenoSubmitted && 
+				                                     fDisenoForm.descripcion.$invalid && fDisenoForm.descripcion.$pristine && 
+				                                     fDisenoSubmitted}">
+				            <label for="fDiseno_descripcion">Descripción</label>
+				            <textarea id="fDiseno_descripcion" 
+				                      name="descripcion" 
+				                      class="form-control" 
+				                      ng-model="fDiseno.descripcion" 
+				                      placeholder="Descripción del diseño" required>
+				            </textarea>
+				            <p ng-show="fDisenoSubmitted && fDisenoForm.descripcion.$invalid" 
+				               class="help-block">
+				                Error en campo Descripción.
+				            </p>
+				        </div>
+				        <input id="fDiseno_idDiseno" 
+				               type="hidden" 
+				               name="idDiseno" 
+				               ng-model="fDiseno.idDiseno"/>
+				        <button type="submit" class="btn btn-primary btn-lg sharp">
+				            Crear
+				        </button>
+				    </form>
+                </div><!-- ng-show="isSet(2)" .tabcontent -->
+            </div><!-- #tab-menu -->
+        </div>
+        <div class="col-sm-9">
+        	<div class="page-header container col-sm-12">
+			    <div id="titulo"><h3>Diseños</h3></div>
+			</div>
+			<div class="container col-sm-12">
+			    <table  ng-table="tableParams0" template-pagination="pager.html" class="table">
+			        <tr ng-repeat="row in $data">
+			            <td data-title="'Nombre'">{{row['nombre']}}</td>
+			            <td data-title="'Descripcion'">{{row['descripcion']}}</td>
+			            <td><a ng-click="VDiseno1(row['idDiseno'])">Diagramas</a></td>
+			        </tr>
+			    </table>
+			</div>
+        </div>
+    </div>
+</div>

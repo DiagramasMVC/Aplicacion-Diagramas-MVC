@@ -53,6 +53,13 @@ class Relacion(object):
         return relacion    
 
 
+    def obtenerRelacionesPorOrigen(self, idNodoOrigen):
+        """"""
+        relacion = clsRelacion.query.filter_by(idNodoOrigen=idNodoOrigen).all()
+
+        return relacion    
+
+
     def obtenerRelacionNoDirigidaOperacionAccion(self, idNodoOrigen):
         """"""
         relacion = clsRelacion.query.filter_by(tipo=TIPO_ACCION_OPERACION, idNodoOrigen=idNodoOrigen).first()

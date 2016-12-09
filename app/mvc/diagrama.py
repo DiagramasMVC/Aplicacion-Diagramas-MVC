@@ -207,7 +207,7 @@ def VDiagrama():
 
         for r in relaExternas:
             n = nodo.obtenerNodoPorID(r.idNodoDestino)
-            lista_relaExternas.append({'idVista': r.idNodoDestino, 'nombre': n.nombre})
+            lista_relaExternas.append({'idVista': r.idNodoDestino, 'nombre': n.nombre, 'nodo_real': n.idNodoExterno})
 
         estiloNodo = eNodo.obtenerEstiloNodoPorIdNodo(a.idNodo)
         acciones.append({'id': a.idNodo, 'nombre': a.nombre, 'x': json.loads(estiloNodo.propiedades)['x'], 'y': json.loads(estiloNodo.propiedades)['y'], "vista_interna": 0, "vista_externa": 0, "relaciones_internas": lista_relaInternas, "relaciones_externas": lista_relaExternas})
@@ -290,12 +290,18 @@ def VDiagrama():
     extVis = []
     for r in relaciones:
         oNodo = nodo.obtenerNodoPorID(r.idNodoOrigen)
-        id_salida = json.loads(r.propiedades)['id_salida']
         if oNodo.tipo == TIPO_VISTA:
+            id_salida = json.loads(r.propiedades)['id_salida']
             visExt.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino, 'id_salida': id_salida})
         else:
             extVis.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino})
 
+    print('\n\nNODOS')
+    print('Nodos vista', vistas, '\n')
+    print('Nodos accion', acciones, '\n')
+    print('Nodos operacion:', operaciones, '\n')
+    print('Nodos externo:', externos, '\n')
+    print('\nENLACES')
     print('Enlaces vista-accion', visAcc, '\n')
     print('Enlaces accion-vista', accVis, '\n')
     print('Enlaces vista-externo:', visExt, '\n')
@@ -436,8 +442,6 @@ def AGuardarPosicionDiagrama():
 
     # Buscamos el estilo nodo asociado al elemento.
     estiloNodo = eNodo.obtenerEstiloNodoPorIdNodo(params['id'])
-
-    print('Propiedades', estiloNodo.propiedades)
 
     propiedades = json.loads(estiloNodo.propiedades)
     propiedades['x'] = params['x']

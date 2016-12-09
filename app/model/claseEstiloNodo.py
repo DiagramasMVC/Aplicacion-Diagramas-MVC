@@ -69,3 +69,17 @@ class EstiloNodo(object):
                     return True
 
         return False
+
+    def eliminarEstiloNodoAsociadoAUnNodo(self, idNodo):
+        """"""
+        if idNodo != None:
+            if idNodo >= NUM_MIN_ID:
+
+                estiloNodo = clsEstiloNodo.query.filter_by(idNodo=idNodo).first()
+
+            if estiloNodo != None:
+                db.session.delete(estiloNodo)
+                db.session.commit()
+                return True
+
+        return False

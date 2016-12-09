@@ -96,13 +96,12 @@ mvcModule.controller('VDiagramaController', [
             textoMasLargo[d.id] = obtenerTextoMasLargo(d.nombre, d.atributos);
         });
 
-        var enlaces_entrada_vista  = {};
-        var enlaces_entrada_accion = {};
 
-        // Calculamos el alto y ancho de las vistas. 
-        // Tambien calculamos la linea divisoria entre titulo y atributos.
+        var enlaces_entrada_vista  = {};
+
+        // Calculamos el ancho y la altura de cada vista.
         nodos.nodos[0].vistas.forEach(function(d) {
-            // Obtenemos el texto mas largo de la vista actual.
+            // Calculamos el ancho de la vista.
             var texto    = textoMasLargo[d.id];
             var tamTexto = texto.length;
 
@@ -111,7 +110,7 @@ mvcModule.controller('VDiagramaController', [
             }
             d.ancho = tamTexto*ANCHO_LETRA + 2*MARGEN_TEXTO;
 
-            // Obtenemos la cantidad de atributos de la vista incluyendo el nombre.
+            // Calculamos la altura de la vista.
             var cantAtributos = d.atributos.length+1;
 
             if (cantAtributos < ALTURA_MIN_VISTA) {
@@ -119,10 +118,13 @@ mvcModule.controller('VDiagramaController', [
             }
 			d.altura = cantAtributos*ALTURA_LETRA + 2*MARGEN_TEXTO;
 
-			enlaces_entrada_vista[d.id] = {"cant":0, "id":d.id, "x":d.x, "y": d.y};
+            enlaces_entrada_vista[d.id] = {"cant":0, "id":d.id, "x":d.x, "y":d.y};
         });
 
-        // Calculamos el ancho y alto de las acciones.
+
+        var enlaces_entrada_accion = {};
+
+        // Calculamos el ancho y la altura de cada accion.
         nodos.nodos[1].acciones.forEach(function(d) {
             var tamNombre   = d.nombre.length;
 
@@ -157,63 +159,178 @@ mvcModule.controller('VDiagramaController', [
                 d.altura = 2*ALTURA_MIN_ACCION;
             }
 
-            enlaces_entrada_accion[d.id] = {"cant":0, "id":d.id, "x":d.x, "y": d.y};
+            enlaces_entrada_accion[d.id] = {"cant":0, "id":d.id, "x":d.x, "y":d.y};
         });
 
-        vistas_externos_ordenados   = [];
-        acciones_externos_ordenados = [];
+        // // Calculamos la cantidad de enlaces que recibe cada vista.
+        // for (var i = 0; i < nodos.enlaces[1].accVis.length; i++) {
+        //     enlaces_entrada_vista[nodos.enlaces[1].accVis[i].destino.id].cant += 1;
+        // }
+        // for (var i = 0; i < nodos.enlaces[3].extVis.length; i++) {
+        //     enlaces_entrada_vista[nodos.enlaces[3].extVis[i].destino.id].cant +=1;
+        // }
 
-        // Obtenemos la cantidad de enlaces entrantes para las vistas.
-        for (var i = 0; i < nodos.enlaces[1].accVis.length; i++) {
-        	enlaces_entrada_vista[nodos.enlaces[1].accVis[i].destino.id].cant += 1;
-        }
-        for (var i = 0; i < nodos.enlaces[3].extVis.length; i++) {
-        	enlaces_entrada_vista[nodos.enlaces[3].extVis[i].destino.id].cant +=1;
-        }
+        // // Calculamos la cantidad de enlaces que recibe cada accion.
+        // for (var i = 0; i < nodos.enlaces[0].visAcc.length; i++) {
+        //     enlaces_entrada_accion[nodos.enlaces[0].visAcc[i].destino.id].cant += 1;
+        // }
+        // for (var i = 0; i < nodos.enlaces[5].extAcc.length; i++) {
+        //     enlaces_entrada_accion[nodos.enlaces[5].extAcc[i].destino.id].cant +=1;
+        // }
 
-        // Obtenemos la cantidad de enlaces entrantes para las acciones.
-        for (var i = 0; i < nodos.enlaces[0].visAcc.length; i++) {
-        	enlaces_entrada_accion[nodos.enlaces[0].visAcc[i].destino.id].cant += 1;
-        }
-        for (var i = 0; i < nodos.enlaces[5].extAcc.length; i++) {
-        	enlaces_entrada_accion[nodos.enlaces[5].extAcc[i].destino.id].cant +=1;
-        }
+        // // Obtenemos las vistas y externos ordenados acorde a su posicion en y.
+        // vistas_y_externos_ordenos = [];
+        
+        // vistas_y_externos_ordenos = valuesToArray(enlaces_entrada_vista);
 
-        enlaces_entrada_vista_ordenados = valuesToArray(enlaces_entrada_vista);
-        enlaces_entrada_accion_ordenados = valuesToArray(enlaces_entrada_accion);
+        // vistas_y_externos_ordenos.sort(function(a, b) {
+        //     if (a.y > b.y) {
+        //         return 1;
+        //     } 
+        //     if (a.y < b.y) {
+        //         return -1;
+        //     }
+        //     return 0;
+        // });
+
+        // // Obtenemos las acciones y externos ordenados acorde a su posicion en x.
+        // acciones_y_externos_ordenos = [];
+    
+        // acciones_y_externos_ordenos = valuesToArray(enlaces_entrada_accion);
+
+        // acciones_y_externos_ordenos.sort(function(a, b) {
+        //     if (a.x > b.x) {
+        //         return 1;
+        //     } 
+        //     if (a.x < b.x) {
+        //         return -1;
+        //     }
+        //     return 0;
+        // });
+
+        // console.log("ordenados vista_externo");
+        // console.log(vistas_y_externos_ordenos);
+        // console.log("ordenados accion_externo");
+        // console.log(acciones_y_externos_ordenos);
 
 
-        enlaces_entrada_vista_ordenados.sort(function(a, b) {
-        	if (a.x > b.x) {
-        		return 1;
-        	} 
-        	if (a.x < b.x) {
-        		return -1;
-        	}
-        	return 0;
-        });
+        // // Asignamos los puertos de llegada para las acciones.
+        // for (var i = 0; i < acciones_y_externos_ordenos.length; i++) {
+        //     console.log(acciones_y_externos_ordenos[i]);
+        // }
 
-        enlaces_entrada_accion_ordenados.sort(function(a, b) {
-        	if (a.y > b.y) {
-        		return 1;
-        	} 
-        	if (a.y < b.y) {
-        		return -1;
-        	}
-        	return 0;
-        });
+        // console.log("Recorriendo los enaces");
+        // Recorremos los enlaces para asignar los puertos. 
+        // nodos.enlaces.forEach(function(d) {
+        //     var enlaces = d.visAcc||d.extAcc;
+          
+        //     if (enlaces != undefined) {
+          
+        //         for (var j = 0; j < vistas_y_externos_ordenos.length; j++) {
+        //             var nro_puerto = 0;
+        //             for (var i = 0; i < enlaces.length; i++) {
 
-        // Asignamos los numeros de puerto. 
-        enlaces_entrada_vista_ordenados.forEach(function(d) {
-        	var nro_puerto = 0;
-        	for (var i = 0; i < nodos.enlaces[1].accVis.length; i++) {
-        	
-        		if (nodos.enlaces[1].accVis[i].destino.id == d.id) {
-        			nro_puerto += 1;
-        			nodos.enlaces[1].accVis[i]["puerto"] = nro_puerto; 
-        		}
-        	}
-        });
+        //                 if (vistas_y_externos_ordenos[j].id == enlaces[i].destino.id) {
+        //                     enlaces[i]["puerto"] = (nro_puerto+=1);
+        //                     // console.log(vistas_y_externos_ordenos[j],enlaces[i]);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
+
+
+
+
+
+
+
+        // // Asignamos los numeros de puerto. 
+        // enlaces_entrada_vista_ordenados.forEach(function(d) {
+        //     var nro_puerto = 0;
+        //     for (var i = 0; i < nodos.enlaces[1].accVis.length; i++) {
+            
+        //         if (nodos.enlaces[1].accVis[i].destino.id == d.id) {
+        //             nro_puerto += 1;
+        //             nodos.enlaces[1].accVis[i]["puerto"] = nro_puerto; 
+        //         }
+        //     }
+        // });
+
+
+
+            // // Asignamos los puertos de salidas y sus posiciones para cada atributo.
+            // var nro_puerto = 0;
+            // for (var i = 0; i < d.atributos.length; i++) {
+            //     nro_puerto += 1;
+            //     d.atributos[i]["puerto_salida"] = nro_puerto;
+
+            //     // Posicion de salida del puerto en y.
+            //     yOrig = d.y - d.altura/2 + 1.4*ALTURA_LETRA + (i+1)*ALTURA_LETRA;
+            //     d.atributos[i]["y"] = yOrig;
+
+            //     console.log(d.atributos[i]);
+            // }
+
+///////////////////////////////////////////////////////////////
+
+                        // for (var j = 0; j < d.origen.atributos.length; j++) {
+                        //     if (d.origen.atributos[j].id === id_salida) {
+                        //         num = j;
+                        //     }
+                        // }
+
+                        // // Posicion de salida del enlace en y.
+                        // yOrig = d.origen.y - d.origen.altura/2 + 1.4*ALTURA_LETRA + (num+1)*ALTURA_LETRA; 
+  
+                        // var tamLineaHoriz;
+
+                        // if (d.origen.y <= d.destino.y) {
+                        //     tamLineaHoriz = 50*(d.origen.atributos.length-num);
+                        // } else {
+                        //     tamLineaHoriz = 50*(num+1);
+                        // }
+
+                        // // Obtenemos la cantidad de enlaces vista-accion.
+                        // var cant_enlaces = nodos.enlaces[0].visAcc.length;
+                        // var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
+
+                        // if (d.origen.x >= d.destino.x-d.destino.ancho && d.origen.x <= d.destino.x) {
+                        //     xOrig = d.origen.x - d.origen.ancho/2;
+                        //     xPto  = xOrig - tamLineaHoriz;
+                        //     yDest = (d.destino.y-d.destino.altura/2-MARGEN_TEXTO)+(d.origen.atributos.length-num)*espaciado;
+                        
+                        // } else if (d.origen.x < d.destino.x+d.destino.ancho && d.origen.x > d.destino.x) {
+                        //     xOrig = d.origen.x + d.origen.ancho/2;
+                        //     xPto = xOrig + tamLineaHoriz;
+                        //     yDest = (d.destino.y-d.destino.altura/2-MARGEN_TEXTO)+(d.origen.atributos.length-num)*espaciado;
+                            
+                        // } else if (d.origen.x < d.destino.x-d.destino.ancho) {
+                        //     xOrig = d.origen.x + d.origen.ancho/2;
+                        //     xPto  = xOrig + tamLineaHoriz;
+                        //     yDest = (d.destino.y-d.destino.altura/2-MARGEN_TEXTO)+(num+1)*espaciado;
+
+                        // } else {
+                        //     xOrig = d.origen.x - d.origen.ancho/2;
+                        //     xPto  = xOrig - tamLineaHoriz;  
+                        //     yDest = (d.destino.y-d.destino.altura/2-MARGEN_TEXTO)+(num+1)*espaciado;                        
+                        // }
+
+                        // if (cant_enlaces == 1) { 
+                        //     yDest = d.destino.y; 
+                        // }
+                        // //Guardamos la posicion donde parte el enlace.
+                        // d.origen.atributos[num]["x1"]=xOrig;
+                        // d.origen.atributos[num]["y1"]=yOrig;
+                        // d.origen.atributos[num]["xPto"]=xPto;
+
+///////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 
 
@@ -315,7 +432,11 @@ mvcModule.controller('VDiagramaController', [
                         $scope.seleccionado = 1;
                         $scope.fVista = {"idNodo": d.id, "nombre": d.nombre, 
                                          "atributos": d.atributos,
-                                         "nombre_atributo": ""};
+                                         "nombre_atributo": "",
+                                         "atributos_eliminar": []};
+
+
+                        console.log(d);
 
                         // Seleccionamos el tab 2 (Elemento) usando JQuery.
                         $('#myTab li a').eq(0).trigger('click');
@@ -352,7 +473,11 @@ mvcModule.controller('VDiagramaController', [
                                           "vista_interna": d.vista_interna, 
                                           "vista_externa": d.vista_externa,
                                           "relaciones_internas": d.relaciones_internas,
-                                          "relaciones_externas": d.relaciones_externas};
+                                          "relaciones_externas": d.relaciones_externas,
+                                          "rela_internas_eliminar": [],
+                                          "rela_externas_eliminar": []};
+
+                                          console.log(d.relaciones_externas);
 
                         // Seleccionamos el tab 2 (Elemento) usando JQuery.
                         $('#myTab li a').eq(0).trigger('click');
@@ -953,7 +1078,7 @@ mvcModule.controller('VDiagramaController', [
         // Triangulo de la flecha para las relaciones vista-accion.
         var flechaA = relacionVA
                     .append("polygon")
-                    .attr("class", "enlaceVA")
+                    .attr("class", "flechaA")
                     .attr("points", function(d) {
                     	var id_salida = d.id_salida;
                     	var num;
@@ -964,11 +1089,21 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }
 
+                        var xDest;
                         var yDest = d.origen.atributos[num].y2;
                         // Obtenemos el valor de x en base al y anterior.
 
-                        var xDest = obtenerPosicionFlecha(yDest, d.origen.x, d.destino.x, d.destino.y, d.destino.ancho, d.destino.altura);
-                    	
+                        if (yDest == d.destino.y) {
+
+                            if (d.origen.x <= d.destino.x) {
+                                xDest = d.destino.x - d.destino.ancho/2;
+                            } else {
+                                xDest = d.destino.x + d.destino.ancho/2;
+                            }
+                        } else {
+                            xDest = obtenerPosicionFlecha(yDest, d.origen.x, d.destino.x, d.destino.y, d.destino.ancho, d.destino.altura);
+                    	}
+
                     	if (d.origen.x <= d.destino.x) {
                     		puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                   	
                     	} else {
@@ -979,31 +1114,39 @@ mvcModule.controller('VDiagramaController', [
 
         // Enlaces dirigidos de tipo accion-vista.
         var enlaceAV = relacionAV
-        			.append("path")
-        			.attr("class", "enlaceAV")
-        			.attr("d", function(d, i) { 
-                        var xOrig, xDest;
-                        var yOrig, yDest;
+                    .append("line")
+                    .attr("class", "enlaceAV")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+        			// .append("path")
+        			// .attr("class", "enlaceAV")
+        			// .attr("d", function(d, i) { 
+           //              console.log('aquiiiii',d);
+
+           //              var xOrig, xDest;
+           //              var yOrig, yDest;
                         
-                        var espaciado = (d.destino.ancho-2*MARGEN_TEXTO)/enlaces_entrada_vista[d.destino.id].cant;
+           //              var espaciado = (d.destino.ancho-2*MARGEN_TEXTO)/enlaces_entrada_vista[d.destino.id].cant;
 
-        				xOrig = d.origen.x;
-        				yOrig = d.origen.y;
+        			// 	xOrig = d.origen.x;
+        			// 	yOrig = d.origen.y;
 
-        				xDest = (d.destino.x-d.destino.ancho/2)+ d.puerto*espaciado;
-        				yDest = d.destino.y + d.destino.altura/2;
+        			// 	xDest = (d.destino.x-d.destino.ancho/2)+ d.puerto*espaciado;
+        			// 	yDest = d.destino.y + d.destino.altura/2;
 
-                        linea = "M"+xOrig+","+yOrig+
-                                " L"+xDest+","+yOrig+
-                                " L"+xDest+","+yDest;
+           //              linea = "M"+xOrig+","+yOrig+
+           //                      " L"+xDest+","+yOrig+
+           //                      " L"+xDest+","+yDest;
 
-                        return linea;
-        			});
+           //              return linea;
+        			// });
 
        	// Triangulo de la flecha para las relaciones accion-vista.
         var flechaV = relacionAV
                     .append("polygon")
-                    .attr("class", "enlaceAV")
+                    .attr("class", "flechaV")
                     .attr("points", function(d) {
 
                         var yDest;
@@ -1020,11 +1163,36 @@ mvcModule.controller('VDiagramaController', [
                     	return puntos;
                     });
 
+        // Enlaces dirigidos de tipo vista-externo.
+        var enlaceVE = relacionVE
+                    .append("line")
+                    .attr("class", "enlaceVE")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+
+        // Enlaces dirigidos de tipo vista-externo.
+        var enlaceEV = relacionEV
+                    .append("line")
+                    .attr("class", "enlaceEV")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
 
         // Enlaces dirigidos de tipo accion-externo.
         var enlaceAE = relacionAE
                     .append("line")
                     .attr("class", "enlaceAE")
+                    .attr("x1", function(d) { return d.origen.x; })
+                    .attr("y1", function(d) { return d.origen.y; })
+                    .attr("x2", function(d) { return d.destino.x; })
+                    .attr("y2", function(d) { return d.destino.y; });
+
+        var enlaceEA = relacionEA
+                    .append("line")
+                    .attr("class", "enlaceEA")
                     .attr("x1", function(d) { return d.origen.x; })
                     .attr("y1", function(d) { return d.origen.y; })
                     .attr("x2", function(d) { return d.destino.x; })
@@ -1251,6 +1419,39 @@ mvcModule.controller('VDiagramaController', [
                         return linea;
                     });
 
+        flechaA.attr("points", function(d) {
+                        var id_salida = d.id_salida;
+                        var num;
+
+                        for (var j = 0; j < d.origen.atributos.length; j++) {
+                            if (d.origen.atributos[j].id === id_salida) {
+                                num = j;
+                            }
+                        }
+
+                        var xDest;
+                        var yDest = d.origen.atributos[num].y2;
+                        // Obtenemos el valor de x en base al y anterior.
+
+                        if (yDest == d.destino.y) {
+
+                            if (d.origen.x <= d.destino.x) {
+                                xDest = d.destino.x - d.destino.ancho/2;
+                            } else {
+                                xDest = d.destino.x + d.destino.ancho/2;
+                            }
+                        } else {
+                            xDest = obtenerPosicionFlecha(yDest, d.origen.x, d.destino.x, d.destino.y, d.destino.ancho, d.destino.altura);
+                        }
+
+                        if (d.origen.x <= d.destino.x) {
+                            puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                       
+                        } else {
+                            puntos = xDest+","+yDest+" "+(xDest+ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest+ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);
+                        }
+                        return puntos;
+                    });
+
         enlaceAV.filter(function(d) {return d.origen.selected;})
                     .attr("d", function(d, i) {
                         var xOrig, xDest;
@@ -1271,8 +1472,7 @@ mvcModule.controller('VDiagramaController', [
                         return linea;
         });
 
-        flechaV
-                    .attr("points", function(d) {
+        flechaV.attr("points", function(d) {
                         var yDest;
                         var espaciado = (d.destino.ancho-2*MARGEN_TEXTO)/enlaces_entrada_vista[d.destino.id].cant;
                         var xDest = (d.destino.x-d.destino.ancho/2)+ d.puerto*espaciado;
@@ -1307,6 +1507,7 @@ mvcModule.controller('VDiagramaController', [
 
                         return linea;
         });
+
         enlaceAE.filter(function(d) {return d.origen.selected;})
             .attr("x1", function(d) {return d.origen.x;})
             .attr("y1", function(d) {return d.origen.y;});
@@ -1395,18 +1596,41 @@ mvcModule.controller('VDiagramaController', [
                 $route.reload();            
             });
         };
-
-
         $scope.agregar1 = function() {
             var id     = $scope.fElemento.atributos.length + 1;
-            var nombre = $scope.fVista.nombre_atributo;
+            var nombre = $scope.fElemento.nombre_atributo;
 
             if (nombre.length > TAMANO_MAX_ATRIBUTO) {
                 nombre = nombre.substr(0,TAMANO_MAX_ATRIBUTO);
             }
-            $scope.fElemento.atributos.push({"id":id, "nombre": nombre, "accion_interna": 0, "accion_externa":0});
+
+            var i   = 0;
+            while (i < $scope.fElemento.atributos.length) {
+                if ($scope.fElemento.atributos[i].id == id) {
+                    id += 1;
+                    i = $scope.fElemento.atributos.length;
+                }
+                i++;
+            }
+            if (nombre.length > 0) {
+                $scope.fElemento.atributos.push({"id":id, "nombre": nombre, "accion_interna": 0, "accion_externa":0, "accion_anterior": 0, "atributos_eliminar": []});
+            }
             $scope.fElemento.nombre_atributo = '';
         };
+        $scope.eliminarAtributo1 = function(id) {
+            var atributos = $scope.fElemento.atributos;
+
+            var i = 0;
+            var encontrado = false;
+            while (i < atributos.length && !encontrado) {
+                encontrado = atributos[i].id == id;
+                i++;
+            }
+
+            if (encontrado) {
+                atributos.splice(i-1,1);
+            }
+        }
         $scope.agregar2 = function() {
             var id     = $scope.fVista.atributos.length + 1;
             var nombre = $scope.fVista.nombre_atributo;
@@ -1414,19 +1638,29 @@ mvcModule.controller('VDiagramaController', [
             if (nombre.length > TAMANO_MAX_ATRIBUTO) {
                 nombre = nombre.substr(0,TAMANO_MAX_ATRIBUTO);
             }
+
+            var i   = 0;
+            while (i < $scope.fVista.atributos.length) {
+                if ($scope.fVista.atributos[i].id == id) {
+                    id += 1;
+                    i = $scope.fVista.atributos.length;
+                }
+                i++;
+            }
+
             if (nombre.length > 0) {
-                $scope.fVista.atributos.push({"id":id, "nombre": nombre, "accion_interna": 0, "accion_externa":0, "accion_anterior": 0});
+                $scope.fVista.atributos.push({"id":id, "nombre": nombre, "accion_interna": 0, "accion_externa":0, "accion_anterior": 0, "atributos_eliminar": []});
             }
             $scope.fVista.nombre_atributo = '';
         };
 
         $scope.atributo_selecionado_id = 0;
-        $scope.setAtributo = function(id) {
+        $scope.setAtributo = function(id, i) {
             var atributos = $scope.fVista.atributos;
             $scope.atributo_selecionado_id = id;
-            $scope.fVista.accion_interna = atributos[id-1].accion_interna;
-            $scope.fVista.accion_externa = atributos[id-1].accion_externa;
-            $scope.fVista.nombre_atr = atributos[id-1].nombre;
+            $scope.fVista.accion_interna = atributos[i].accion_interna;
+            $scope.fVista.accion_externa = atributos[i].accion_externa;
+            $scope.fVista.nombre_atr = atributos[i].nombre;
         };
         $scope.asociar1 = function() {
             var atributos = $scope.fVista.atributos;
@@ -1443,12 +1677,11 @@ mvcModule.controller('VDiagramaController', [
                         atributos[i].accion_anterior = anterior;
                     }
                 }
-                console.log($scope.fVista);
             }
         };
         $scope.eliminarAtributo2 = function(id) {
             var atributos = $scope.fVista.atributos;
-            
+
             var i = 0;
             var encontrado = false;
             while (i < atributos.length && !encontrado) {
@@ -1456,76 +1689,103 @@ mvcModule.controller('VDiagramaController', [
                 i++;
             }
 
-            if (encontrado) {atributos.splice(i-1,1);}
+            if (encontrado) {
+                $scope.fVista.atributos_eliminar.push(atributos[i-1]);
+                atributos.splice(i-1,1);
+            }
         }
-
-
-        var lista_vistas_1 = $scope.fAccion.relaciones_internas;
         $scope.agregar3 = function() {
-
-        if ($scope.fAccion.vista_interna != 0) {
-
-            // Buscamos el nobre de la vista.
-            var j = 0;
-            var nombre = '';
-            while (j < $scope.res.fAccion_opcionesVistaInterna.length) {
-
-                if ($scope.res.fAccion_opcionesVistaInterna[j].key == $scope.fAccion.vista_interna) {
-                    nombre = $scope.res.fAccion_opcionesVistaInterna[j].value;
-                    j = $scope.res.fAccion_opcionesVistaInterna.length;
-                }
-                j++;
-            }
+            if ($scope.fAccion.vista_interna != 0) {
                 
-            var i = 0;
-            var encontrado = false;
-            while (i < lista_vistas_1.length && !encontrado) {
-                encontrado = lista_vistas_1[i].idVista == $scope.fAccion.vista_interna;
-                i++;
-            }                
+                // Buscamos si ya la vista fue agregada.
+                var i = 0;
+                var tam_relaciones_internas = $scope.fAccion.relaciones_internas.length;
+                var existe = false;
+                while (i < tam_relaciones_internas && !existe) {
+                    if ($scope.fAccion.relaciones_internas[i].idVista == $scope.fAccion.vista_interna) {
+                        existe = true;
+                    }
+                    i++;
+                }
 
-            if (!encontrado) {
-                lista_vistas_1.push({"idVista": $scope.fAccion.vista_interna, "nombre": nombre});
+                if (!existe) {
+                    // Buscamos el nombre de la vista.
+                    var j = 0;
+                    var nombre = '';
+                    while (j < $scope.res.fAccion_opcionesVistaInterna.length) {
+
+                        if ($scope.res.fAccion_opcionesVistaInterna[j].key == $scope.fAccion.vista_interna) {
+                            nombre = $scope.res.fAccion_opcionesVistaInterna[j].value;
+                            j = $scope.res.fAccion_opcionesVistaInterna.length;
+                        }
+                        j++;
+                    }
+                    $scope.fAccion.relaciones_internas.push({"idVista": $scope.fAccion.vista_interna,  "nombre": nombre});
+                }
             }
-
-        }
-            $scope.fAccion.relaciones_internas = lista_vistas_1;
             $scope.fAccion.vista_interna = 0;
         };
-
-
-        var lista_vistas_2 = $scope.fAccion.relaciones_externas;
-        $scope.agregar4 = function() {
-
-        if ($scope.fAccion.vista_externa != 0) {
-
-            // Buscamos el nobre de la vista.
-            var j = 0;
-            var nombre = '';
-            while (j < $scope.res.fAccion_opcionesVistaExterna.length) {
-
-                if ($scope.res.fAccion_opcionesVistaExterna[j].key == $scope.fAccion.vista_externa) {
-                    nombre = $scope.res.fAccion_opcionesVistaExterna[j].value;
-                    j = $scope.res.fAccion_opcionesVistaExterna.length;
-                }
-                j++;
-            }
-                
+        $scope.eliminarVistaInterna1 = function(id) {
+            var relaciones = $scope.fAccion.relaciones_internas;
+            
             var i = 0;
             var encontrado = false;
-            while (i < lista_vistas_2.length && !encontrado) {
-                encontrado = lista_vistas_2[i].idVista == $scope.fAccion.vista_externa;
+            while (i < relaciones.length && !encontrado) {
+                encontrado = relaciones[i].idVista == id;
                 i++;
-            }                
-
-            if (!encontrado) {
-                lista_vistas_2.push({"idVista": $scope.fAccion.vista_externa, "nombre": nombre});
             }
 
-        }
-            $scope.fAccion.relaciones_externas = lista_vistas_2;
+            if (encontrado) {
+                $scope.fAccion.rela_internas_eliminar.push(id);
+                relaciones.splice(i-1,1);
+            }
+        };
+        $scope.agregar4 = function() {
+            if ($scope.fAccion.vista_externa != 0) {
+                // Buscamos si ya la vista fue agregada.
+                var i = 0;
+                var tam_relaciones_externas = $scope.fAccion.relaciones_externas.length;
+                var existe = false;
+                while (i < tam_relaciones_externas && !existe) {
+                    if ($scope.fAccion.relaciones_externas[i].nodo_real == $scope.fAccion.vista_externa) {
+                        existe = true;
+                    }
+                    i++;
+                }
+
+                if (!existe) {
+                    // Buscamos el nombre de la vista.
+                    var j = 0;
+                    var nombre = '';
+                    while (j < $scope.res.fAccion_opcionesVistaExterna.length) {
+
+                        if ($scope.res.fAccion_opcionesVistaExterna[j].key == $scope.fAccion.vista_externa) {
+                            nombre = $scope.res.fAccion_opcionesVistaExterna[j].value;
+                            j = $scope.res.fAccion_opcionesVistaExterna.length;
+                        }
+                        j++;
+                    }
+                    $scope.fAccion.relaciones_externas.push({"idVista": $scope.fAccion.vista_externa,  "nombre": nombre, "nodo_real": $scope.fAccion.vista_externa});
+                }
+            }
             $scope.fAccion.vista_externa = 0;
         };
+        $scope.eliminarVistaExterna1 = function(id) {
+            var relaciones = $scope.fAccion.relaciones_externas;
+            
+            var i = 0;
+            var encontrado = false;
+            while (i < relaciones.length && !encontrado) {
+                encontrado = relaciones[i].nodo_real == id;
+                i++;
+            }
+
+            if (encontrado) {
+                $scope.fAccion.rela_externas_eliminar.push(id);
+                relaciones.splice(i-1,1);
+            }
+        };
+
 
         $scope.fVistaSubmitted = false;
         $scope.AModificarVista1 = function(isValid) {

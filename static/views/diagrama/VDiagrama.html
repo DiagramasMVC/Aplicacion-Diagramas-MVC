@@ -89,12 +89,16 @@
                             <button type="button" 
                                     class="btn btn-primary btn-md sharp"
                                     ng-click="agregar1()">
-                                +
+                                <span class="glyphicon glyphicon-plus"></span>
                             </button>
                             <br><br>
-                            <div ng-repeat="atr in fElemento.atributos">           
-                                {{atr.nombre}}
-                            </div>
+                            <table>
+                                <tr ng-repeat="atr in fElemento.atributos">
+                                    <td id="nombre">{{atr.nombre}}</td>
+                                    <td id="eliminar">
+                                        <a ng-click="eliminarAtributo1(atr.id)"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                </tr>
+                            </table>
                         </div>
 
                         <div id="accion" 
@@ -166,7 +170,7 @@
                                         <td id="enlazar">
                                             <a data-toggle="modal" 
                                                data-target="#modal-atributo"
-                                               ng-click="setAtributo(atr.id)">
+                                               ng-click="setAtributo(atr.id, $index)">
                                                <span class="glyphicon glyphicon-edit"></span>
                                             </a>
                                         </td>
@@ -185,7 +189,7 @@
                             </button>
                             <button type="button" 
                                     data-toggle="modal" 
-                                    data-target="#modal-eliminar-vista"
+                                    data-target="#modal-eliminar"
                                     class="btn btn-primary btn-lg sharp">
                                 Eliminar
                             </button>
@@ -242,31 +246,6 @@
                                 </div>
                             </div>
                         </div><!-- modal-atributo -->
-
-                        <!-- Modal Edicion de atributos -->
-                        <div id="modal-eliminar-vista" class="modal fade eliminar" role="dialog">
-                          	<div class="modal-dialog">
-
-                            	<!-- Modal content-->
-                            	<div class="modal-content">
-                              		<div class="modal-header">
-                                		<button type="button" class="close" 
-                                        		data-dismiss="modal">&times;</button>
-                                		<h4 class="modal-title">Eliminar Vista</h4>
-                              		</div>
-	                              	<div class="modal-body">
-	                                	<p>¿Esta seguro que desea eliminar la vista seleccionada?</p>
-	                                	<button type="button" 
-											    class="btn btn-primary btn-lg sharp"
-											    ng-click="AEliminarElemento1(fVista.idNodo)"
-											    data-dismiss="modal">Si</button>
-	                                	<button type="button" 
-											    class="btn btn-primary btn-lg sharp"
-											    data-dismiss="modal">No</button>
-	                                </div>
-                                </div>
-                            </div>
-                        </div><!-- modal-eliminar-vista -->
                     </div><!-- seleccionado==1 -->
                     
                     <div ng-show="seleccionado==2">
@@ -300,12 +279,17 @@
                                 <button type="button" 
                                         class="btn btn-primary btn-md sharp"
                                         ng-click="agregar3()">
-                                    +
+                                    <span class="glyphicon glyphicon-plus"></span>
                                 </button>
                                 <br><br>
-                                <div ng-repeat="atr in fAccion.relaciones_internas">
-                                    {{atr.nombre}}
-                                </div>
+                                <table>
+                                    <tr ng-repeat="atr in fAccion.relaciones_internas">
+                                        <td id="nombre">{{atr.nombre}}</td>
+                                        <td id="eliminar">
+                                          <a ng-click="eliminarVistaInterna1(atr.idVista)"><span class="glyphicon glyphicon-trash"></span></a>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
 
                             <div class="form-group form-inline">
@@ -318,12 +302,17 @@
                                 <button type="button" 
                                         class="btn btn-primary btn-md sharp"
                                         ng-click="agregar4()">
-                                    +
+                                    <span class="glyphicon glyphicon-plus"></span>
                                 </button>
                                 <br><br>
-                                <div ng-repeat="atr in fAccion.relaciones_externas">
-                                    {{atr.nombre}}
-                                </div>
+                                <table>
+                                    <tr ng-repeat="atr in fAccion.relaciones_externas">
+                                        <td id="nombre">{{atr.nombre}}</td>
+                                        <td id="eliminar">
+                                          <a ng-click="eliminarVistaExterna1(atr.nodo_real)"><span class="glyphicon glyphicon-trash"></span></a>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
 
                             <input id="fAccion_idAccion" 
@@ -332,6 +321,12 @@
                                    ng-model="fAccion.idDiagrama" />
                             <button type="submit" class="btn btn-primary btn-lg sharp">
                                 Modificar
+                            </button>
+                            <button type="button" 
+                                    data-toggle="modal" 
+                                    data-target="#modal-eliminar"
+                                    class="btn btn-primary btn-lg sharp">
+                                Eliminar
                             </button>
                         </form>
                     </div>
@@ -379,6 +374,12 @@
                             <button type="submit" class="btn btn-primary btn-lg sharp">
                                 Modificar
                             </button>
+                            <button type="button" 
+                                    data-toggle="modal" 
+                                    data-target="#modal-eliminar"
+                                    class="btn btn-primary btn-lg sharp">
+                                Eliminar
+                            </button>
                         </form>
                     </div>
                     <div ng-show="seleccionado==4">
@@ -387,6 +388,33 @@
                 </div><!-- ng-show="isSet(2)" .tabcontent -->
             </div><!-- #tab-menu -->
         </div>
+
+        <!-- Modal eliminar elementos -->
+        <div id="modal-eliminar" 
+             class="modal fade eliminar" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" 
+                                data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Eliminar elemento del diagrama</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Esta seguro que desea eliminar el elemento seleccionado?</p>
+                        <button type="button" 
+                                class="btn btn-primary btn-lg sharp"
+                                ng-click="AEliminarElemento1(fVista.idNodo)"
+                                data-dismiss="modal">Si</button>
+                            <button type="button" 
+                                    class="btn btn-primary btn-lg sharp"
+                                    data-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- modal-eliminar-vista -->
+
         <div class="col-sm-9 dibujo">
             <div class="page-header container col-sm-12">
                 <div class="col-sm-8" id="tituloDiagrama"><h3>Diagrama</h3></div>

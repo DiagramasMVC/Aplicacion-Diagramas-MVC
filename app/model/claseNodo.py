@@ -227,10 +227,17 @@ class Nodo(object):
         return externos
 
 
+    # def obtenerNodosExternosPorIdDelNodoReal(self, idNodoReal):
+    #     """Permite obtener los nodos externos de distintos diagramas asociado a un 
+    #        id de nodo"""
+    #     externos = clsExterno.query.filter_by(idNodoExterno=idNodoReal).all()
+
+    #     return externos
+
+
     def obtenerNodoExternoAsociadoAlDiagrama(self, idDiagrama, idNodoReal):
         """Permite obtener el nodo externo de un diagrama dado que representa a
            un nodo de otro diagrama"""
-        print('idDiagrama', 'idNodoReal', idDiagrama, idNodoReal)
         nodo = clsExterno.query.filter_by(idDiagrama=idDiagrama, idNodoExterno=idNodoReal).first()
 
         return nodo

@@ -118,22 +118,20 @@ svg text { /* Texto dentro del nodo */
     stroke-width: 1.5px;
     fill: none;
 }
-.enlaceAE {                
+.enlaceAE, .enlaceEA  {                
     stroke: #000;        /* Color de las relaciones*/
     stroke-width: 1.5px;
     fill: none;
-    marker-end: url(#marcadorFlechaEnCirculo);
-}
-.enlaceEA {                
-    stroke: #000;        /* Color de las relaciones*/
-    stroke-width: 1.5px;
-    fill: none;
-    marker-end: url(#marcadorFlechaEnRombo);
 }
 .enlaceAO {
     stroke: #000;        /* Color de las relaciones*/
     stroke-width: 1.5px;
     fill: none;
+}
+.flechaV, .flechaA, .flechaE {
+    stroke: #000;       
+    stroke-width: 1.5px;
+    fill: #000; 
 }
 
 

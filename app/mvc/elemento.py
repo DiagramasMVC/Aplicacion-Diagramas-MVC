@@ -736,7 +736,7 @@ def AEliminarElemento():
     # Buscamos el tipo de nodo que vamos a eliminar.
     nd = nodo.obtenerNodoPorID(idNodo)
     eliminado = True
-    
+
     if nd.tipo == TIPO_VISTA:
         pass
     elif nd.tipo == TIPO_ACCION:

@@ -47,50 +47,148 @@
                 </ul>
 
                 <div ng-show="isSet(1)" class="tabcontent">
-                    <form name="fDiagramaForm" 
-                          ng-submit="AModificarDiagrama1(fDiagramaForm.$valid)" novalidate>
+                    <div  ng-show="seleccionado==0">
+                        No hay ningun elemento seleccionado.
+                    </div>
+                    <form ng-show="seleccionado==1"
+                          name="fDiagrama1Form" 
+                          ng-submit="AModificarDiagrama1(fDiagrama1Form.$valid)" novalidate>
                         <div class="form-group"
-                             ng-class="{'has-error': fDiagramaSubmitted &&
-                                                     fDiagramaForm.nombre.$invalid &&
-                                                     fDiagramaForm.nombre.$pristine &&
-                                                     fDiagramaSubmitted}">
-                            <label for="fDiagrama_nombre">Nombre</label>
-                            <input id="fDiagrama_nombre" 
+                             ng-class="{'has-error': fDiagrama1Submitted &&
+                                                     fDiagrama1Form.nombre.$invalid &&
+                                                     fDiagrama1Form.nombre.$pristine &&
+                                                     fDiagrama1Submitted}">
+                            <label for="fDiagrama1_nombre">Nombre</label>
+                            <input id="fDiagrama1_nombre" 
                                    type="text" 
                                    name="nombre"
                                    class="form-control"
-                                   ng-model="fDiagrama.nombre"
-                                   placeholder="Nombre del diagrama o entidad"
+                                   ng-model="fDiagrama1.nombre"
+                                   placeholder="Nombre del diagrama"
                                    required/>
-                            <p ng-show="fDiagramaSubmitted && fDiagramaForm.nombre.$invalid"
+                            <p ng-show="fDiagrama1Submitted && fDiagrama1Form.nombre.$invalid"
                                class="help-block">
                                 Error en campo Nombre.                    
                             </p>
                         </div>
                         <div class="form-group" 
-                             ng-class="{'has-error': fDiagramaSubmitted && 
-                                                     fDiagramaForm.descripcion.$invalid && fDiagramaForm.descripcion.$pristine && 
-                                                     fDiagramaSubmitted}">
-                            <label for="fDiagrama_descripcion">Descripción</label>
-                            <textarea id="fDiagrama_descripcion" 
+                             ng-class="{'has-error': fDiagrama1Submitted && 
+                                                     fDiagrama1Form.descripcion.$invalid && fDiagrama1Form.descripcion.$pristine && 
+                                                     fDiagrama1Submitted}">
+                            <label for="fDiagrama1_descripcion">Descripción</label>
+                            <textarea id="fDiagrama1_descripcion" 
                                       name="descripcion" 
                                       class="form-control" 
-                                      ng-model="fDiagrama.descripcion" 
-                                      placeholder="Descripción del diagrama o entidad" required>
+                                      ng-model="fDiagrama1.descripcion" 
+                                      placeholder="Descripción del diagrama" required>
                             </textarea>
-                            <p ng-show="fDiagramaSubmitted && 
-                                        fDiagramaForm.descripcion.$invalid" 
+                            <p ng-show="fDiagrama1Submitted && 
+                                        fDiagrama1Form.descripcion.$invalid" 
                                         class="help-block">
                                 Error en campo Descripción.
                             </p>
                         </div>
-                        <input id="fDiagrama_idDiagrama" type="hidden" name="idDiagrama" 
-                               ng-model="fDiagrama.idDiagrama" />
+                        <input id="fDiagrama1_idDiagrama" type="hidden" name="idDiagrama" 
+                               ng-model="fDiagrama1.idDiagrama" />
                         <button type="submit" class="btn btn-primary btn-lg sharp">
                             <span>Modificar</span>
                         </button>
+                        <button type="button" 
+                                data-toggle="modal" 
+                                data-target="#modal-eliminar-diagrama"
+                                ng-click="setElementoEliminar(fOperacion.idNodo)"
+                                class="btn btn-primary btn-lg sharp">
+                                Eliminar
+                        </button>
+                    </form>
+
+                    <!-- Modal eliminar diagrama -->
+                    <div id="modal-eliminar-diagrama" 
+                         class="modal fade eliminar" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" 
+                                            data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Eliminar diagrama</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Esta seguro que desea eliminar el diagrama seleccionado?</p>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            ng-click="AEliminarDiagrama1(elemento_eliminar_id)"
+                                            data-dismiss="modal">Si</button>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            data-dismiss="modal">No</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- modal-eliminar-diagrama -->
+
+                    <form ng-show="seleccionado==2"
+                          name="fEntidad1Form" 
+                          ng-submit="AModificarEntidad1(fEntidad1Form.$valid)" novalidate>
+                        <div class="form-group"
+                             ng-class="{'has-error': fEntidad1Submitted &&
+                                                     fEntidad1Form.nombre.$invalid &&
+                                                     fEntidad1Form.nombre.$pristine &&
+                                                     fEntidad1Submitted}">
+                            <label for="fEntidad1_nombre">Nombre</label>
+                            <input id="fEntidad1_nombre" 
+                                   type="text" 
+                                   name="nombre"
+                                   class="form-control"
+                                   ng-model="fEntidad1.nombre"
+                                   placeholder="Nombre de la entidad"
+                                   required/>
+                            <p ng-show="fEntidad1Submitted && fEntidad1Form.nombre.$invalid"
+                               class="help-block">
+                                Error en campo Nombre.                    
+                            </p>
+                        </div>
+                        <input id="fEntidad1_idEntidad" type="hidden" name="idEntidad" 
+                               ng-model="fEntidad1.idEntidad" />
+                        <button type="submit" class="btn btn-primary btn-lg sharp">
+                            <span>Modificar</span>
+                        </button>
+                        <button type="button" 
+                                data-toggle="modal" 
+                                data-target="#modal-eliminar-diagrama"
+                                ng-click="setElementoEliminar(fOperacion.idNodo)"
+                                class="btn btn-primary btn-lg sharp">
+                                Eliminar
+                        </button>
                     </form>
                 </div><!-- ng-show="isSet(1)" .tabcontent -->
+
+                    <!-- Modal eliminar entidad -->
+                    <div id="modal-eliminar-entidad" 
+                         class="modal fade eliminar" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" 
+                                            data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Eliminar diagrama</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Esta seguro que desea eliminar la entidad seleccionada?</p>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            ng-click="AEliminarEntidad1(elemento_eliminar_id)"
+                                            data-dismiss="modal">Si</button>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            data-dismiss="modal">No</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- modal-eliminar-entidad -->
 
                 <div ng-show="isSet(2)" class="tabcontent">
                     <h4>Crear Diagrama</h4>
@@ -178,7 +276,9 @@
             </div>  
             <div class="container col-sm-12">
                 <table ng-table="tableParams1" template-pagination="pager.html" class="table">
-                    <tr ng-repeat="row in $data">
+                    <tr ng-repeat="row in $data"
+                        ng-click="setDiagrama(row['idDiagrama'])"
+                        class="seleccionable">
                         <td data-title="'Nombre'">{{row['nombre']}}</td>
                         <td data-title="'Descripción'">{{row['descripcion']}}</td>
                         <td><a ng-click="VDiagrama1(row['idDiagrama'])">Ver</a></td>
@@ -190,7 +290,9 @@
             </div>
             <div class="container col-sm-12">
                 <table ng-table="tableParams2" template-pagination="pager.html" class="table">
-                    <tr ng-repeat="row in $data">
+                    <tr ng-repeat="row in $data"
+                        ng-click="setEntidad(row['idEntidad'])"
+                        class="seleccionable">
                         <td data-title="'Nombre'">{{row['nombre']}}</td>
                     </tr>
                 </table>  

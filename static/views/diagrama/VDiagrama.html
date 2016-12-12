@@ -190,6 +190,7 @@
                             <button type="button" 
                                     data-toggle="modal" 
                                     data-target="#modal-eliminar"
+                                    ng-click="setElementoEliminar(fVista.idNodo)"
                                     class="btn btn-primary btn-lg sharp">
                                 Eliminar
                             </button>
@@ -325,6 +326,7 @@
                             <button type="button" 
                                     data-toggle="modal" 
                                     data-target="#modal-eliminar"
+                                    ng-click="setElementoEliminar(fAccion.idNodo)"
                                     class="btn btn-primary btn-lg sharp">
                                 Eliminar
                             </button>
@@ -377,6 +379,7 @@
                             <button type="button" 
                                     data-toggle="modal" 
                                     data-target="#modal-eliminar"
+                                    ng-click="setElementoEliminar(fOperacion.idNodo)"
                                     class="btn btn-primary btn-lg sharp">
                                 Eliminar
                             </button>
@@ -405,9 +408,11 @@
                         <p>¿Esta seguro que desea eliminar el elemento seleccionado?</p>
                         <button type="button" 
                                 class="btn btn-primary btn-lg sharp"
-                                ng-click="AEliminarElemento1(fVista.idNodo)">Si</button>
-                            <button type="button" 
-                                    class="btn btn-primary btn-lg sharp">No</button>
+                                ng-click="AEliminarElemento1(elemento_eliminar_id)"
+                                data-dismiss="modal">Si</button>
+                        <button type="button" 
+                                class="btn btn-primary btn-lg sharp"
+                                data-dismiss="modal">No</button>
                     </div>
                 </div>
             </div>
@@ -439,6 +444,6 @@
 
 <footer class="footer">
     <div class="container">
-        <p class="text-muted">Place sticky footer content here.</p>
+        <p class="text-muted">Universidad Simón Bolívar.</p>
     </div>
 </footer>

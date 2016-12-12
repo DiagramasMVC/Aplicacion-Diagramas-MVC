@@ -27,6 +27,7 @@ body {
 #nav-list-left a:hover, #nav-list-right a:hover{
   background: #F0F0F2;
   color: #008EB7;
+  background: #F0F0F2;
   cursor: pointer;
 }
 .navbar-default .navbar-text {
@@ -36,14 +37,16 @@ body {
 
 /** MAIN CONTENT **/
 #login { 
-  padding-top: 20px;
+  padding-top: 70px;
   padding-left: 60px;
   padding-right: 60px;
   border-left: 1px solid #999;
   height: 450px;
+  margin-top: 70px;
 }
 #info {
-  padding-top: 20px;
+  margin-top: 70px;
+  padding-top: 70px;
   padding-left: 50px;
 }
 /* Formularios */
@@ -64,7 +67,8 @@ body {
 }
 
 #contenido {   
-  padding-top: 20px;
+  margin-top: 20px;
+  padding-top: 0px;
   padding-left: 50px;
 }
 
@@ -236,6 +240,10 @@ ul.tab li a {
 }
 #enlazar, #eliminar { 
     padding-left: 5px;
+}
+table tr.seleccionable:hover{
+    background-color: #F1F1F1;
+    cursor: pointer;
 }
 
 /* STICKY FOOTER

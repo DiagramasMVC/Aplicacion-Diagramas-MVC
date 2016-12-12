@@ -63,6 +63,7 @@ def ACrearDiseno():
  
 @dise.route('/diseno/AModificarDiseno', methods=['POST'])
 def AModificarDiseno():
+    console.log("llego a modificar");
 	# Paramatros POST.
     params  = request.get_json()
     results = [{'label':'/VDiseno', 'msg':['Diseno actualizado.']}, 
@@ -74,9 +75,10 @@ def AModificarDiseno():
 
 @dise.route('/diseno/AEliminarDiseno', methods=['GET'])
 def AEliminarDiseno():
+    console.log("llego a eliminar");
 	# Paramatros POST.
     params  = request.get_json()
-    results = [{'label':'/VDiseno', 'msg':['Diseño actualizado.']}, ]
+    results = [{'label':'/VDiseno', 'msg':['Diseño eliminado.']}, ]
     res     = results[0]
     return json.dumps(res)
 
@@ -84,7 +86,6 @@ def AEliminarDiseno():
 
 @dise.route('/diseno/VDiseno')
 def VDiseno():
-    print('Estoy en VDiseno y esta es su session')
     print(session)
     res = {}
 
@@ -97,14 +98,6 @@ def VDiseno():
     
     # Comunicamos a la vista el nombre de usuario actual.
     res['usuario'] = session['usuario']
-
-    # Obtenemos los datos del diseno actual.
-    diseno = dis.obtenerDisenoPorID(idDiseno)
-
-    # Obtenemos los datos asociados al diseño.
-    res['fDiseno'] = {'idDiseno': idDiseno, 
-                      'nombre': diseno.nombre, 
-                      'descripcion': diseno.descripcion}
 
     # Obtenemos los diagramas asociados al diseño actual.
     listaDiagramas = diag.obtenerDiagramasPorDiseno(idDiseno)

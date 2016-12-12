@@ -43,6 +43,21 @@ mvcModule.controller('VDisenosController',
             });          
         });
 
+        $scope.setDiseno = function(id) {
+            // Buscamos el diseno seleccionado.
+            var i = 0; 
+            var encontrado = false;
+
+            while(i < $scope.res.data0.length) {
+                if ($scope.res.data0[i].idDiseno == id) {
+                    var x = $scope.res.data0[i];
+                    $scope.fDiseno = {"idDiseno": x.idDiseno, "descripcion":x.descripcion, "nombre":x.nombre};
+                    encontrado = true;
+                }
+                i++;
+            }
+            $scope.setTab(1);
+        };
         $scope.setTab = function(newTab) {
             $scope.tab = newTab;
         };
@@ -112,6 +127,7 @@ mvcModule.controller('VDisenoController',
         $scope.tab = 2;
         $scope.fDiseno = {};
         $scope.fEntidad = {};
+        $scope.seleccionado = 0;
 
         disenoService.VDiseno({"idDiseno":$routeParams.idDiseno}).then(function (object) {
             $scope.res = object.data;
@@ -148,6 +164,38 @@ mvcModule.controller('VDisenoController',
             });
         });
 
+        $scope.setEntidad = function(id) {
+            // Buscamos el diseno seleccionado.
+            var i = 0; 
+            var encontrado = false;
+
+            while(i < $scope.res.data2.length) {
+                if ($scope.res.data2[i].idEntidad == id) {
+                    var x = $scope.res.data2[i];
+                    $scope.fEntidad1= {"idEntidad": x.idEntidad, "nombre":x.nombre};
+                    encontrado = true;
+                }
+                i++;
+            }
+            $scope.setTab(1);
+            $scope.seleccionado = 2;
+        }
+        $scope.setDiagrama = function(id) {
+            // Buscamos el diseno seleccionado.
+            var i = 0; 
+            var encontrado = false;
+
+            while(i < $scope.res.data1.length) {
+                if ($scope.res.data1[i].idDiagrama== id) {
+                    var x = $scope.res.data1[i];
+                    $scope.fDiagrama1 = {"idDiseno": x.idDiagrama, "descripcion":x.descripcion, "nombre":x.nombre};
+                    encontrado = true;
+                }
+                i++;
+            }
+            $scope.setTab(1);
+            $scope.seleccionado = 1;
+        };
         $scope.setTab = function(newTab) {
             $scope.tab = newTab;
         };

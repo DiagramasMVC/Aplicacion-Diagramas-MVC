@@ -236,48 +236,47 @@ def AModificarVista():
                 nodoExt2 = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
                 nodoExt1 = nodo.obtenerNodoExternoAsociadoAlDiagrama(idDiagrama, nd.idNodo)
 
-                oRela1 = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
-                oRela2 = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt2.idNodo)
+                if nodoExt2 != None:
+                    oRela1 = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
+                    oRela2 = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt2.idNodo)
 
-                for r in oRela1:
-                    if r.idNodoDestino == nodoExt1.idNodo:
-                        rela.eliminarRelacionPorID(r.idRelacion)
+                    for r in oRela1:
+                        if r.idNodoDestino == nodoExt1.idNodo:
+                            rela.eliminarRelacionPorID(r.idRelacion)
 
-                for r in oRela2:
-                    if r.idNodoDestino == nd.idNodo:
-                        rela.eliminarRelacionPorID(r.idRelacion)
+                    for r in oRela2:
+                        if r.idNodoDestino == nd.idNodo:
+                            rela.eliminarRelacionPorID(r.idRelacion)
 
-                # Verificamos si podemos eliminar los nodos.
+                    # Verificamos si podemos eliminar los nodos.
 
-                # Para nodoExt1 buscamos si quedan relaciones con el.
-                result1 = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
-                result2 = rela.obtenerRelacionesDirigidasExternoVista(nodoExt1.idNodo)
+                    # Para nodoExt1 buscamos si quedan relaciones con el.
+                    result1 = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
+                    result2 = rela.obtenerRelacionesDirigidasExternoVista(nodoExt1.idNodo)
 
-                hay = False
-                for r in result1:
-                    result = r.idNodoDestino == nodoExt1.idNodo
-                    if result == True:
-                        hay = True
-                        break
+                    hay = False
+                    for r in result1:
+                        result = r.idNodoDestino == nodoExt1.idNodo
+                        if result == True:
+                            hay = True
+                            break
+                    
+                    if not hay and result2 == []:
+                        eliminado = nodo.eliminarNodoPorId(nodoExt1.idNodo)
                 
-                if not hay and result2 == []:
-                    eliminado = nodo.eliminarNodoPorId(nodoExt1.idNodo)
-            
-                # Para nodoExt2 buscamos si quedan relaciones con el.
-                result1 = rela.obtenerRelacionesDirigidasAccionExterno(nd.idNodo)
-                result2 = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt2.idNodo)
-            
-                hay = False
-                for r in result1:
-                    result = r.idNodoDestino == nodoExt2.idNodo
-                    if result == True:
-                        hay = True
-                        break
+                    # Para nodoExt2 buscamos si quedan relaciones con el.
+                    result1 = rela.obtenerRelacionesDirigidasAccionExterno(nd.idNodo)
+                    result2 = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt2.idNodo)
+                
+                    hay = False
+                    for r in result1:
+                        result = r.idNodoDestino == nodoExt2.idNodo
+                        if result == True:
+                            hay = True
+                            break
 
-                if not hay and result2 == []:
-                    eliminado = nodo.eliminarNodoPorId(nodoExt2.idNodo)
-
-
+                    if not hay and result2 == []:
+                        eliminado = nodo.eliminarNodoPorId(nodoExt2.idNodo)
 
     creado1 = True
     creado2 = True
@@ -331,76 +330,75 @@ def AModificarVista():
                 creadoExt1 = nodo.crearNodoExterno(nd.nombre, json.dumps({}), idDiagrama, nd.idNodo)
 
             if creadoExt1:
-                # Antes de crear la relacion buscamos si existe.
-                existeRela = rela.obtenerRelacionPorOrigenYDestino(idVista, atr['accion_externa'])
-            
-                if not existeRela:
-                    # Creamos la nueva relacion pero antes eliminamos la anterior.
-                    listaRelaVisExt = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
+                nodoExt1 = nodo.obtenerNodoExternoAsociadoAlDiagrama(idDiagrama, nd.idNodo)
 
-                    for r in listaRelaVisExt:
-                        # Eliminamos la relacion anterior.
-                        id_salida = json.loads(r.propiedades)['id_salida']
-                        if id_salida == atr['id']: 
+                # Antes de crear la relacion buscamos si existe.
+                existeRela = rela.obtenerRelacionPorOrigenYDestino(idVista, nodoExt1.idNodo)
+            
+                
+                # Creamos la nueva relacion pero antes eliminamos la anterior.
+                listaRelaVisExt = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
+
+                for r in listaRelaVisExt:
+                    # Eliminamos la relacion anterior.
+                    id_salida = json.loads(r.propiedades)['id_salida']
+                    if id_salida == atr['id']: 
+                        eliminado = rela.eliminarRelacionPorID(r.idRelacion)
+
+                # Obtenemos la relacion externo-accion del otro diagrama.
+                nodoExt = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
+                    
+                if nodoExt != None:
+                    listaRelaExtAccion = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt.idNodo)
+
+                    for r in listaRelaExtAccion:
+                        if nd.idNodo == r.idNodoDestino:
                             eliminado = rela.eliminarRelacionPorID(r.idRelacion)
 
-                    # Obtenemos la relacion externo-accion del otro diagrama.
-                    nodoExt = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
-                    
-                    if nodoExt != None:
-                        listaRelaExtVis = rela.obtenerRelacionesDirigidasExternoVista(nodoExt.idNodo)
+                # Obtenemos la lista de nodos externos del diagrama actual.
+                listaExternosDiag = nodo.obtenerNodosExternoPorDiagrama(idDiagrama)
 
-                        for r in listaRelaExtVis:
-                            if idVista == r.idNodoDestino:
-                                eliminado = rela.eliminarRelacionPorID(r.idRelacion)
+                posIni = 80 + len(listaExternosDiag)*60
+ 
+                # Establecemos la posicion del nodo.
+                creadoEstiloNodo = eNodo.crearEstiloNodo(idDiagrama, nodoExt1.idNodo, json.dumps({"x": 750, "y": posIni}))
+
+                # Creamos la relacion con el nodo externo creado.
+                propiedades_rela = {"id_salida": atr['id']}
+                creado2 = rela.crearRelacion(None, TIPO_VISTA_EXTERNO, json.dumps(propiedades_rela), idVista, nodoExt1.idNodo, idDiagrama)
+          
+                if not creado2: 
+                    creado2 = False
+                    break
+
+                # Creamos ahora la vista actual en el diagrama de la accion pero como nodo externo.
                     
+                # Verificamos si el nodo externo a crear existe en el otro diagrama.
+                existe = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
+
+                creadoExt2 = True
+                if not existe:
+                    creadoExt2 = nodo.crearNodoExterno(nombreVista, json.dumps({}), nd.idDiagrama, idVista)
+
+                if creadoExt2:
                     # Obtenemos el nodo recien creado.
-                    nodoExt = nodo.obtenerNodoExternoAsociadoAlDiagrama(idDiagrama, nd.idNodo)
+                    nodoExt = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
 
-                    # Obtenemos la lista de nodos externos del diagrama actual.
-                    listaExternosDiag = nodo.obtenerNodosExternoPorDiagrama(idDiagrama)
+                    # Obtenemos la lista de nodos externos del diagrama de la accion.
+                    listaExternosDiag = nodo.obtenerNodosExternoPorDiagrama(nd.idDiagrama)
 
                     posIni = 80 + len(listaExternosDiag)*60
 
                     # Establecemos la posicion del nodo.
                     creadoEstiloNodo = eNodo.crearEstiloNodo(idDiagrama, nodoExt.idNodo, json.dumps({"x": 750, "y": posIni}))
 
-                    # Creamos la relacion con el nodo externo creado.
+                    # Creamos la relaccion externo-accion.
                     propiedades_rela = {"id_salida": atr['id']}
-                    creado2 = rela.crearRelacion(None, TIPO_VISTA_EXTERNO, json.dumps(propiedades_rela), idVista, nodoExt.idNodo, idDiagrama)
-            
-                    if not creado2: 
-                        creado2 = False
+                    creado3 = rela.crearRelacion(None, TIPO_ACCION_EXTERNO, json.dumps(propiedades_rela), nodoExt.idNodo, nd.idNodo, nd.idDiagrama)
+
+                    if not creado3:
+                        creado3 = False
                         break
-
-
-                    # Creamos ahora la vista actual en el diagrama de la accion pero como nodo externo.
-                    
-                    # Verificamos si el nodo externo a crear existe en el otro diagrama.
-                    existe = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
-
-                    creadoExt2 = True
-                    if not existe:
-                        creadoExt2 = nodo.crearNodoExterno(nombreVista, json.dumps({}), nd.idDiagrama, idVista)
-
-                    if creadoExt2:
-                        # Obtenemos el nodo recien creado.
-                        nodoExt = nodo.obtenerNodoExternoAsociadoAlDiagrama(nd.idDiagrama, idVista)
-
-                        # Obtenemos la lista de nodos externos del diagrama de la accion.
-                        listaExternosDiag = nodo.obtenerNodosExternoPorDiagrama(nd.idDiagrama)
-
-                        posIni = 80 + len(listaExternosDiag)*60
-
-                        # Establecemos la posicion del nodo.
-                        creadoEstiloNodo = eNodo.crearEstiloNodo(idDiagrama, nodoExt.idNodo, json.dumps({"x": 750, "y": posIni}))
-
-                        # Creamos la relaccion externo-accion.
-                        creado3 = rela.crearRelacion(None, TIPO_ACCION_EXTERNO, json.dumps({}), nodoExt.idNodo, nd.idNodo, nd.idDiagrama)
-
-                        if not creado3:
-                            creado3 = False
-                            break
         else:
             listaRelaVisExt = rela.obtenerRelacionesDirigidasVistaExterno(idVista)
 
@@ -737,19 +735,97 @@ def AEliminarElemento():
     nd = nodo.obtenerNodoPorID(idNodo)
     eliminado = True
 
-    if nd.tipo == TIPO_VISTA:
-        pass
-    elif nd.tipo == TIPO_ACCION:
-        pass
-    elif nd.tipo == TIPO_OPERACION:
-        relacion = rela.obtenerRelacionNoDirigidaOperacionAccion(nd.idNodo)
+    if nd != None:
+        print("Se encontro el nodo", nd.nombre)
+        
+        if nd.tipo == TIPO_VISTA:
 
-        if relacion != None:
-            rela_elim = rela.eliminarRelacionPorID(relacion.idRelacion)
+            relacionVE = rela.obtenerRelacionesDirigidasVistaExterno(nd.idNodo)
+            relacionVA = rela.obtenerRelacionesDirigidasVistaAccion(nd.idNodo)
 
-            if rela_elim:
-                eliminado = eNodo.eliminarEstiloNodoAsociadoAUnNodo(nd.idNodo)
-                eliminado = nodo.eliminarNodoPorId(nd.idNodo)
+
+
+            acciones_externas_salida  = []
+            acciones_externas_entrada = []
+
+            # for r in relacionEV:
+            #     print("Obteniendo relacion EV",r.idNodoOrigen, r.idNodoDestino)
+            #     acciones_externas_entrada.append(r.idNodoOrigen)
+            #     rela_elim = rela.eliminarRelacionPorID(r.idRelacion)
+            #     print("Eliminada", rela_elim)
+            # for r in relacionAV:
+            #     print("Obteniendo relacion AV",r.idNodoOrigen, r.idNodoDestino)
+            #     rela_elim = rela.eliminarRelacionPorID(r.idRelacion)
+            #     print("Eliminada", rela_elim)
+            for r in relacionVE:
+                print("Obteniendo relacion VE",r.idNodoOrigen, r.idNodoDestino)
+                acciones_externas_salida.append(r.idNodoDestino)
+                rela_elim = rela.eliminarRelacionPorID(r.idRelacion)
+                print("Eliminada", rela_elim)
+            for r in relacionVA:
+                print("Obteniendo relacion VA",r.idNodoOrigen, r.idNodoDestino)
+                rela_elim = rela.eliminarRelacionPorID(r.idRelacion)
+                print("Eliminada", rela_elim)
+
+            for ndE in acciones_externas_salida:
+                # Buscamos en el nodo externo el diagrama al que pertenece.
+                idDiagramaExt = ndE.idDiagrama
+
+                # Obtenemos el nodo externo que representa a la vista que queremos eliminar.
+                nodoExt2 = nodo.obtenerNodoExternoAsociadoAlDiagrama(idDiagramaExt, idNodo)
+                print("Encontramos nodo externo asociado a la vista en el otro diagrama", nodoExt2)
+
+                #Obtenemos el nodo externo que pertenece a este diagrama.
+                nodoExt1 = nodo.obtenerNodoPorID(ndE.idNodo)
+                print("Encontramos nodo externo asociado a la accion en el diagrama actual", nodoExt2)
+
+                # Verificamos si podemos eliminar los nodos.
+
+                # Para nodoExt1 buscamos si quedan relaciones con el.
+                result1 = rela.obtenerRelacionesDirigidasVistaExterno(idNodo)
+                result2 = rela.obtenerRelacionesDirigidasExternoVista(nodoExt1.idNodo)
+
+                hay = False
+                for r in result1:
+                    result = r.idNodoDestino == nodoExt1.idNodo
+                    if result == True:
+                        hay = True
+                        break
+                    
+                if not hay and result2 == []:
+                    print("Se puede eliminar el externo asociado a la vista")
+            #         eliminado = nodo.eliminarNodoPorId(nodoExt1.idNodo)
+                
+                # Para nodoExt2 buscamos si quedan relaciones con el.
+                result1 = rela.obtenerRelacionesDirigidasAccionExterno(ndE.idNodoExterno)
+                result2 = rela.obtenerRelacionesDirigidasExternoAccion(nodoExt2.idNodo)
+
+                hay = False
+                for r in result1:
+                    result = r.idNodoDestino == nodoExt1.idNodo
+                    if result == True:
+                        hay = True
+                        break
+                    
+                if not hay and result2 == []:
+                    print("Se puede eliminar el externo asociado a la accion")
+            #         eliminado = nodo.eliminarNodoPorId(nodoExt2.idNodo)
+
+            eliminado = eNodo.eliminarEstiloNodoAsociadoAUnNodo(nd.idNodo)
+            eliminado = nodo.eliminarNodoPorId(nd.idNodo)
+
+
+        elif nd.tipo == TIPO_ACCION:
+            pass
+        elif nd.tipo == TIPO_OPERACION:
+            relacion = rela.obtenerRelacionNoDirigidaOperacionAccion(nd.idNodo)
+
+            if relacion != None:
+                rela_elim = rela.eliminarRelacionPorID(relacion.idRelacion)
+
+                if rela_elim:
+                    eliminado = eNodo.eliminarEstiloNodoAsociadoAUnNodo(nd.idNodo)
+                    eliminado = nodo.eliminarNodoPorId(nd.idNodo)
 
     if eliminado: 
         res = results[0]

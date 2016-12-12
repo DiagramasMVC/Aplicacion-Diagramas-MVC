@@ -281,7 +281,8 @@ def VDiagrama():
         if oNodo.tipo == TIPO_ACCION:
             accExt.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino})
         else:
-            extAcc.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino})
+            id_salida = json.loads(r.propiedades)['id_salida']
+            extAcc.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino, 'id_salida': id_salida})
 
     # Obtenemos las relaciones dirigidas externo-vista y vista-externo.
     relaciones = rela.obtenerRelacionesPorTipoYDiagrama(TIPO_VISTA_EXTERNO, idDiagrama)

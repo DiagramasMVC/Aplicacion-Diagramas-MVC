@@ -1,27 +1,23 @@
-<!-- Agrega la barra de navegacion -->
-  <nav id="header-nav" class="navbar navbar-default"> 
-    <div class="container-fluid">
+<!-- Agrega la barra de navegacion Fixed navbar-->
+<nav id="header-nav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
         <div class="navbar-header">
-            <!-- Se aplica a el logo o titulo de la marca -->
-            <div class="navbar-brand">
-                <a href=""><span>Diagramas MVC</span></a>
-            </div>      
             <button type="button" 
                     class="navbar-toggle collapsed" 
                     data-toggle="collapse" 
-                    data-target="#contenido-plegable"
-                    aria-expanded="false">
+                    data-target="#contenido-plegable" 
+                    aria-expanded="false" 
+                    aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>   
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Diagramas MVC</a>
         </div><!-- .navbar-header -->
 
         <div class="collapse navbar-collapse" id="contenido-plegable">
-            <ul id="nav-list-left" class="nav navbar-nav navbar-left">
-                
-            </ul>
+            <ul id="nav-list-left" class="nav navbar-nav navbar-left"></ul>
             <ul id="nav-list-right" class="nav navbar-nav navbar-right">
                 <li><a ng-click="VLogin1()">Iniciar Sesión</a></li>
             </ul>
@@ -29,10 +25,9 @@
     </div><!-- .container-fluid -->
 </nav><!-- #header-nav -->
 
-<flash:messages></flash:messages>
 
 <div class="col-xs-11 col-sm-3"></div>
-<div id="contenido" class="col-xs-11 col-sm-6">
+<div id="info" class="col-xs-11 col-sm-6">
 	<form name="fUsuarioForm" 
 	      ng-submit="ARegistrar1(fUsuarioForm.$valid)" novalidate>
 	    <div class="form-group" 

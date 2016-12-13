@@ -139,7 +139,6 @@ svg text { /* Texto dentro del nodo */
 }
 
 
-
 /* TABS
 -------------------------------------------------- */
 ul.tab {
@@ -206,7 +205,6 @@ ul.tab li a {
 }
 
 
-
 /* CONTENIDO PAGINA
 -------------------------------------------------- */
 #contenido {
@@ -235,16 +233,23 @@ ul.tab li a {
 }
 /* Lista de atributos del tab de edicion de la vista */
 #nombre {
-  padding-right: 5px;
-  width: 400px;
+    padding-right: 5px;
+    width: 400px;
 }
 #enlazar, #eliminar { 
     padding-left: 5px;
 }
+
+/* TABLES
+-------------------------------------------------- */
 table tr.seleccionable:hover{
     background-color: #F1F1F1;
     cursor: pointer;
 }
+.table > thead > tr > th {
+    padding-top: 18px;
+}
+
 
 /* STICKY FOOTER
 -------------------------------------------------- */
@@ -271,14 +276,3 @@ body {
   padding-right: 15px;
   padding-left: 15px;
 }
-
-
-
-
-
-
-
-
-
-
-

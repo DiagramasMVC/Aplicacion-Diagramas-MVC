@@ -51,9 +51,28 @@ class Diagrama(object):
 		return diagramas
 
 
-	def actualizarDiagrama(self, idDiagrama, nuevoNOmbre, nuevaDescripcion, nuevasPropiedades, nuevoIdDiseno):
-		pass
+	def actualizarDiagrama(self, idDiagrama, nuevoNombre, nuevaDescripcion, nuevasPropiedades, nuevoIdDiseno):
+		""""""
+		if idDiagrama != None:
 
+			if idDiagrama >= NUM_MIN_ID:
+
+				viejoDiagrama = clsDiagrama.query.filter_by(idDiagrama=idDiagrama).first()
+
+				if viejoDiagrama != None:
+
+					if nuevoNombre != None and nuevaDescripcion != None and nuevasPropiedades != None:
+
+						if len(nuevoNombre) <= TAM_MAX_NOMBRE:
+
+							viejoDiagrama.nombre      = nuevoNombre
+							viejoDiagrama.descripcion = nuevaDescripcion
+							viejoDiagrama.propiedades = nuevasPropiedades
+							db.session.commit()
+
+							return True
+
+		return False
 
 	def eliminarDiagrama(self, idDiagrama):
 		""""""

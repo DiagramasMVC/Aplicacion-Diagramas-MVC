@@ -70,12 +70,12 @@ mvcModule.controller('VDisenosController',
         $scope.VDiseno1 = function(idDiseno) {
             $location.path('/VDiseno/'+((typeof idDiseno === 'object')?JSON.stringify(idDiseno):idDiseno));
         };
-        $scope.fDisenoSubmitted = false;
+        $scope.fDiseno1Submitted = false;
         $scope.ACrearDiseno1 = function(isValid) {
-            $scope.fDisenoSubmitted = true;
+            $scope.fDiseno1Submitted = true;
             if (isValid) {
           
-                disenoService.ACrearDiseno($scope.fDiseno).then(function (object) {
+                disenoService.ACrearDiseno($scope.fDiseno1).then(function (object) {
                     var msg = object.data["msg"];
                     if (msg) flash(msg);
                     var label = object.data["label"];
@@ -188,7 +188,7 @@ mvcModule.controller('VDisenoController',
             while(i < $scope.res.data1.length) {
                 if ($scope.res.data1[i].idDiagrama== id) {
                     var x = $scope.res.data1[i];
-                    $scope.fDiagrama1 = {"idDiseno": x.idDiagrama, "descripcion":x.descripcion, "nombre":x.nombre};
+                    $scope.fDiagrama1 = {"idDiagrama": x.idDiagrama, "descripcion":x.descripcion, "nombre":x.nombre};
                     encontrado = true;
                 }
                 i++;
@@ -220,6 +220,20 @@ mvcModule.controller('VDisenoController',
                   $location.path(label);
                   $route.reload();
               });
+            }
+        };
+        $scope.fDiagrama1Submitted = false;
+        $scope.AModificarDiagrama1 = function(isValid) {
+            $scope.fDiagrama1Submitted = true;
+            if (isValid) {
+
+                diagramaService.AModificarDiagrama($scope.fDiagrama1).then(function (object) {
+                    var msg = object.data["msg"];
+                    if (msg) flash(msg);
+                    var label = object.data["label"];
+                    $location.path(label);
+                    $route.reload();
+                });
             }
         };
         $scope.fEntidadSubmitted = false;

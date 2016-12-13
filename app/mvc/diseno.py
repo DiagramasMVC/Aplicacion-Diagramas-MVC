@@ -19,8 +19,8 @@ ent  = Entidad()
 def ACrearDiseno():
     params  = request.get_json()
     results = [{'label':'/VDisenos', 'msg':['Diseño creado.']}, 
-               {'label':'/VCrearDiseno', 'msg':['El nombre de diseño ya existe.']},
-               {'label':'/VCrearDiseno', 'msg':['Error al crear diseño.']}, ]
+               {'label':'/VDisenos', 'msg':['El nombre de diseño ya existe.']},
+               {'label':'/VDisenos', 'msg':['Error al crear diseño.']}, ]
 
     # Asignamos el mensaje a mostrar por defecto.
     res = results[2]
@@ -63,12 +63,27 @@ def ACrearDiseno():
  
 @dise.route('/diseno/AModificarDiseno', methods=['POST'])
 def AModificarDiseno():
-    console.log("llego a modificar");
 	# Paramatros POST.
     params  = request.get_json()
-    results = [{'label':'/VDiseno', 'msg':['Diseno actualizado.']}, 
-    		   {'label':'/VDiseno', 'msg':['Error al actualizar diseño.']},]
-    res     = results[0]
+    results = [{'label':'/VDisenos', 'msg':['Diseño actualizado.']}, 
+    		   {'label':'/VDisenos', 'msg':['Error al actualizar diseño.']},]
+    
+    # Asignamos un mensaje a mostrar por defecto.
+    res = results[1]
+
+    # Obtenemos los parametros.
+    nuevoNombre      = params['nombre']
+    nuevaDescripcion = params['descripcion']
+    idDiseno         = params['idDiseno']
+
+    #  Buscamos el diseno a modificar.
+    diseno = dis.obtenerDisenoPorID(idDiseno)
+
+    modificado = dis.actualizarDiseno(idDiseno, nuevoNombre, nuevaDescripcion, diseno.propiedades)
+
+    if modificado:
+        res = results[0]
+
     return json.dumps(res)
 
 

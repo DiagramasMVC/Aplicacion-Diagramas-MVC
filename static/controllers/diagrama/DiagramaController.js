@@ -2656,21 +2656,6 @@ mvcModule.controller('VDiagramaController', [
         $scope.ACambiarDiagrama1 = function(idDiagrama) {
             $location.path('/VDiagrama/'+idDiagrama)
         };
-        $scope.fDiagramaSubmitted = false;
-        $scope.AModificarDiagrama1 = function(isValid) {
-            $scope.fDiagramaSubmitted = true;
-            if (isValid) {
-
-                diagramaService.AModificarDiagrama($scope.fDiagrama).then(function (object) {
-                    var msg = object.data["msg"];
-                    if (msg) flash(msg);
-                    var label = object.data["label"];
-                    $location.path(label);
-                    $route.reload();
-                });
-            }
-        };
-
         $scope.fElementoSubmitted = false;
         $scope.ACrearElemento1 = function(isValid) {
             $scope.fElementoSubmitted = true;

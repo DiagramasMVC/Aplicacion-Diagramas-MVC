@@ -74,18 +74,50 @@ def ACrearDiagrama():
 def AModificarDiagrama():
     params  = request.get_json()
     results = [{'label':'/VDiseno', 'msg':['Diagrama creado']},
-               {'label':'/VCrearDiagrama', 'msg':['El nombre del diagrama ya existe']},
-               {'label':'/VCrearDiagrama', 'msg':['Error al crear diagrama']},]
+               {'label':'/VDiseno', 'msg':['El nombre del diagrama ya existe']},
+               {'label':'/VDiseno', 'msg':['Error al crear diagrama']},]
 
     # Asignamos el mensaje a mostrar por defecto.
     res = results[2]
 
     # Extraemos los parametros
-    nombreDiagrama = params['nombre'] 
-    descDiagrama   = params['descripcion']
+    nuevoNombre      = params['nombre'] 
+    nuevaDescripcion = params['descripcion']
+    idDiagrama       = params['idDiagrama']
+
+    print("Parametros", params)
 
     #Obtenemos el id del diseno al cual pertenece el diagrama.
-    idDiseno = int(session['idDiseno'])
+    idDiseno = int(request.args.get('idDiseno',1))
+    print("idDiseno :O ",idDiseno)
+
+    # Obtenemos los diagramas asociados al diseno.
+    listaDiagramas = dia.obtenerDiagramasPorDiseno(idDiseno)
+    print("Diagramas por diseno", listaDiagramas)
+
+    # Buscamos si alguno de esos diagramas se llama igual al que se va a crear.
+    existe = False
+    for d in listaDiagramas:
+        print("Comparando", d.nombre.lower(), nuevoNombre.lower())
+        if d.nombre.lower() == nuevoNombre.lower():
+            existe = True
+            break
+
+    if existe:
+        print("Existe un diagrama con el mismo nombre")
+        res = results[1]
+    else: 
+        #  Buscamos el diagrama a modificar.
+        diagrama = dia.obtenerDiagramaPorID(idDiagrama)
+        print("se modificara el diagrama", diagrama.nombre)
+
+        modificado = dia.actualizarDiagrama(idDiagrama, nuevoNombre, nuevaDescripcion, diagrama.propiedades, idDiseno)
+
+        if modificado:
+            print("se modifico:", modificado)
+            res = results[0]
+
+    res['label'] = res['label'] + '/' + str(idDiseno)
 
     return json.dumps(res)
 

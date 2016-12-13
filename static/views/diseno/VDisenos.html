@@ -93,45 +93,45 @@
                 </div><!-- ng-show="isSet(1)" .tabcontent -->
 
                 <div ng-show="isSet(2)" class="tabcontent">
-				    <form name="fDisenoForm" 
-				          ng-submit="ACrearDiseno1(fDisenoForm.$valid)" novalidate>
+				    <form name="fDiseno1Form" 
+				          ng-submit="ACrearDiseno1(fDiseno1Form.$valid)" novalidate>
 				        <div class="form-group"
-				             ng-class="{'has-error': fDisenoSubmitted &&
-				                                     fDisenoForm.nombre.$invalid &&
-				                                     fDisenoForm.nombre.$pristine &&
-				                                     fDisenoSubmitted}">
-				            <label for="fDiseno_nombre">Nombre</label>
-				            <input id="fDiseno_nombre" 
+				             ng-class="{'has-error': fDiseno1Submitted &&
+				                                     fDiseno1Form.nombre.$invalid &&
+				                                     fDiseno1Form.nombre.$pristine &&
+				                                     fDiseno1Submitted}">
+				            <label for="fDiseno1_nombre">Nombre</label>
+				            <input id="fDiseno1_nombre" 
 				                   type="text" 
 				                   name="nombre"
 				                   class="form-control"
-				                   ng-model="fDiseno.nombre"
+				                   ng-model="fDiseno1.nombre"
 				                   placeholder="Nombre del diseño"/>
-				            <p ng-show="fDisenoSubmitted && fDisenoForm.nombre.$invalid"
+				            <p ng-show="fDiseno1Submitted && fDiseno1Form.nombre.$invalid"
 				               class="help-block">
 				                Error en campo Nombre del diseño.                    
 				            </p>
 				        </div>
 				        <div class="form-group" 
-				             ng-class="{'has-error': fDisenoSubmitted && 
-				                                     fDisenoForm.descripcion.$invalid && fDisenoForm.descripcion.$pristine && 
-				                                     fDisenoSubmitted}">
-				            <label for="fDiseno_descripcion">Descripción</label>
-				            <textarea id="fDiseno_descripcion" 
+				             ng-class="{'has-error': fDiseno1Submitted && 
+				                                     fDiseno1Form.descripcion.$invalid && fDiseno1Form.descripcion.$pristine && 
+				                                     fDiseno1Submitted}">
+				            <label for="fDiseno1_descripcion">Descripción</label>
+				            <textarea id="fDiseno1_descripcion" 
 				                      name="descripcion" 
 				                      class="form-control" 
-				                      ng-model="fDiseno.descripcion" 
+				                      ng-model="fDiseno1.descripcion" 
 				                      placeholder="Descripción del diseño" required>
 				            </textarea>
-				            <p ng-show="fDisenoSubmitted && fDisenoForm.descripcion.$invalid" 
+				            <p ng-show="fDiseno1Submitted && fDiseno1Form.descripcion.$invalid" 
 				               class="help-block">
 				                Error en campo Descripción.
 				            </p>
 				        </div>
-				        <input id="fDiseno_idDiseno" 
+				        <input id="fDiseno1_idDiseno" 
 				               type="hidden" 
 				               name="idDiseno" 
-				               ng-model="fDiseno.idDiseno"/>
+				               ng-model="fDiseno1.idDiseno"/>
 				        <button type="submit" class="btn btn-primary btn-lg sharp">
 				            Crear
 				        </button>

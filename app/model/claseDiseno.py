@@ -227,7 +227,7 @@ class Diseno(object):
         return False
         
 
-    def eliminarDiseno(self, idDiseno):
+    def eliminarDisenoPorID(self, idDiseno):
         """Permite eliminar un diseno almacenado
 		   
 		       Recibe:

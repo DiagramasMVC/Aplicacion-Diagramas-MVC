@@ -115,12 +115,29 @@ class Nodo(object):
         return False
 
 
+    def obtenerNodosPorDiagrama(self, idDiagrama):
+        """Permite obtener todos los nodos asociados a un diagrama dado
+
+           Recibe:
+           idDiagrama     -- identificador del diagrama al cual pertenecen los nodos.
+
+           Devuelve: 
+           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
+           correspondientes a clsNodo. En caso de no existir nodos devuelve 
+           lista vacia.
+        """
+        nodos = clsNodo.query.filter_by(idDiagrama=idDiagrama).all()
+
+        return nodos
+
+
+
     def obtenerNodosVistaPorDiagrama(self, idDiagrama):
         """Permite obtener los nodos de tipo vista almacenados en la base
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -137,7 +154,7 @@ class Nodo(object):
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiseno    -- identificador del diseno al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -159,7 +176,7 @@ class Nodo(object):
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -176,7 +193,7 @@ class Nodo(object):
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiseno     -- identificador del diseno al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -198,7 +215,7 @@ class Nodo(object):
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -210,12 +227,29 @@ class Nodo(object):
         return operaciones
 
 
+    def obtenerNodosOperacionPorDiagramaYEntidad(self, idDiagrama, idEntidad):
+        """Permite obtener los nodos de tipo operacion almecenados en la base de datos 
+           para un diagrama y entida dados
+
+           Recibe:
+           Ningun argumento.
+
+           Devuelve: 
+           [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
+           correspondientes a clsOperacion. En caso de no existir nodos devuelve 
+           lista vacia."""
+
+        operaciones = clsOperacion.query.filter_by(idDiagrama=idDiagrama, idEntidad=idEntidad).all()
+
+        return operaciones
+
+
     def obtenerNodosExternoPorDiagrama(self, idDiagrama):
         """Permite obtener los nodos de tipo externo almacenados en la base
            de datos para un diagrama dado.
            
            Recibe:
-           Ningun argumento.
+           idDiagrama     -- identificador del diagrama al cual pertenece el nodo.
 
            Devuelve: 
            [<idNodo, nombre, tipo, propiedades, idDiagrama>] -- lista de tuplas 
@@ -227,12 +261,12 @@ class Nodo(object):
         return externos
 
 
-    # def obtenerNodosExternosPorIdDelNodoReal(self, idNodoReal):
-    #     """Permite obtener los nodos externos de distintos diagramas asociado a un 
-    #        id de nodo"""
-    #     externos = clsExterno.query.filter_by(idNodoExterno=idNodoReal).all()
+    def obtenerNodosExternosPorIdDelNodoReal(self, idNodoReal):
+        """Permite obtener los nodos externos de distintos diagramas asociado a un 
+           id de nodo"""
+        externos = clsExterno.query.filter_by(idNodoExterno=idNodoReal).all()
 
-    #     return externos
+        return externos
 
 
     def obtenerNodoExternoAsociadoAlDiagrama(self, idDiagrama, idNodoReal):
@@ -359,11 +393,11 @@ class Nodo(object):
         return False
 
 
-    def actualizarNodoOperacion(self, idNodo, nuevoNombre, nuevasPropiedades):
+    def actualizarNodoOperacion(self, idNodo, nuevoNombre, nuevasPropiedades, nuevoidEntidad):
         """"""
-        if idNodo != None and nuevoNombre != None and nuevasPropiedades != None:
+        if idNodo != None and nuevoNombre != None and nuevasPropiedades != None and nuevoidEntidad != None:
 
-          if idNodo >= NUM_MIN_ID:
+          if idNodo >= NUM_MIN_ID and nuevoidEntidad >= NUM_MIN_ID:
 
             viejoNodo = clsNodo.query.filter_by(idNodo=idNodo).first()
 
@@ -374,6 +408,7 @@ class Nodo(object):
                   viejoNodo.nombre      = nuevoNombre
                   viejoNodo.nuevoTipo   = TIPO_OPERACION
                   viejoNodo.propiedades = nuevasPropiedades
+                  viejoNodo.idEntidad   = nuevoidEntidad
                   db.session.commit()
                   return True
 

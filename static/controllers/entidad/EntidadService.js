@@ -8,30 +8,12 @@ mvcModule.service('entidadService', ['$q', '$http', function($q, $http) {
             });
         };
 
-        this.VEntidad = function(args) {
-            if(typeof args == 'undefined') args={};
-            return $http({
-              url: 'entidad/VEntidad',
-              method: 'GET',
-              params: args,
-            });
-        };
-
         this.ACrearEntidad = function(fEntidad) {
             return  $http({
               url: "entidad/ACrearEntidad",
               data: fEntidad,
               method: 'POST',
             });
-        };
-
-        this.VCrearEntidad = function(args) {
-          if(typeof args == 'undifined') args={};
-          return $http({
-            url: 'entidad/VCrearEntidad',
-            method: 'GET',
-            params: args,
-          });
         };
 
         this.AEliminarEntidad = function(args) {

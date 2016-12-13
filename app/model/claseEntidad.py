@@ -50,4 +50,40 @@ class Entidad(object):
 
 		return entidades
 
+
+	def actualizarEntidad(self, idEntidad, nuevoNombre, idDiseno):
+		""""""
+		if idEntidad != None:
+
+			if idEntidad >= NUM_MIN_ID:
+
+				viejaEntidad = clsEntidad.query.filter_by(idEntidad=idEntidad).first()
+
+				if viejaEntidad != None:
+
+					if nuevoNombre != None:
+
+						viejaEntidad.nombre = nuevoNombre
+						db.session.commit()
+
+						return True
+		return False
+
+
+	def eliminarEntidadPorID(self, idEntidad):
+		""""""
+		if idEntidad != None:
+
+			if idEntidad >= NUM_MIN_ID:
+
+				#  Obtenemos la entidad que queremos eliminar.
+				entidad = clsEntidad.query.filter_by(idEntidad=idEntidad).first()
+
+				if entidad != None:
+					db.session.delete(entidad)
+					db.session.commit()
+					return True
+
+		return False
+
 	# Fin Clase Diagrama

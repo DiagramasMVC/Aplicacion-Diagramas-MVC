@@ -32,7 +32,6 @@
         </div><!-- .collapse navbar-collapse -->
     </div><!-- .container -->
 </nav><!-- #header-nav -->
-
 <div id="contenido" class="container">
     <div class="row">
         <div class="col-sm-3">
@@ -124,6 +123,9 @@
                                             class="btn btn-primary btn-lg sharp"
                                             data-dismiss="modal">No</button>
                                 </div>
+                                <div class="modal-footer">
+                                    <p>Nota: Esta acción podría modificar algunos elementos de otros diagramas</p>
+                                </div>
                             </div>
                         </div>
                     </div><!-- modal-eliminar-diagrama -->
@@ -154,11 +156,9 @@
                         <button type="submit" class="btn btn-primary btn-lg sharp">
                             <span>Modificar</span>
                         </button>
-                        {{fEntidad}}
                         <button type="button" 
                                 data-toggle="modal" 
-                                data-target="#modal-eliminar-diagrama"
-                                ng-click="setElementoEliminar(fOperacion.idNodo)"
+                                data-target="#modal-eliminar-entidad"
                                 class="btn btn-primary btn-lg sharp">
                                 Eliminar
                         </button>
@@ -175,7 +175,7 @@
                                 <div class="modal-header">
                                     <button type="button" class="close" 
                                             data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Eliminar diagrama</h4>
+                                        <h4 class="modal-title">Eliminar entidad</h4>
                                 </div>
                                 <div class="modal-body">
                                     <p>¿Esta seguro que desea eliminar la entidad seleccionada?</p>
@@ -186,6 +186,9 @@
                                     <button type="button" 
                                             class="btn btn-primary btn-lg sharp"
                                             data-dismiss="modal">No</button>
+                                </div>
+                                <div class="modal-footer">
+                                    <p>Nota: Esta acción podría modificar algunos elementos de los diagramas</p>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +210,7 @@
                                    name="nombre"
                                    class="form-control"
                                    ng-model="fDiagrama.nombre"
-                                   placeholder="Nombre del diagrama"/>
+                                   placeholder="Nombre del diagrama" required/>
                             <p ng-show="fDiagramaSubmitted && fDiagramaForm.nombre.$invalid"
                                class="help-block">
                                 Error en campo Nombre.                    
@@ -254,7 +257,7 @@
                                    name="nombre"
                                    class="form-control"
                                    ng-model="fEntidad.nombre"
-                                   placeholder="Nombre de la entidad"/>
+                                   placeholder="Nombre de la entidad" required/>
                             <p ng-show="fEntidadSubmitted && fEntidadForm.nombre.$invalid"
                                class="help-block">
                                 Error en campo Nombre.                    

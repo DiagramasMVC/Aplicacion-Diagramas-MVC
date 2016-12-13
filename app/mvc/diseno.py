@@ -5,7 +5,10 @@ from app.model.claseUsuario  import *
 from app.model.claseDiseno   import *
 from app.model.claseDiagrama import *
 from app.model.claseEntidad  import *
-
+from app.model.claseNodo     import *
+from app.model.claseRelacion import *
+from app.model.claseEstiloNodo     import *
+from app.model.claseEstiloRelacion import *
 
 dise = Blueprint('diseno', __name__)
 
@@ -13,6 +16,10 @@ usr  = Usuario()
 dis  = Diseno()
 diag = Diagrama()
 ent  = Entidad()
+nodo = Nodo()
+rela = Relacion()
+eNodo = EstiloNodo()
+eRela = EstiloRelacion()
 
 
 @dise.route('/diseno/ACrearDiseno', methods=['POST'])
@@ -90,11 +97,50 @@ def AModificarDiseno():
 
 @dise.route('/diseno/AEliminarDiseno', methods=['GET'])
 def AEliminarDiseno():
-    console.log("llego a eliminar");
-	# Paramatros POST.
     params  = request.get_json()
-    results = [{'label':'/VDiseno', 'msg':['Diseño eliminado.']}, ]
-    res     = results[0]
+    results = [{'label':'/VDisenos', 'msg':['Diseño eliminado.']}, 
+               {'label':'/VDisenos', 'msg':['Error al eliminar diseño']}]
+
+    # Asignamos el mensaje a mostrar por defecto.
+    res     = results[1]
+
+    #Obtenemos el id del diseno que queremos eliminar.
+    idDiseno = int(request.args.get('idDiseno',1))
+
+    # Obtenemos los diagramas asociados.
+    listaDiagramas = diag.obtenerDiagramasPorDiseno(idDiseno)
+    listaEntidades = ent.obtenerEntidadesPorDiseno(idDiseno)
+
+    for d in listaDiagramas:        
+        listaRela     = rela.obtenerRelacionesPorDiagrama(d.idDiagrama)
+        listaNodos    = nodo.obtenerNodosPorDiagrama(d.idDiagrama)
+        listaEstNodos = eNodo.obtenerEstilosNodoPorDiagrama(d.idDiagrama)
+        listaEstRela  = eRela.obtenerEstilosRelacionPorDiagrama(d.idDiagrama)
+
+        # Eliminamos todos las relaciones.
+        for r in listaRela:
+            rela.eliminarRelacionPorID(r.idRelacion)
+
+        # Eliminamos todos los nodos.  
+        for n in listaNodos:
+            nodo.eliminarNodoPorId(n.idNodo)
+
+        # Eliminamos todos los estilo nodo.
+        for en in listaEstNodos:
+            eNodo.eliminarEstiloNodoPorID(en.idEstiloNodo)
+
+        # Eliminamos todos los estilo relacion.
+        for er in listaEstRela:
+            eRela.eliminarEstiloRelacionPorID(er.idEstiloRelacion)
+
+    for e in listaEntidades:
+        ent.eliminarEntidadPorID(e.idEntidad)
+
+    eliminado = dis.eliminarDisenoPorID(idDiseno)
+
+    if eliminado:
+        res = results[0]
+
     return json.dumps(res)
 
 

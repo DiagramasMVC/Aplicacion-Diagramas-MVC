@@ -48,48 +48,89 @@
                 </ul>
 
 				<div ng-show="isSet(1)" class="tabcontent">
-				    <form name="fDisenoForm" 
-				          ng-submit="AModificarDiseno1(fDisenoForm.$valid)" novalidate>
-				        <div class="form-group"
-				             ng-class="{'has-error': fDisenoSubmitted &&
-				                                     fDisenoForm.nombre.$invalid &&
-				                                     fDisenoForm.nombre.$pristine &&
-				                                     fDisenoSubmitted}">
-				            <label for="fDiseno_nombre">Nombre</label>
-				            <input id="fDiseno_nombre" 
-				                   type="text" 
-				                   name="nombre"
-				                   class="form-control"
-				                   ng-model="fDiseno.nombre"
-				                   placeholder="Nombre del diseño"/>
-				            <p ng-show="fDisenoSubmitted && fDisenoForm.nombre.$invalid"
-				               class="help-block">
-				                Error en campo Nombre.                    
-				            </p>
-				        </div>
-				        <div class="form-group" 
-				             ng-class="{'has-error': fDisenoSubmitted && 
-				                                     fDisenoForm.descripcion.$invalid && fDisenoForm.descripcion.$pristine && 
-				                                     fDisenoSubmitted}">
-				            <label for="fDiseno_descripcion">Descripción</label>
-				            <textarea id="fDiseno_descripcion" 
-				                      name="descripcion" 
-				                      class="form-control" 
-				                      ng-model="fDiseno.descripcion" 
-				                      placeholder="Descripción del diseño" required>
-				            </textarea>
-				            <p ng-show="fDisenoSubmitted && 
-				                        fDisenoForm.descripcion.$invalid" 
-				                        class="help-block">
-				                Error en campo Descripción.
-				            </p>
-				        </div>
-				        <input id="fDiseno_idDiseno" type="hidden" name="idDiseno" 
-				               ng-model="fDiseno.idDiseno" />
-				        <button type="submit" class="btn btn-primary btn-lg sharp">
-				            <span>Modificar</span>
-				        </button>
-				    </form>
+					<div ng-show="seleccionado==0">
+						No hay ningun elemento seleccionado
+					</div>
+					<div ng-show="seleccionado==1">
+					    <form name="fDisenoForm" 
+					          ng-submit="AModificarDiseno1(fDisenoForm.$valid)" novalidate>
+					        <div class="form-group"
+					             ng-class="{'has-error': fDisenoSubmitted &&
+					                                     fDisenoForm.nombre.$invalid &&
+					                                     fDisenoForm.nombre.$pristine &&
+					                                     fDisenoSubmitted}">
+					            <label for="fDiseno_nombre">Nombre</label>
+					            <input id="fDiseno_nombre" 
+					                   type="text" 
+					                   name="nombre"
+					                   class="form-control"
+					                   ng-model="fDiseno.nombre"
+					                   placeholder="Nombre del diseño"/>
+					            <p ng-show="fDisenoSubmitted && fDisenoForm.nombre.$invalid"
+					               class="help-block">
+					                Error en campo Nombre.                    
+					            </p>
+					        </div>
+					        <div class="form-group" 
+					             ng-class="{'has-error': fDisenoSubmitted && 
+					                                     fDisenoForm.descripcion.$invalid && fDisenoForm.descripcion.$pristine && 
+					                                     fDisenoSubmitted}">
+					            <label for="fDiseno_descripcion">Descripción</label>
+					            <textarea id="fDiseno_descripcion" 
+					                      name="descripcion" 
+					                      class="form-control" 
+					                      ng-model="fDiseno.descripcion" 
+					                      placeholder="Descripción del diseño" required>
+					            </textarea>
+					            <p ng-show="fDisenoSubmitted && 
+					                        fDisenoForm.descripcion.$invalid" 
+					                        class="help-block">
+					                Error en campo Descripción.
+					            </p>
+					        </div>
+					        <input id="fDiseno_idDiseno" type="hidden" name="idDiseno" 
+					               ng-model="fDiseno.idDiseno" />
+					        <button type="submit" class="btn btn-primary btn-lg sharp">
+					            <span>Modificar</span>
+					        </button>
+	                        <button type="button" 
+	                                data-toggle="modal" 
+	                                data-target="#modal-eliminar-diseno"
+	                                class="btn btn-primary btn-lg sharp">
+	                                Eliminar
+	                        </button>
+					    </form>
+
+                    <!-- Modal eliminar diseno -->
+                    <div id="modal-eliminar-diseno" 
+                         class="modal fade eliminar" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" 
+                                            data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Eliminar diseño</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>¿Esta seguro que desea eliminar el diseño seleccionado?</p>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            ng-click="AEliminarDiseno1(elemento_eliminar_id)"
+                                            data-dismiss="modal">Si</button>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-lg sharp"
+                                            data-dismiss="modal">No</button>
+                                </div>
+                                <div class="modal-footer">
+                                    <p>Nota: Esta acción eliminará todos los diagramas asociados al diseño y sus elementos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- modal-eliminar-diseno -->
+
+				    </div>
                 </div><!-- ng-show="isSet(1)" .tabcontent -->
 
                 <div ng-show="isSet(2)" class="tabcontent">
@@ -106,7 +147,7 @@
 				                   name="nombre"
 				                   class="form-control"
 				                   ng-model="fDiseno1.nombre"
-				                   placeholder="Nombre del diseño"/>
+				                   placeholder="Nombre del diseño" required/>
 				            <p ng-show="fDiseno1Submitted && fDiseno1Form.nombre.$invalid"
 				               class="help-block">
 				                Error en campo Nombre del diseño.                    

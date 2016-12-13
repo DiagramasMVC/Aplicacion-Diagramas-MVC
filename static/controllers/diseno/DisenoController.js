@@ -20,6 +20,7 @@ mvcModule.controller('VDisenosController',
     function ($scope, $location, $route, flash, ngTableParams, disenoService, identificarService) {
         $scope.msg = '';
         $scope.tab = 2;
+        $scope.seleccionado = 0;
 
         disenoService.VDisenos().then(function (object) {
             $scope.res = object.data;
@@ -42,7 +43,7 @@ mvcModule.controller('VDisenosController',
                 }
             });          
         });
-
+        $scope.elemento_eliminar_id = 0;
         $scope.setDiseno = function(id) {
             // Buscamos el diseno seleccionado.
             var i = 0; 
@@ -56,7 +57,9 @@ mvcModule.controller('VDisenosController',
                 }
                 i++;
             }
+            $scope.elemento_eliminar_id = id
             $scope.setTab(1);
+            $scope.seleccionado = 1;
         };
         $scope.setTab = function(newTab) {
             $scope.tab = newTab;
@@ -163,7 +166,7 @@ mvcModule.controller('VDisenoController',
                     }
             });
         });
-
+        $scope.elemento_eliminar_id = 0;
         $scope.setEntidad = function(id) {
             // Buscamos el diseno seleccionado.
             var i = 0; 
@@ -177,6 +180,7 @@ mvcModule.controller('VDisenoController',
                 }
                 i++;
             }
+            $scope.elemento_eliminar_id = id;
             $scope.setTab(1);
             $scope.seleccionado = 2;
         }
@@ -193,6 +197,7 @@ mvcModule.controller('VDisenoController',
                 }
                 i++;
             }
+            $scope.elemento_eliminar_id = id;
             $scope.setTab(1);
             $scope.seleccionado = 1;
         };
@@ -236,6 +241,15 @@ mvcModule.controller('VDisenoController',
                 });
             }
         };
+        $scope.AEliminarDiagrama1 = function(idDiagrama) {
+            diagramaService.AEliminarDiagrama({'idDiagrama':((typeof idDiagrama === 'object')?JSON.stringify(idDiagrama):idDiagrama)}).then(function (object) {
+                var msg = object.data["msg"];
+                if (msg) flash(msg);
+                var label = object.data["label"];
+                $location.path(label);
+                $route.reload();
+            });
+        };
         $scope.fEntidadSubmitted = false;
         $scope.ACrearEntidad1 = function(isValid) {
         $scope.fEntidadSubmitted = true;
@@ -249,6 +263,29 @@ mvcModule.controller('VDisenoController',
                   $route.reload();
               });
             }
+        };
+        $scope.fEntidad1Submitted = false;
+        $scope.AModificarEntidad1 = function(isValid) {
+            $scope.fEntidad1Submitted = true;
+            if (isValid) {
+
+                entidadService.AModificarEntidad($scope.fEntidad1).then(function (object) {
+                    var msg = object.data["msg"];
+                    if (msg) flash(msg);
+                    var label = object.data["label"];
+                    $location.path(label);
+                    $route.reload();
+                });
+            }
+        };   
+        $scope.AEliminarEntidad1 = function(idEntidad) {
+            entidadService.AEliminarEntidad({"idEntidad":((typeof idEntidad === 'object')?JSON.stringify(idEntidad):idEntidad)}).then(function (object) {
+                var msg = object.data["msg"];
+                if (msg) flash(msg);
+                var label = object.data["label"];
+                $location.path(label);
+                $route.reload();
+            });
         };
         $scope.VDiagrama1 = function(idDiagrama) {
             $location.path('/VDiagrama/'+((typeof idDiagrama === 'object')?JSON.stringify(idDiagrama):idDiagrama));

@@ -219,6 +219,15 @@
 				                                       placeholder="Nombre del atributo" required/>
 				                            </div>
 											<div class="form-group">	
+                                                <label for="fVista_etiqueta_accion_interna">
+                                                    Etiqueta
+                                                </label>
+                                                <input id="fVista_etiqueta_accion_interna" 
+                                                       type="text" 
+                                                       name="etiqueta" 
+                                                       class="form-control" 
+                                                       ng-model="fVista.etiqueta" 
+                                                       placeholder="Etiqueta de la relación (opcional)">
 												<label for="fVista_nombre_accion_interna">
 													Acción interna asociada
 												</label>	
@@ -227,6 +236,17 @@
 	                                        			ng-model="fVista.accion_interna"
 	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionInterna">
 	                                			</select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="fVista_etiqueta_accion_externa">
+                                                    Etiqueta
+                                                </label>
+                                                <input id="fVista_etiqueta_accion_externa" 
+                                                       type="text" 
+                                                       name="etiqueta" 
+                                                       class="form-control" 
+                                                       ng-model="fVista.etiqueta" 
+                                                       placeholder="Etiqueta de la relación (opcional)">
 	                                			<label for="fVista_nombre_Accion_externa">
 													Acción externa asociada
 												</label>	

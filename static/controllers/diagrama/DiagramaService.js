@@ -25,12 +25,14 @@
 		});
 	};
 
-	this.AEliminarDiagrama = function() {
-		return $http({
-			url: 'diagrama/AEliminarDiagrama',
-			method: 'POST',
-		});
-	};
+    this.AEliminarDiagrama = function(args) {
+      if(typeof args == 'undefined') args={};
+      return $http({
+        url: 'diagrama/AEliminarDiagrama',
+        method: 'GET',
+        params: args,
+      });
+    };
 
 	this.AGuardarPosicionDiagrama = function(fDiagrama) {
 		return $http({

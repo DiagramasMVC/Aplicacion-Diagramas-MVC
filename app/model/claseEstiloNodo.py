@@ -77,9 +77,23 @@ class EstiloNodo(object):
 
                 estiloNodo = clsEstiloNodo.query.filter_by(idNodo=idNodo).first()
 
-            if estiloNodo != None:
-                db.session.delete(estiloNodo)
-                db.session.commit()
-                return True
+                if estiloNodo != None:
+                    db.session.delete(estiloNodo)
+                    db.session.commit()
+                    return True
+
+        return False
+
+    def eliminarEstiloNodoPorID(self, idEstiloNodo):
+        """"""
+        if idEstiloNodo != None:
+            if idEstiloNodo >= NUM_MIN_ID:
+
+                estiloNodo = clsEstiloNodo.query.filter_by(idEstiloNodo=idEstiloNodo).first()
+
+                if estiloNodo != None:
+                    db.session.delete(estiloNodo)
+                    db.session.commit()
+                    return True
 
         return False

@@ -6,6 +6,7 @@ from app.model.claseDiagrama   import *
 from app.model.claseNodo       import *
 from app.model.claseRelacion   import *
 from app.model.claseEstiloNodo import *
+from app.model.claseEstiloRelacion import *
 from app.model.claseEntidad    import *
 
 
@@ -26,6 +27,7 @@ dia = Diagrama()
 nodo = Nodo()
 rela = Relacion()
 eNodo = EstiloNodo()
+eRela = EstiloRelacion()
 ent = Entidad()
 
 
@@ -85,36 +87,28 @@ def AModificarDiagrama():
     nuevaDescripcion = params['descripcion']
     idDiagrama       = params['idDiagrama']
 
-    print("Parametros", params)
-
     #Obtenemos el id del diseno al cual pertenece el diagrama.
     idDiseno = int(request.args.get('idDiseno',1))
-    print("idDiseno :O ",idDiseno)
 
     # Obtenemos los diagramas asociados al diseno.
     listaDiagramas = dia.obtenerDiagramasPorDiseno(idDiseno)
-    print("Diagramas por diseno", listaDiagramas)
 
     # Buscamos si alguno de esos diagramas se llama igual al que se va a crear.
     existe = False
     for d in listaDiagramas:
-        print("Comparando", d.nombre.lower(), nuevoNombre.lower())
         if d.nombre.lower() == nuevoNombre.lower():
             existe = True
             break
 
     if existe:
-        print("Existe un diagrama con el mismo nombre")
         res = results[1]
     else: 
         #  Buscamos el diagrama a modificar.
         diagrama = dia.obtenerDiagramaPorID(idDiagrama)
-        print("se modificara el diagrama", diagrama.nombre)
 
         modificado = dia.actualizarDiagrama(idDiagrama, nuevoNombre, nuevaDescripcion, diagrama.propiedades, idDiseno)
 
         if modificado:
-            print("se modifico:", modificado)
             res = results[0]
 
     res['label'] = res['label'] + '/' + str(idDiseno)
@@ -123,22 +117,69 @@ def AModificarDiagrama():
 
 
 
-@diag.route('/diagrama/AEliminarDiagrama', methods=['GET'])
+@diag.route('/diagrama/AEliminarDiagrama')
 def AEliminarDiagrama():
     params  = request.get_json()
-    results = [{'label':'/VDiseno', 'msg':['Diagrama creado']},
-               {'label':'/VCrearDiagrama', 'msg':['El nombre del diagrama ya existe']},
-               {'label':'/VCrearDiagrama', 'msg':['Error al crear diagrama']},]
+    results = [{'label':'/VDiseno', 'msg':['Diagrama eliminado']},
+               {'label':'/VDiseno', 'msg':['Error al eliminar diagrama']},]
 
     # Asignamos el mensaje a mostrar por defecto.
-    res = results[2]
+    res = results[1]
 
-    # Extraemos los parametros
-    nombreDiagrama = params['nombre'] 
-    descDiagrama   = params['descripcion']
+    # Obtenemos el id del diagrama que queremos eliminar.
+    idDiagrama = int(request.args.get('idDiagrama',1))
 
     #Obtenemos el id del diseno al cual pertenece el diagrama.
-    idDiseno = int(session['idDiseno'])
+    idDiseno = int(request.args.get('idDiseno',1))
+
+    # Obtenemos los nodos y relaciones asociados al diagrama.
+    listaNodos = nodo.obtenerNodosPorDiagrama(idDiagrama)
+    listaRela  = rela.obtenerRelacionesPorDiagrama(idDiagrama)
+
+    for r in listaRela:
+        eliminado = rela.eliminarRelacionPorID(r.idRelacion)
+        eRela.eliminarEstiloRelacionAsociadoAUnaRelacion(r.idRelacion)
+
+    for n in listaNodos:
+
+        if n.tipo == TIPO_VISTA or n.tipo == TIPO_ACCION:
+            externos = nodo.obtenerNodosExternosPorIdDelNodoReal(n.idNodo)
+
+            for ext in externos:
+                # Buscamos las relaciones que salen y llegan de este nodo.
+                rela_destino = rela.obtenerRelacionesPorDestino(ext.idNodo)
+                rela_origen  = rela.obtenerRelacionesPorOrigen(ext.idNodo)
+
+                for r in rela_destino:
+                    rela.eliminarRelacionPorID(r.idRelacion)
+                    eRela.eliminarEstiloRelacionAsociadoAUnaRelacion(r.idRelacion)
+
+                for r in rela_origen:
+                    rela.eliminarRelacionPorID(r.idRelacion)
+                    eRela.eliminarEstiloRelacionAsociadoAUnaRelacion(r.idRelacion)
+
+                eliminado = nodo.eliminarNodoPorId(ext.idNodo)
+                eNodo.eliminarEstiloNodoAsociadoAUnNodo(ext.idNodo)
+
+        eliminado = nodo.eliminarNodoPorId(n.idNodo)
+
+    eliminado = dia.eliminarDiagramaPorID(idDiagrama)
+
+    listaEstNodo = eNodo.obtenerEstilosNodoPorDiagrama(idDiagrama)
+    listaEstRela = eRela.obtenerEstilosRelacionPorDiagrama(idDiagrama)
+
+    # Eliminamos los estilos nodo y estilo relacion.
+    for en in listaEstNodo:
+        eNodo.eliminarEstiloNodoPorID(en.idEstiloNodo)
+
+    for er in listaEstRela:
+        eRela.eliminarEstiloRelacionPorID(er.idEstiloRelacion)
+
+
+    if eliminado:
+        res = results[0]
+
+    res['label'] = res['label'] + '/' + str(idDiseno)
 
     return json.dumps(res)
 
@@ -270,14 +311,15 @@ def VDiagrama():
     listaOperaciones = nodo.obtenerNodosOperacionPorDiagrama(idDiagrama)
     
     operaciones = []
-    idAccion = 0
     for o in listaOperaciones:
         estiloNodo = eNodo.obtenerEstiloNodoPorIdNodo(o.idNodo)
-
         # Obtenmos la accion con la cual esta asociado.
+        idAccion = 0
         for r in accOp:
             if o.idNodo == r['origen']:
                 idAccion = r['destino']
+                break
+
         operaciones.append({'id': o.idNodo, 'nombre': o.nombre, 'x': json.loads(estiloNodo.propiedades)['x'], 'y': json.loads(estiloNodo.propiedades)['y'], 'idEntidad': o.idEntidad, 'idAccion': idAccion})
 
     # Nodos Externos.
@@ -330,18 +372,41 @@ def VDiagrama():
             extVis.append({'origen': r.idNodoOrigen, 'destino': r.idNodoDestino})
 
     print('\n\nNODOS')
-    print('Nodos vista', vistas, '\n')
-    print('Nodos accion', acciones, '\n')
-    print('Nodos operacion:', operaciones, '\n')
-    print('Nodos externo:', externos, '\n')
+    print('Nodos vista')
+    for i in vistas: print(i)
+    print('\n')
+    print('Nodos accion')
+    for i in acciones: print(i)
+    print('\n')
+    print('Nodos operacion:')
+    for i in operaciones: print(i)
+    print('\n')
+    print('Nodos externo:')
+    for i in externos: print(i)
+    print('\n')
+
     print('\nENLACES')
-    print('Enlaces vista-accion', visAcc, '\n')
-    print('Enlaces accion-vista', accVis, '\n')
-    print('Enlaces vista-externo:', visExt, '\n')
-    print('Enlaces externo-vista:', extVis, '\n')
-    print('Enlaces accion-externo:', accExt, '\n')
-    print('Enlaces externo-accion:', extAcc, '\n')
-    print('Enlaces accion-operacion:', accOp, '\n')   
+    print('Enlaces vista-accion')
+    for i in visAcc: print(i)
+    print('\n')
+    print('Enlaces accion-vista')
+    for i in accVis: print(i)
+    print('\n')
+    print('Enlaces vista-externo:')
+    for i in visExt: print(i)
+    print('\n')
+    print('Enlaces externo-vista:')
+    for i in extVis: print(i)
+    print('\n')
+    print('Enlaces accion-externo:')
+    for i in accExt: print(i)
+    print('\n')
+    print('Enlaces externo-accion:')
+    for i in extAcc: print(i)
+    print('\n')
+    print('Enlaces accion-operacion:') 
+    for i in accOp: print(i)
+    print('\n')  
 
 
     res['data5'] = {"nodos":
@@ -451,7 +516,6 @@ def VDiagrama():
     #                     ]}
     #                   ]
     #               };
-
 
 
     res['fOperacion_opcionesAccion']  = [{'key': a.idNodo, 'value': a.nombre} for a in listaAcciones]

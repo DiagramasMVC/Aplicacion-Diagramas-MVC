@@ -351,6 +351,7 @@ mvcModule.controller('VDiagramaController', [
                                              "nombre": d.nombre, 
                                              "idEntidad": d.idEntidad, 
                                              "idAccion": d.idAccion};
+                        console.log(d);
 
                         // Seleccionamos el tab 2 (Elemento) usando JQuery.
                         $('#myTab li a').eq(0).trigger('click');
@@ -2672,9 +2673,7 @@ mvcModule.controller('VDiagramaController', [
         };
         $scope.elemento_eliminar_id = 0;
         $scope.setElementoEliminar = function(id) {
-            console.log($scope.elemento_eliminar_id);
             $scope.elemento_eliminar_id = id;
-            console.log($scope.elemento_eliminar_id);
         };
         $scope.AEliminarElemento1 = function(idNodo) {
             

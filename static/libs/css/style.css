@@ -138,6 +138,28 @@ svg text { /* Texto dentro del nodo */
     fill: #000; 
 }
 
+/* LOADER
+-------------------------------------------------- */
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #008EB7;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 /* TABS
 -------------------------------------------------- */
@@ -196,6 +218,11 @@ ul.tab li a {
 }
 .modal-body {
     margin: 0 15px 0 15px;
+}
+.modal-footer {
+    margin: 0 15px 0 15px;
+    text-align: center;
+    color: #666;
 }
 .modal-content {
     border-radius: 0;

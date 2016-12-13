@@ -6,6 +6,7 @@ from app.model.claseDiagrama   import *
 from app.model.claseNodo       import *
 from app.model.claseRelacion   import *
 from app.model.claseEstiloNodo import *
+from app.model.claseEstiloRelacion import *
 from app.model.claseEntidad    import *
 
 
@@ -21,12 +22,13 @@ TIPO_ACCION_OPERACION  = 2
 TIPO_VISTA_EXTERNO  = 3
 TIPO_ACCION_EXTERNO = 4
 
-dis = Diseno()
-dia = Diagrama() 
-nodo = Nodo()
-rela = Relacion()
+dis   = Diseno()
+dia   = Diagrama() 
+nodo  = Nodo()
+rela  = Relacion()
 eNodo = EstiloNodo()
-ent = Entidad()
+eRela = EstiloRelacion()
+ent   = Entidad()
 
 
 @elem.route('/elemento/ACrearElemento', methods=['POST'])
@@ -134,7 +136,7 @@ def ACrearElemento():
     elif tipoElemento == TIPO_OPERACION:
         idEntidad = params['idEntidad'] 
 
-        listaOperaciones = nodo.obtenerNodosOperacionPorDiagrama(idDiagrama)
+        listaOperaciones = nodo.obtenerNodosOperacionPorDiagramaYEntidad(idDiagrama, idEntidad)
 
         # Buscamos si alguno de las operaciones se llama igual que la que se va a crear.
         existe = False
@@ -170,7 +172,7 @@ def ACrearElemento():
                 else:
                     res = results[6]
                     nodo.eliminarNodoPorId(operacion.idNodo)
-                    # Eliminar estilo nodo tambien ###################################################################################################
+                    eNodo.eliminarEstiloNodoAsociadoAUnNodo(operacion.idNodo)
 
     res['label'] = res['label'] + '/' + str(idDiagrama)
 
@@ -671,7 +673,8 @@ def AModificarAccion():
 def AModificarOperacion():
     params  = request.get_json()
     results = [{'label':'/VDiagrama', 'msg':['Operación Modificada']},
-               {'label':'/VDiagrama', 'msg':['Error al modificar Operación']},]
+               {'label':'/VDiagrama', 'msg':['Error al modificar Operación']},
+               {'label':'/VDiagrama', 'msg':['El nombre de la Operación ya existe para esa entidad']}]
 
     # # Asignamos el mensaje a mostrar por defecto.
     res = results[1]
@@ -683,21 +686,38 @@ def AModificarOperacion():
     idOrigen  = params['idNodo'] 
     idDestino = params['idAccion']
     nombreOp  = params['nombre']
+    idEntidad = params['idEntidad']
 
     nodoAnterior = nodo.obtenerNodoPorID(idOrigen)
 
     propiedades = json.loads(nodoAnterior.propiedades)
 
-    actualizado1 = nodo.actualizarNodoOperacion(idOrigen, nombreOp, json.dumps(propiedades))
+    listaOperaciones = nodo.obtenerNodosOperacionPorDiagramaYEntidad(idDiagrama, idEntidad)
 
+    # Buscamos si alguno de las operaciones se llama igual que la que se va a actualizar.
+    actualizado1 = True
+    existe = False
+    for o in listaOperaciones:
+        print(o.nombre, o.idEntidad)
+        if o.nombre.lower() == nombreOp.lower():
+            existe = True
+            break
+
+    # Creamos la nueva operacion.
+    if existe:
+        res = results[2]
+    else:
+        actualizado1 = nodo.actualizarNodoOperacion(idOrigen, nombreOp, json.dumps(propiedades), idEntidad)
 
     # Obtenemos la relacion actual de la operacion con la accion.
     relaAnterior = rela.obtenerRelacionNoDirigidaOperacionAccion(idOrigen)
+    actualizado2 = True
 
     if relaAnterior != None:
 
         if idDestino == 0: # Eliminamos la relacion existente.
             rela.eliminarRelacionPorID(relaAnterior.idRelacion)
+            eRela.eliminarEstiloRelacionAsociadoAUnaRelacion(relaAnterior.idRelacion)
         else:
 
             if idDestino == relaAnterior.idNodoDestino:
@@ -706,10 +726,17 @@ def AModificarOperacion():
                 propiedades  = json.loads(relaAnterior.propiedades)
                 actualizado2 = rela.actualizarRelacion(relaAnterior.idRelacion, None, TIPO_ACCION_OPERACION, json.dumps(propiedades), idOrigen, idDestino, idDiagrama)
     else:
-        actualizado2 = rela.crearRelacion(None, TIPO_ACCION_OPERACION, json.dumps({}), idOrigen, idDestino, idDiagrama)
 
-        if actualizado1 and actualizado2:
-            res = results[0]
+        if idDestino != 0:
+            actualizado2 = rela.crearRelacion(None, TIPO_ACCION_OPERACION, json.dumps({}), idOrigen, idDestino, idDiagrama)
+
+            # Obtenemos la relacion recien creada.
+            relacion   = rela.obtenerRelacionPorOrigenYDestino(idOrigen, idDestino) 
+
+            estiloRela = eRela.crearEstiloRelacion(idDiagrama, relacion.idRelacion, json.dumps({}))
+
+    if actualizado1 and actualizado2:
+        res = results[0]
 
     res['label'] = res['label'] + '/' + str(idDiagrama)
 

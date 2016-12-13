@@ -74,7 +74,7 @@ class Diagrama(object):
 
 		return False
 
-	def eliminarDiagrama(self, idDiagrama):
+	def eliminarDiagramaPorID(self, idDiagrama):
 		""""""
 		if idDiagrama != None:
 

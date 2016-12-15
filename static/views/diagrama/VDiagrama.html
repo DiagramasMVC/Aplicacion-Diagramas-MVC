@@ -209,60 +209,57 @@
                               		</div>
 	                              	<div class="modal-body">
 	                                	<form>
-				                            <div class="form-group">
-				                                <label for="fVista_nombre_atr">Nombre</label>
-				                                <input id="fVista_nombre_atr" 
-				                                       type="text" 
-				                                       name="nombre"
-				                                       class="form-control"
-				                                       ng-model="fVista.nombre_atr"
-				                                       placeholder="Nombre del atributo" required/>
-				                            </div>
-											<div class="form-group">	
-                                               <!--  <label for="fVista_etiqueta_accion_interna">
-                                                    Etiqueta
-                                                </label> -->
-                                                <input id="fVista_etiqueta_accion_interna" 
-                                                       type="text" 
-                                                       name="etiqueta" 
-                                                       class="form-control" 
-                                                       ng-model="fVista.etiqueta" 
-                                                       placeholder="Etiqueta de la relación (opcional)">
-												<label for="fVista_nombre_accion_interna">
-													Acción interna asociada
-												</label>	
-												<select id="fVista_nombre_accion_interna" 
-	                                        			class="form-control"
-	                                        			ng-model="fVista.accion_interna"
-	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionInterna">
-	                                			</select>
-                                            </div>
-                                            <div class="form-group">
-                                               <!--  <label for="fVista_etiqueta_accion_externa">
-                                                    Etiqueta
-                                                </label> -->
-                                                <input id="fVista_etiqueta_accion_externa" 
-                                                       type="text" 
-                                                       name="etiqueta" 
-                                                       class="form-control" 
-                                                       ng-model="fVista.etiqueta" 
-                                                       placeholder="Etiqueta de la relación (opcional)">
-	                                			<label for="fVista_nombre_Accion_externa">
-													Acción externa asociada
-												</label>	
-	                                			<select id="fVista_nombre_accion_externa" 
-	                                        			class="form-control"
-	                                        			ng-model="fVista.accion_externa"
-	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionExterna">
-	                                			</select>
-											</div>
-											<button type="button" 
-											        class="btn btn-primary btn-lg sharp"
-											        ng-click="asociar1()"
-											        data-dismiss="modal">
-                                					Asociar
-                            				</button>
-										</form>
+  				                            <div class="form-group">
+  				                                <label for="fVista_nombre_atr">Nombre</label>
+  				                                <input id="fVista_nombre_atr" 
+  				                                       type="text" 
+  				                                       name="nombre"
+  				                                       class="form-control"
+  				                                       ng-model="fVista.nombre_atr"
+  				                                       placeholder="Nombre del atributo" required/>
+  				                            </div>
+                                      <div class="form-group">
+                                          <label>Tipo de relación</label>
+                                          <div class="radio">
+                                              <label><input type="radio" 
+                                                            name="chickenEgg" 
+                                                            value="1" 
+                                                            ng-model="tipo_accion">Acción interna</label>
+                                          </div>
+                                          <div class="radio">
+                                              <label><input type="radio" 
+                                                            name="chickenEgg" 
+                                                            value="2" 
+                                                            ng-model="tipo_accion">Acción externa</label>
+                                          </div>
+                                      </div>
+  											              <div class="form-group" ng-show="tipo_accion==1">	
+  												                <label for="fVista_nombre_accion_interna">
+  													                  Acción interna asociada
+  												                </label>	
+  												                <select id="fVista_nombre_accion_interna" 
+  	                                        			class="form-control"
+  	                                        			ng-model="fVista.accion_interna"
+  	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionInterna">
+  	                                			</select>
+                                      </div>
+                                      <div class="form-group" ng-show="tipo_accion==2">
+  	                                			<label for="fVista_nombre_Accion_externa">
+  													                  Acción externa asociada
+  												                </label>	
+  	                                			<select id="fVista_nombre_accion_externa" 
+  	                                        			class="form-control"
+  	                                        			ng-model="fVista.accion_externa"
+  	                                        			ng-options="item.key as item.value for item in fVista_opcionesAccionExterna">
+  	                                			</select>
+  											              </div>
+              											  <button type="button" 
+              											          class="btn btn-primary btn-lg sharp"
+              											          ng-click="asociar1()"
+              											          data-dismiss="modal">
+                                              					Asociar
+                                      </button>
+										                </form>
 	                                </div>
                                 </div>
                             </div>

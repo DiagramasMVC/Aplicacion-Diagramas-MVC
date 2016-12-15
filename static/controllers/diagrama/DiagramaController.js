@@ -868,7 +868,7 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = acciones.length;
-                        espaciado_accion = d.destino.altura/cant_enlaces;
+                        espaciado_accion = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
                         posInicio    = d.origen.y-d.origen.altura/2;
 
                         var nro_puerto = 0;
@@ -1157,11 +1157,9 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }   
 
-                        console.log("Puerto_destino", nro_puerto, d.origen.nombre);
-
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = d.destino.ancho/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2;
+                        var cant_enlaces    = vistas.length; 
+                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -1216,9 +1214,9 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }   
 
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = d.destino.ancho/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2;
+                        var cant_enlaces    = vistas.length; 
+                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2022,7 +2020,7 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = acciones.length;
-                        espaciado_accion = d.destino.altura/cant_enlaces;
+                        espaciado_accion = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
                         posInicio    = d.origen.y-d.origen.altura/2;
 
                         var nro_puerto = 0;
@@ -2196,9 +2194,9 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }   
 
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = d.destino.ancho/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2;
+                        var cant_enlaces    = vistas.length; 
+                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2249,9 +2247,9 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }   
 
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = d.destino.ancho/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2;
+                        var cant_enlaces    = vistas.length; 
+                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2721,6 +2719,7 @@ mvcModule.controller('VDiagramaController', [
             $scope.fVista.accion_externa = atributos[i].accion_externa;
             $scope.fVista.nombre_atr = atributos[i].nombre;
         };
+        $scope.tipo_accion = 1;
         $scope.asociar1 = function() {
             var atributos = $scope.fVista.atributos;
 

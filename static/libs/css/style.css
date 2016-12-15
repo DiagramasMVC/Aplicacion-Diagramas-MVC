@@ -93,15 +93,15 @@ body {
   padding: 0;
 }
 svg {
-  background: #F1F1F1;
+    background: #F1F1F1;
 }
-.nodo { /* Nodos del diagrama (Vista, Acción, Operación, Externo) */
-    fill: #FFF;     
+.nodo {  /* Nodos del diagrama (Vista, Acción, Operación, Externo) */
+    fill: #FFF;    
     stroke: #000;         
-    stroke-width: 1.5px;   
+    stroke-width: 1.5px;  
 }
 .nodo .seleccionado {
-    stroke: red;         /* Color de circulo seleccionado */
+    stroke: red;   /* Color de circulo seleccionado */
 }
 
 svg text { /* Texto dentro del nodo */
@@ -113,7 +113,7 @@ svg text { /* Texto dentro del nodo */
 }
 
 .enlaceVA, .enlaceAV {                
-    stroke: #000;        /* Color de las relaciones*/
+    stroke: #000;        /* Color de las relaciones */
     stroke-width: 1.5px;
     fill: none;
 }
@@ -246,6 +246,9 @@ ul.tab li a {
 }
 .page-header div h3 {
     margin-top: 10px;
+}
+#descargar {
+    font-size: 20px;
 }
 #cambiarDiagrama {
     float:right;

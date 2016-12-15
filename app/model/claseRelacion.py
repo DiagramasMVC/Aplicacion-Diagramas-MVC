@@ -76,14 +76,14 @@ class Relacion(object):
 
     def obtenerRelacionesDirigidasExternoVista(self, idExterno):
         """"""
-        relacion = clsRelacion.query.filter_by(tipo=TIPO_VISTA_EXTERNO, idNodoDestino=idExterno).all()
+        relacion = clsRelacion.query.filter_by(tipo=TIPO_VISTA_EXTERNO, idNodoOrigen=idExterno).all()
 
         return relacion
 
 
     def obtenerRelacionesDirigidasAccionVista(self, idAccion):
         """"""
-        relacion = clsRelacion.query.filter_by(tipo=TIPO_VISTA_ACCION, idNodoDestino=idAccion).all()
+        relacion = clsRelacion.query.filter_by(tipo=TIPO_VISTA_ACCION, idNodoOrigen=idAccion).all()
 
         return relacion
 
@@ -104,7 +104,7 @@ class Relacion(object):
 
     def obtenerRelacionesDirigidasExternoAccion(self, idExterno):
         """"""
-        relacion = clsRelacion.query.filter_by(tipo=TIPO_ACCION_EXTERNO, idNodoDestino=idExterno).all()
+        relacion = clsRelacion.query.filter_by(tipo=TIPO_ACCION_EXTERNO, idNodoOrigen=idExterno).all()
 
         return relacion
 

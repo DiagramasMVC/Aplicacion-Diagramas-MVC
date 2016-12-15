@@ -60,40 +60,40 @@ class Diseno(object):
         return False
 
 
-    # def obtenerDisenos(self):
-    #     """Permite obtener todos los disenos almacenados en la base de datos
+    def obtenerDisenos(self):
+        """Permite obtener todos los disenos almacenados en la base de datos
            
-    #        Recibe:
-    #        Ningun argumento.
+           Recibe:
+           Ningun argumento.
 
-    #        Devuelve: 
-    #        [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
-    #        correspondientes a clsDiseno. En caso de no existir disenos devuelve 
-    #        lista vacia.
-    #     """
-    #     disenos = clsDiseno.query.all()
+           Devuelve: 
+           [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
+           correspondientes a clsDiseno. En caso de no existir disenos devuelve 
+           lista vacia.
+        """
+        disenos = clsDiseno.query.all()
 
-    #     return disenos
+        return disenos
 
 
-    # def existeDiseno(self, idDiseno):
-    #     """Permite saber si un diseno se encuentra almacenado en la base de 
-    #        datos o no.
+    def existeDiseno(self, idDiseno):
+        """Permite saber si un diseno se encuentra almacenado en la base de 
+           datos o no.
 
-    #        Recibe:
-    #        idDiseno -- identificador del diseno en la tabla diseno.
+           Recibe:
+           idDiseno -- identificador del diseno en la tabla diseno.
 
-    #        Devuelve:
-    #        bool -- confirma si existe o no el elemento.
-    #     """
-    #     existeDiseno = None
+           Devuelve:
+           bool -- confirma si existe o no el elemento.
+        """
+        existeDiseno = None
 
-    #     if idDiseno != None:
+        if idDiseno != None:
 
-    #         if idDiseno >= NUM_MIN_ID:
-    #             existeDiseno = clsDiseno.query.filter_by(idDiseno=idDiseno).first()
+            if idDiseno >= NUM_MIN_ID:
+                existeDiseno = clsDiseno.query.filter_by(idDiseno=idDiseno).first()
 
-    #     return (existeDiseno != None)
+        return (existeDiseno != None)
 
 
     def obtenerDisenoPorID(self, idDiseno):
@@ -117,38 +117,38 @@ class Diseno(object):
         return existeDiseno
 
 
-    # def obtenerDisenosPorNombre(self, nombre):
-    #     """Permite obtener disenos por su nombre. El nombre no es unico.
+    def obtenerDisenosPorNombre(self, nombre):
+        """Permite obtener disenos por su nombre. El nombre no es unico.
            
-    #        Recibe:
-    #        nombre -- nombre del diseno a buscar.
+           Recibe:
+           nombre -- nombre del diseno a buscar.
 
-    #        Devuelve:
-    #        [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
-    #        correspondientes a clsDiseno. En caso de no existir disenos devuelve 
-    #        lista vacia.
-    #     """
-    #     disenos = clsDiseno.query.filter_by(nombre=nombre).all()
+           Devuelve:
+           [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
+           correspondientes a clsDiseno. En caso de no existir disenos devuelve 
+           lista vacia.
+        """
+        disenos = clsDiseno.query.filter_by(nombre=nombre).all()
 
-    #     return disenos        
+        return disenos        
 
 
-    # def obtenerDisenosPorNombreYDescripcion(self, nombre, descripcion):
-    #     """Permite obtener disenos por su nombre y descripcion. 
-    #        El nombre no es unico y la descripcion tampoco.
+    def obtenerDisenosPorNombreYDescripcion(self, nombre, descripcion):
+        """Permite obtener disenos por su nombre y descripcion. 
+           El nombre no es unico y la descripcion tampoco.
            
-    #        Recibe:
-    #        nombre -- nombre del diseno a crear.
-    #        descripcion -- descripcion del diseno a crear.
+           Recibe:
+           nombre -- nombre del diseno a crear.
+           descripcion -- descripcion del diseno a crear.
 
-    #        Devuelve:
-    #        [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
-    #        correspondientes a clsDiseno. En caso de no existir disenos devuelve 
-    #        lista vacia.
-    #     """
-    #     disenos = clsDiseno.query.filter_by(nombre=nombre, descripcion=descripcion).all()
+           Devuelve:
+           [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
+           correspondientes a clsDiseno. En caso de no existir disenos devuelve 
+           lista vacia.
+        """
+        disenos = clsDiseno.query.filter_by(nombre=nombre, descripcion=descripcion).all()
 
-    #     return disenos
+        return disenos
 
 
     def obtenerDisenosPorUsuario(self, idUsuario):
@@ -178,20 +178,6 @@ class Diseno(object):
             disenos.append(diseno)
 
         return disenos
-
-
-    # def obtenerDisenosPorNombreYPorUsuario():
-    #     """Permite obtener los disenos asociados a un usuario dado.
-
-    #        Recibe:
-    #        idUsuario -- identificador del usuario en la tabla de usuarios.
-
-    #        Devuelve:
-    #        [<idDiseno, nombre, descripcion, propiedades>] -- lista de tuplas 
-    #        correspondientes a clsDiseno. En caso de no existir disenos devuelve 
-    #        lista vacia.
-    #     """
-    #     pass
 
 
     def actualizarDiseno(self, idDiseno, nuevoNombre, nuevaDescripcion, nuevasPropiedades):

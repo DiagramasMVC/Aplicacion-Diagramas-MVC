@@ -219,9 +219,9 @@
 				                                       placeholder="Nombre del atributo" required/>
 				                            </div>
 											<div class="form-group">	
-                                                <label for="fVista_etiqueta_accion_interna">
+                                               <!--  <label for="fVista_etiqueta_accion_interna">
                                                     Etiqueta
-                                                </label>
+                                                </label> -->
                                                 <input id="fVista_etiqueta_accion_interna" 
                                                        type="text" 
                                                        name="etiqueta" 
@@ -238,9 +238,9 @@
 	                                			</select>
                                             </div>
                                             <div class="form-group">
-                                                <label for="fVista_etiqueta_accion_externa">
+                                               <!--  <label for="fVista_etiqueta_accion_externa">
                                                     Etiqueta
-                                                </label>
+                                                </label> -->
                                                 <input id="fVista_etiqueta_accion_externa" 
                                                        type="text" 
                                                        name="etiqueta" 
@@ -339,7 +339,7 @@
                             <input id="fAccion_idAccion" 
                                    type="hidden" 
                                    name="idAccion" 
-                                   ng-model="fAccion.idDiagrama" />
+                                   ng-model="fAccion.idAccion" />
                             <button type="submit" class="btn btn-primary btn-lg sharp">
                                 Modificar
                             </button>
@@ -440,8 +440,8 @@
 
         <div class="col-sm-9 dibujo">
             <div class="page-header container col-sm-12">
-                <div class="col-sm-8" id="tituloDiagrama"><h3>Diagrama</h3></div>
-                <div class="col-sm-4" id="dropdownCambiarDiagrama">
+                <div class="col-sm-6" id="tituloDiagrama"><h3>{{fDiagrama.nombre}} <a id="descargar"ng-click="ARespaldo()">(Descargar JSON)</a></h3></div>
+                <div class="col-sm-6" id="dropdownCambiarDiagrama">
                     <div class="form-group form-inline" id="cambiarDiagrama">
                         <select id="fDiagrama_cambiarDiagrama" 
                                 class="form-control"
@@ -461,9 +461,3 @@
         </div>
     </div><!-- .row -->
 </div><!-- #contenido .container -->
-
-<footer class="footer">
-    <div class="container">
-        <p class="text-muted">Universidad Simón Bolívar.</p>
-    </div>
-</footer>

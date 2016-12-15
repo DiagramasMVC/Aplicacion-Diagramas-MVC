@@ -27,6 +27,7 @@ mvcModule.controller('VDiagramaController', [
         $scope.fAccion.relaciones_externas = [];
         $scope.fElemento = {};
         $scope.fElemento.atributos = [];
+        $scope.json = {};
 
 
         diagramaService.VDiagrama({"idDiagrama":$routeParams.idDiagrama}).then(function (object) {
@@ -66,6 +67,7 @@ mvcModule.controller('VDiagramaController', [
         // Interpretamos los datos que estan en formato json.
         var datos = JSON.stringify($scope.res.data5);
         var nodos = JSON.parse(datos);
+        $scope.json= datos;
 
         // Hacemos que origen y destino referencien al id de los nodos.
         nodos.enlaces.forEach(function(d) {
@@ -208,11 +210,6 @@ mvcModule.controller('VDiagramaController', [
                     .attr("height", altoSVG)
                     .selectAll("g");
 
-        //Permite realizar definiciones para reusar elementos.
-        var defs = svg
-                    .data([""]).enter()
-                    .append("defs");
-
         
         //ENLACES AGRUPADOS.
         //Enlaces dirigidos de vista-accion agrupados.
@@ -275,9 +272,6 @@ mvcModule.controller('VDiagramaController', [
                                          "atributos": d.atributos,
                                          "nombre_atributo": "",
                                          "atributos_eliminar": []};
-
-
-                        console.log(d);
 
                         // Seleccionamos el tab 2 (Elemento) usando JQuery.
                         $('#myTab li a').eq(0).trigger('click');
@@ -351,7 +345,6 @@ mvcModule.controller('VDiagramaController', [
                                              "nombre": d.nombre, 
                                              "idEntidad": d.idEntidad, 
                                              "idAccion": d.idAccion};
-                        console.log(d);
 
                         // Seleccionamos el tab 2 (Elemento) usando JQuery.
                         $('#myTab li a').eq(0).trigger('click');
@@ -776,18 +769,18 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         var cant_enlaces = acciones.length;
-                        var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.altura/2+MARGEN_TEXTO/2;
+                        var espaciado    = d.destino.altura/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.altura/2;
 
-                        if (d.origen.x >= d.destino.x-d.destino.ancho && d.origen.x <= d.destino.x) {
+                        if (d.origen.x >= d.destino.x-1.5*d.destino.ancho && d.origen.x <= d.destino.x) {
                             xOrig = d.origen.x - d.origen.ancho/2;
                             xPto  = xOrig - tamLineaHoriz;
                         
-                        } else if (d.origen.x < d.destino.x+d.destino.ancho && d.origen.x > d.destino.x) {
+                        } else if (d.origen.x < d.destino.x+1.5*d.destino.ancho && d.origen.x > d.destino.x) {
                             xOrig = d.origen.x + d.origen.ancho/2;
                             xPto = xOrig + tamLineaHoriz;
                             
-                        } else if (d.origen.x < d.destino.x-d.destino.ancho) {
+                        } else if (d.origen.x < d.destino.x-1.5*d.destino.ancho) {
                             xOrig = d.origen.x + d.origen.ancho/2;
                             xPto  = xOrig + tamLineaHoriz;
 
@@ -802,7 +795,6 @@ mvcModule.controller('VDiagramaController', [
                             yDest = d.destino.y; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
                         //Guardamos la posicion donde parte el enlace.
                         d.origen.atributos[num]["x1"]=xOrig;
                         d.origen.atributos[num]["y1"]=yOrig;
@@ -860,7 +852,7 @@ mvcModule.controller('VDiagramaController', [
                     });
 
 
-        // Enlaces dirigidos de tipo accion-vista.
+        // // Enlaces dirigidos de tipo accion-vista.
         var enlaceAV  = relacionAV
                     .append("path")
                     .attr("class", "enlaceAV")
@@ -876,8 +868,8 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = acciones.length;
-                        espaciado_accion = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.altura/2+MARGEN_TEXTO/2;
+                        espaciado_accion = d.destino.altura/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.altura/2;
 
                         var nro_puerto = 0;
                         for (var k = 0; k < acciones.length; k++) {
@@ -918,8 +910,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 - MARGEN_TEXTO;
+                        var espaciado_vista = (d.destino.ancho+MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -937,12 +929,9 @@ mvcModule.controller('VDiagramaController', [
                             xDest = d.destino.x; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xDest+","+yOrig+
@@ -978,8 +967,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = (d.destino.ancho+MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -1007,12 +996,110 @@ mvcModule.controller('VDiagramaController', [
 
         // Enlaces dirigidos de tipo vista-externo.
         var enlaceVE = relacionVE
-                    .append("line")
+                    .append("path")
                     .attr("class", "enlaceVE")
-                    .attr("x1", function(d) { return d.origen.x; })
-                    .attr("y1", function(d) { return d.origen.y; })
-                    .attr("x2", function(d) { return d.destino.x; })
-                    .attr("y2", function(d) { return d.destino.y; });
+                    .attr("d", function(d, i) {
+                        var id_salida = d.id_salida;
+
+                        for (var j = 0; j < d.origen.atributos.length; j++) {
+                            if (d.origen.atributos[j].id === id_salida) {
+                                num = j;
+                            }
+                        }
+
+                        // Obtenemos el puerto asignado a este enlace.
+                        var externos = [];
+
+                        if (d.origen.x <= d.destino.x) {
+                            externos = info_externos[d.destino.id].rela_izq;
+                        } else {
+                            externos = info_externos[d.destino.id].rela_der;
+                        }
+
+                        var nro_puerto = 0;
+                        for (var k = 0; k < externos.length; k++) {
+                            if (externos[k].id == d.origen.id && externos[k].id_salida == id_salida) {
+                                nro_puerto = externos[k].puerto;
+                            }
+                        }
+
+                        // Posicion de salida del enlace en y.
+                        yOrig = d.origen.y - d.origen.altura/2 + 1.4*ALTURA_LETRA + (num+1)*ALTURA_LETRA; 
+
+                        var tamLineaHoriz;
+
+                        if (d.origen.y <= d.destino.y) {
+                         tamLineaHoriz = 50*(d.origen.atributos.length-num);
+                        } else {
+                         tamLineaHoriz = 50*(num+1);
+                        }
+
+                        var cant_enlaces = externos.length;
+                        var espaciado    = d.destino.radio/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.radio/2;
+
+                        if (d.origen.x >= d.destino.x-1.5*d.destino.radio && d.origen.x <= d.destino.x) {
+                            xOrig = d.origen.x - d.origen.ancho/2;
+                            xPto  = xOrig - tamLineaHoriz;
+                        
+                        } else if (d.origen.x < d.destino.x+1.5*d.destino.radio && d.origen.x > d.destino.x) {
+                            xOrig = d.origen.x + d.origen.ancho/2;
+                            xPto = xOrig + tamLineaHoriz;
+                            
+                        } else if (d.origen.x < d.destino.x-1.5*d.destino.radio) {
+                            xOrig = d.origen.x + d.origen.ancho/2;
+                            xPto  = xOrig + tamLineaHoriz;
+
+                        } else {
+                            xOrig = d.origen.x - d.origen.ancho/2;
+                            xPto  = xOrig - tamLineaHoriz;                        
+                        }
+
+                        yDest = posInicio+nro_puerto*espaciado; 
+
+                        if (cant_enlaces == 1) { 
+                            yDest = d.destino.y; 
+                        }
+
+                        //Guardamos la posicion donde parte el enlace.
+                        d.origen.atributos[num]["x1"]=xOrig;
+                        d.origen.atributos[num]["y1"]=yOrig;
+                        d.origen.atributos[num]["xPto"]=xPto;
+                        
+                        xDest = d.destino.x;
+
+                        linea = "M"+xOrig+","+yOrig+
+                                " L"+xPto+","+yOrig+
+                                " L"+xPto+","+yDest+
+                                " L"+xDest+","+yDest;
+
+                        //Guardamos la posicion donde llega el enlace.
+                        d.origen.atributos[num]["x2"]=xDest;
+                        d.origen.atributos[num]["y2"]=yDest;
+
+                        return linea;
+                    });
+
+        var flechaC2 = relacionVE
+                    .append("polygon")
+                    .attr("class", "flechaE")
+                    .attr("points", function(d, i) {
+                        var xDest;
+                        var yDest = d.destino.y;
+
+                        if (d.origen.x <= d.destino.x) {
+                            xDest = d.destino.x - d.destino.radio - 2;
+                        } else {
+                            xDest = d.destino.x + d.destino.radio + 2;
+                        }
+
+                        if (d.origen.x <= d.destino.x) {
+                            puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                       
+                        } else {
+                            puntos = xDest+","+yDest+" "+(xDest+ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest+ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);
+                        }
+                        return puntos;
+                    });
 
         // Enlaces dirigidos de tipo vista-externo.
         var enlaceEV = relacionEV
@@ -1029,8 +1116,8 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = externos.length;
-                        espaciado_externo = (d.origen.radio-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.radio+MARGEN_TEXTO/2;
+                        espaciado_externo = d.origen.radio/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.radio;
 
                         var nro_puerto = 0;
                         for (var k = 0; k < externos.length; k++) {
@@ -1070,9 +1157,11 @@ mvcModule.controller('VDiagramaController', [
                             }
                         }   
 
+                        console.log("Puerto_destino", nro_puerto, d.origen.nombre);
+
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = d.destino.ancho/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -1093,8 +1182,6 @@ mvcModule.controller('VDiagramaController', [
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xDest+","+yOrig+
@@ -1130,8 +1217,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = d.destino.ancho/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -1171,20 +1258,17 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = acciones.length;
-                        espaciado_accion = (d.origen.altura-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.altura/2+MARGEN_TEXTO/2;
+                        espaciado_accion = d.origen.altura/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.altura/2;
                         
                         var nro_puerto = 0;
                         for (var k = 0; k < acciones.length; k++) {
-                            console.log(acciones[k].id,d.destino.id);
                             if (acciones[k].id == d.destino.id) {
                                 nro_puerto = acciones[k].puerto;
                             }
                         }
 
                         var externos = [];
-
-                        console.log("Puerto", nro_puerto, d, acciones);
 
                         if (d.origen.x <= d.destino.x) {
                             acciones = info_externos[d.destino.id].rela_izq;
@@ -1204,11 +1288,10 @@ mvcModule.controller('VDiagramaController', [
                         var tamLineaHoriz;
 
                         if (d.origen.x <= d.destino.x) {
-                            tamLineaHoriz = 50*(acciones.length-i);
+                            tamLineaHoriz = d.origen.ancho/3*(acciones.length-i);
                         } else {
-                            tamLineaHoriz = -50*(acciones.length-i);
+                            tamLineaHoriz = -d.origen.ancho/3*(acciones.length-i);
                         }
-
                         // Buscamos el puerto asignado en el externo.
                         externos = []
 
@@ -1220,14 +1303,14 @@ mvcModule.controller('VDiagramaController', [
 
                         var nro_puerto = 0;
                         for (var k = 0; k < externos.length; k++) {
-                            if (externos[k].id == d.destino.id) {
+                            if (externos[k].id == d.origen.id) {
                                 nro_puerto = externos[k].puerto;
                             }
                         }   
 
                         var cant_enlaces = externos.length;
-                        var espaciado    = (d.destino.radio-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.radio+MARGEN_TEXTO/2;
+                        var espaciado    = (d.destino.radio)/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.radio;
 
                         xPto  = xOrig + tamLineaHoriz;
                         yDest = posInicio+nro_puerto*espaciado; 
@@ -1236,7 +1319,6 @@ mvcModule.controller('VDiagramaController', [
                             yDest = d.destino.y; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
@@ -1253,7 +1335,6 @@ mvcModule.controller('VDiagramaController', [
                         d["x2"]=xDest;
                         d["y2"]=yDest;
 
-                        console.log("Aqui", linea)
                         return linea;
                     });
 
@@ -1264,20 +1345,12 @@ mvcModule.controller('VDiagramaController', [
                         var xDest;
                         var yDest = d.y2;
 
-                        // Obtenemos el valor de x en base al y anterior.
-
-                        // if (yDest == d.destino.y) {
-
-                        //     if (d.origen.x <= d.destino.x) {
-                        //         xDest = d.destino.x - d.destino.ancho/2;
-                        //     } else {
-                        //         xDest = d.destino.x + d.destino.ancho/2;
-                        //     }
-                        // } else {
-                            xDest = -Math.pow(Math.abs(Math.pow(d.destino.radio,2)-Math.pow(d.y2,2)),0.5);
-                        // }
-
-                        console.log(xDest);
+                        if (d.xPto <= d.destino.x) {
+                            // xDest = d.destino.x - d.destino.radio;
+                            xDest = d.destino.x - d.destino.radio - 2;
+                        } else {
+                            xDest = d.destino.x + d.destino.radio + 2;
+                        }
 
                         if (d.origen.x <= d.destino.x) {
                             puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                       
@@ -1303,7 +1376,7 @@ mvcModule.controller('VDiagramaController', [
 
                         var nro_puerto = 0;
                         for (var k = 0; k < acciones.length; k++) {
-                            if (acciones[k].id == d.origen.id && acciones[k].id_salida == id_salida) {
+                            if (acciones[k].id == d.origen.id) {
                                 nro_puerto = acciones[k].puerto;
                             }
                         }
@@ -1321,32 +1394,28 @@ mvcModule.controller('VDiagramaController', [
                         yOrig = d.origen.y; 
                         xOrig = d.origen.x;
 
-                        var tamLineaHoriz;
-
-                        if (d.origen.y <= d.destino.y) {
-                            tamLineaHoriz = 50*(acciones.length-i);
+                        if (d.origen.x <= d.destino.x - d.destino.ancho) {
+                            xPto  = xOrig + 1.5*d.origen.radio;
                         } else {
-                            tamLineaHoriz = -50*(acciones.length-i);
+                            xPto  = xOrig - 1.5*d.origen.radio;
                         }
 
                         var cant_enlaces = acciones.length;
-                        var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.altura/2+MARGEN_TEXTO/2;
+                        var espaciado    = (d.destino.altura)/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.altura/2
 
-                        xPto  = xOrig + tamLineaHoriz;
                         yDest = posInicio+nro_puerto*espaciado; 
 
                         if (cant_enlaces == 1) { 
                             yDest = d.destino.y; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
+                        xDest = d.destino.x;
+
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
                         d["xPto"]=xPto;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xPto+","+yOrig+
@@ -1398,6 +1467,61 @@ mvcModule.controller('VDiagramaController', [
                     .attr("x2", function(d) { return d.destino.x; })
                     .attr("y2", function(d) { return d.destino.y; });
 
+
+        // var svg_style = d3.selectAll("svg");
+        //     svg_style.style("background","#F1F1F1");
+
+        // var svg_nodo = d3.selectAll("g.nodo");
+        //     svg_nodo.style("fill", "#FFF");     
+        //     svg_nodo.style("stroke", "#000");         
+        //     svg_nodo.style("stroke-width", "1.5px");
+
+        // var text_style = d3.selectAll("svg text");
+        //     text_style.style("font-family", "Helvetica Neue, Helvetica, Arial,sans-serif");
+        //     text_style.style("font-size", "15px");
+        //     text_style.style("cursor", "default");
+        //     text_style.style("fill", "black");
+        //     text_style.style("stroke-width", "0.5px");
+
+        // var enlaceAV_style = d3.selectAll("g.enlaceAV");
+        //     enlaceAV_style.style("stroke", "#000");
+        //     enlaceAV_style.style("stroke-width", "1.5px");
+        //     enlaceAV_style.style("fill", "none");
+
+        // var enlaceVA_style = d3.selectAll("g.enlaceVA");
+        //     enlaceVA_style.style("stroke", "#000");
+        //     enlaceVA_style.style("stroke-width", "1.5px");
+        //     enlaceVA_style.style("fill", "none");
+
+        // var enlaceEA_style = d3.selectAll("g.enlaceEA");
+        //     enlaceEA_style.style("stroke", "#000");
+        //     enlaceEA_style.style("stroke-width", "1.5px");
+        //     enlaceEA_style.style("fill", "none");
+
+        // var enlaceAE_style = d3.selectAll("g.enlaceAE");
+        //     enlaceAE_style.style("stroke", "#000");
+        //     enlaceAE_style.style("stroke-width", "1.5px");
+        //     enlaceAE_style.style("fill", "none");
+
+        // var enlaceAO_style = d3.selectAll("g.enlaceAO");
+        //     enlaceAO_style.style("stroke", "#000");
+        //     enlaceAO_style.style("stroke-width", "1.5px");
+        //     enlaceAO_style.style("fill", "none");
+
+        // var flechaV_sytle = d3.selectAll("g.flechaV");
+        //     flechaV_sytle.style("stroke", "#000");       
+        //     flechaV_sytle.style("stroke-width", "1.5px");
+        //     flechaV_sytle.style("fill", "#000"); 
+
+        // var flechaA_sytle = d3.selectAll("g.flechaA");
+        //     flechaA_sytle.style("stroke", "#000");       
+        //     flechaA_sytle.style("stroke-width", "1.5px");
+        //     flechaA_sytle.style("fill", "#000"); 
+
+        // var flechaE_sytle = d3.selectAll("g.flechaE");
+        //     flechaE_sytle.style("stroke", "#000");       
+        //     flechaE_sytle.style("stroke-width", "1.5px");
+        //     flechaE_sytle.style("fill", "#000");                  
 
 
         // FUNCIONES AUXILIARES
@@ -1497,13 +1621,13 @@ mvcModule.controller('VDiagramaController', [
                 for (var c = 0; c < vistas[idVistas[k]].relaciones.length; c++) {
 
                     if (vistas[idVistas[k]].relaciones[c].y <= vistas[idVistas[k]].y) {
-                        nro_puerto_abajo += 1;
                         vistas[idVistas[k]].relaciones[c]["puerto"] = nro_puerto_abajo;
                         vistas[idVistas[k]].rela_abajo.push(vistas[idVistas[k]].relaciones[c]);
+                        nro_puerto_abajo += 1;
                     } else {
-                        nro_puerto_arriba += 1;
                         vistas[idVistas[k]].relaciones[c]["puerto"] = nro_puerto_arriba;
                         vistas[idVistas[k]].rela_arriba.push(vistas[idVistas[k]].relaciones[c]);
+                        nro_puerto_arriba += 1;
                     }
                 }
             }
@@ -1525,7 +1649,7 @@ mvcModule.controller('VDiagramaController', [
                             externos[id_externo] = {"x":d.accExt[j].destino.x, "y":d.accExt[j].destino.y, "rela_izq":[], "rela_der":[]};                 
                             externos[id_externo]["relaciones"] = [{"id":d.accExt[j].origen.id, "x":d.accExt[j].origen.x, "y":d.accExt[j].origen.y}];
                         } else {
-                            acciones[id_accion].relaciones.push({"id":d.accExt[j].origen.id, "x":d.accExt[j].origen.x, "y":d.accExt[j].origen.y});
+                            externos[id_externo].relaciones.push({"id":d.accExt[j].origen.id, "x":d.accExt[j].origen.x, "y":d.accExt[j].origen.y});
                         }
                     }
 
@@ -1608,13 +1732,13 @@ mvcModule.controller('VDiagramaController', [
                 for (var c = 0; c < externos[idExternos[k]].relaciones.length; c++) {
 
                     if (externos[idExternos[k]].relaciones[c].x <= externos[idExternos[k]].x) {
-                        nro_puerto_izq += 1;
                         externos[idExternos[k]].relaciones[c]["puerto"] = nro_puerto_izq;
                         externos[idExternos[k]].rela_izq.push(externos[idExternos[k]].relaciones[c]);
+                        nro_puerto_izq += 1;
                     } else {
-                        nro_puerto_der += 1;
                         externos[idExternos[k]].relaciones[c]["puerto"] = nro_puerto_der;
                         externos[idExternos[k]].rela_der.push(externos[idExternos[k]].relaciones[c]);
+                        nro_puerto_der += 1;
                     }
                 }
             }
@@ -1716,18 +1840,16 @@ mvcModule.controller('VDiagramaController', [
                 for (var c = 0; c < acciones[idAcciones[k]].relaciones.length; c++) {
 
                     if (acciones[idAcciones[k]].relaciones[c].x <= acciones[idAcciones[k]].x) {
-                        nro_puerto_izq += 1;
                         acciones[idAcciones[k]].relaciones[c]["puerto"] = nro_puerto_izq;
                         acciones[idAcciones[k]].rela_izq.push(acciones[idAcciones[k]].relaciones[c]);
+                        nro_puerto_izq += 1;
                     } else {
-                        nro_puerto_der += 1;
                         acciones[idAcciones[k]].relaciones[c]["puerto"] = nro_puerto_der;
                         acciones[idAcciones[k]].rela_der.push(acciones[idAcciones[k]].relaciones[c]);
+                        nro_puerto_der += 1;
                     }
                 }
             }
-
-            console.log("acciones", acciones);
             return acciones;
         }
 
@@ -1758,95 +1880,7 @@ mvcModule.controller('VDiagramaController', [
             });
         info_externos = obtenerPuertosExterno();
 
-
-        enlaceVA.filter(function(d) {return d.origen.selected;})
-                    .attr("d", function(d, i) {
-                        var id_salida = d.id_salida;
-
-                        for (var j = 0; j < d.origen.atributos.length; j++) {
-                            if (d.origen.atributos[j].id === id_salida) {
-                                num = j;
-                            }
-                        }
-
-                        // Obtenemos el puerto asignado a este enlace.
-                        var acciones = [];
-                        var esta_a_la_izq = true;
-
-                        if (d.origen.x <= d.destino.x) {
-                            acciones = info_acciones[d.destino.id].rela_izq;
-                        } else {
-                            esta_a_la_izq = false;
-                            acciones = info_acciones[d.destino.id].rela_der;
-                        }
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < acciones.length; k++) {
-                            if (acciones[k].id == d.origen.id && acciones[k].id_salida == id_salida) {
-                                nro_puerto = acciones[k].puerto;
-                            }
-                        }
-
-                        // Posicion de salida del enlace en y.
-                        yOrig = d.origen.y - d.origen.altura/2 + 1.4*ALTURA_LETRA + (num+1)*ALTURA_LETRA; 
-
-                        var tamLineaHoriz;
-
-                        if (d.origen.y <= d.destino.y) {
-                         tamLineaHoriz = 50*(d.origen.atributos.length-num);
-                        } else {
-                         tamLineaHoriz = 50*(num+1);
-                        }
-
-                        var cant_enlaces = acciones.length;
-                        var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.altura/2+MARGEN_TEXTO/2;
-
-                        if (d.origen.x >= d.destino.x-d.destino.ancho && d.origen.x <= d.destino.x) {
-                            xOrig = d.origen.x - d.origen.ancho/2;
-                            xPto  = xOrig - tamLineaHoriz;
-                        
-                        } else if (d.origen.x < d.destino.x+d.destino.ancho && d.origen.x > d.destino.x) {
-                            xOrig = d.origen.x + d.origen.ancho/2;
-                            xPto = xOrig + tamLineaHoriz;
-                            
-                        } else if (d.origen.x < d.destino.x-d.destino.ancho) {
-                            xOrig = d.origen.x + d.origen.ancho/2;
-                            xPto  = xOrig + tamLineaHoriz;
-
-                        } else {
-                            xOrig = d.origen.x - d.origen.ancho/2;
-                            xPto  = xOrig - tamLineaHoriz;                        
-                        }
-
-                        yDest = posInicio+nro_puerto*espaciado; 
-
-                        if (cant_enlaces == 1) { 
-                            yDest = d.destino.y; 
-                        }
-
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
-                        //Guardamos la posicion donde parte el enlace.
-                        d.origen.atributos[num]["x1"]=xOrig;
-                        d.origen.atributos[num]["y1"]=yOrig;
-                        d.origen.atributos[num]["xPto"]=xPto;
-                        
-                        xDest = d.destino.x;
-
-                        linea = "M"+xOrig+","+yOrig+
-                                " L"+xPto+","+yOrig+
-                                " L"+xPto+","+yDest+
-                                " L"+xDest+","+yDest;
-
-                        //Guardamos la posicion donde llega el enlace.
-                        d.origen.atributos[num]["x2"]=xDest;
-                        d.origen.atributos[num]["y2"]=yDest;
-
-                        return linea;
-                    });
-
-        enlaceVA.filter(function(d) {return d.destino.selected;})
-                    .attr("d", function(d, i) {
+        enlaceVA.attr("d", function(d, i) {
                         var id_salida = d.id_salida;
 
                         for (var j = 0; j < d.origen.atributos.length; j++) {
@@ -1891,14 +1925,14 @@ mvcModule.controller('VDiagramaController', [
                         if (esta_a_la_izq) {
                             // Obtenemos la cantidad de enlaces vista-accion que llegan a la accion.
                             cant_enlaces = info_acciones[d.destino.id].rela_izq.length;
-                            espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                            posInicio    = d.destino.y-d.destino.altura/2-MARGEN_TEXTO/2;
+                            espaciado    = d.destino.altura/cant_enlaces;
+                            posInicio    = d.destino.y-d.destino.altura/2;
 
                         } else {
                             // Obtenemos la cantidad de enlaces vista-accion que llegan a la accion.
                             cant_enlaces = info_acciones[d.destino.id].rela_der.length;
-                            espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                            posInicio    = d.destino.y-d.destino.altura/2-MARGEN_TEXTO/2;
+                            espaciado    = d.destino.altura/cant_enlaces;
+                            posInicio    = d.destino.y-d.destino.altura/2;
                         }
 
                         if (d.origen.x >= d.destino.x-d.destino.ancho && d.origen.x <= d.destino.x) {
@@ -1976,8 +2010,7 @@ mvcModule.controller('VDiagramaController', [
                         return puntos;
                     });
 
-        enlaceAV.filter(function(d) {return d.origen.selected;})
-                    .attr("d", function(d, i) { 
+        enlaceAV.attr("d", function(d, i) { 
                         //  Obtenemos el puerto asignado en la vista para este enlace.
                         var acciones = [];
                         
@@ -1989,8 +2022,8 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = acciones.length;
-                        espaciado_accion = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.altura/2+MARGEN_TEXTO/2;
+                        espaciado_accion = d.destino.altura/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.altura/2;
 
                         var nro_puerto = 0;
                         for (var k = 0; k < acciones.length; k++) {
@@ -2031,8 +2064,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 - MARGEN_TEXTO;
+                        var espaciado_vista = (d.destino.ancho+MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2050,104 +2083,9 @@ mvcModule.controller('VDiagramaController', [
                             xDest = d.destino.x; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
-
-                        linea = "M"+xOrig+","+yOrig+
-                                " L"+xDest+","+yOrig+
-                                " L"+xDest+","+yDest;
-
-                        //Guardamos la posicion donde llega el enlace.
-                        d["x2"]=xDest;
-                        d["y2"]=yDest;
-
-                        return linea;
-        });
-
-        enlaceAV.filter(function(d) {return d.destino.selected;})
-                    .attr("d", function(d, i) { 
-                        //  Obtenemos el puerto asignado en la vista para este enlace.
-                        var acciones = [];
-                        
-                        // Buscamos el puerto asignado en la accion.
-                        if (d.destino.x <= d.origen.x) {
-                            acciones = info_acciones[d.origen.id].rela_izq;
-                        } else {
-                            acciones = info_acciones[d.origen.id].rela_der;
-                        }
-
-                        cant_enlaces = acciones.length;
-                        espaciado_accion = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.altura/2+MARGEN_TEXTO/2;
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < acciones.length; k++) {
-                            if (acciones[k].id == d.destino.id) {
-                                nro_puerto = acciones[k].puerto;
-                            }
-                        }   
-
-                        //  Posicion de salida en y desde a accion.
-                        yOrig = posInicio+nro_puerto*espaciado_accion;
-                        xOrig = d.origen.x;
-
-                        if (cant_enlaces == 1) {
-                            yOrig = d.origen.y
-                        } 
-
-                        var tamLineaHoriz;
-
-                        if (d.origen.x <= d.destino.x) {
-                            tamLineaHoriz = 50*(acciones.length-i);
-                        } else {
-                            tamLineaHoriz = -50*(acciones.length-i);
-                        }
-                    
-                        // Buscamos el puerto asignado en la vista.
-                        vistas = [];
-                        if (d.origen.y <= d.destino.y) {
-                            vistas = info_vistas[d.destino.id].rela_abajo;
-                        } else {
-                            vistas = info_vistas[d.destino.id].rela_arriba;
-                        }
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < vistas.length; k++) {
-                            if (vistas[k].id == d.origen.id) {
-                                nro_puerto = vistas[k].puerto;
-                            }
-                        }   
-
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 - MARGEN_TEXTO;
-
-                        if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
-                            yDest = d.destino.y - d.destino.altura/2;
-                        } else if (d.origen.y <= d.destino.y + d.destino.altura && d.origen.y > d.destino.y) {
-                            yDest = d.destino.y + d.destino.altura/2;
-                        } else if (d.origen.y < d.destino.y - d.destino.altura) {
-                            yDest = d.destino.y - d.destino.altura/2;
-                        } else {
-                            yDest = d.destino.y + d.destino.altura/2;
-                        }
-
-                        xDest = posInicio+nro_puerto*espaciado_vista;
-
-                        if (cant_enlaces == 1) { 
-                            xDest = d.destino.x; 
-                        }
-
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
-                        //Guardamos la posicion donde parte el enlace.
-                        d["x1"]=xOrig;
-                        d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xDest+","+yOrig+
@@ -2179,8 +2117,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = (d.destino.ancho+MARGEN_TEXTO)/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2 +MARGEN_TEXTO;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2206,8 +2144,7 @@ mvcModule.controller('VDiagramaController', [
                         return puntos;
                     });
 
-        enlaceEV.filter(function(d) {return d.origen.selected;})
-                    .attr("d", function(d, i) {
+        enlaceEV.attr("d", function(d, i) {
                         var externos = [];
                         
                         // Buscamos el puerto asignado en el externo.
@@ -2218,8 +2155,8 @@ mvcModule.controller('VDiagramaController', [
                         }
 
                         cant_enlaces = externos.length;
-                        espaciado_externo = (d.origen.radio-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.radio+MARGEN_TEXTO/2;
+                        espaciado_externo = d.origen.radio/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.radio;
 
                         var nro_puerto = 0;
                         for (var k = 0; k < externos.length; k++) {
@@ -2260,8 +2197,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = d.destino.ancho/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2282,98 +2219,6 @@ mvcModule.controller('VDiagramaController', [
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
-
-                        linea = "M"+xOrig+","+yOrig+
-                                " L"+xDest+","+yOrig+
-                                " L"+xDest+","+yDest;
-
-                        //Guardamos la posicion donde llega el enlace.
-                        d["x2"]=xDest;
-                        d["y2"]=yDest;
-
-                        return linea;
-                });
-
-        enlaceEV.filter(function(d) {return d.destino.selected;})
-                    .attr("d", function(d, i) {
-                        var externos = [];
-                        
-                        // Buscamos el puerto asignado en el externo.
-                        if (d.destino.x <= d.origen.x) {
-                            externos = info_externos[d.origen.id].rela_izq;
-                        } else {
-                            externos = info_externos[d.origen.id].rela_der;
-                        }
-
-                        cant_enlaces = externos.length;
-                        espaciado_externo = (d.origen.radio-MARGEN_TEXTO)/cant_enlaces;
-                        posInicio    = d.origen.y-d.origen.radio+MARGEN_TEXTO/2;
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < externos.length; k++) {
-                            if (externos[k].id == d.destino.id) {
-                                nro_puerto = externos[k].puerto;
-                            }
-                        }   
-
-                        //  Posicion de salida en y desde a accion.
-                        yOrig = posInicio+nro_puerto*espaciado_externo;
-                        xOrig = d.origen.x;
-
-                        if (cant_enlaces == 1) {
-                            yOrig = d.origen.y
-                        } 
-
-                        var tamLineaHoriz;
-
-                        if (d.origen.x <= d.destino.x) {
-                            tamLineaHoriz = 50*(externos.length-i) + d.origen.radio;
-                        } else {
-                            tamLineaHoriz = -50*(externos.length-i) + d.origen.radio;
-                        }
-                    
-                        // Buscamos el puerto asignado en la vista.
-                        vistas = [];
-                        if (d.origen.y <= d.destino.y) {
-                            vistas = info_vistas[d.destino.id].rela_abajo;
-                        } else {
-                            vistas = info_vistas[d.destino.id].rela_arriba;
-                        }
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < vistas.length; k++) {
-                            if (vistas[k].id == d.origen.id) {
-                                nro_puerto = vistas[k].puerto;
-                            }
-                        }   
-
-                        var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
-
-                        if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
-                            yDest = d.destino.y - d.destino.altura/2;
-                        } else if (d.origen.y <= d.destino.y + d.destino.altura && d.origen.y > d.destino.y) {
-                            yDest = d.destino.y + d.destino.altura/2;
-                        } else if (d.origen.y < d.destino.y - d.destino.altura) {
-                            yDest = d.destino.y - d.destino.altura/2;
-                        } else {
-                            yDest = d.destino.y + d.destino.altura/2;
-                        }
-
-                        xDest = posInicio+nro_puerto*espaciado_vista;
-
-                        if (cant_enlaces == 1) { 
-                            xDest = d.destino.x; 
-                        }
-
-                        //Guardamos la posicion donde parte el enlace.
-                        d["x1"]=xOrig;
-                        d["y1"]=yOrig;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xDest+","+yOrig+
@@ -2405,8 +2250,8 @@ mvcModule.controller('VDiagramaController', [
                         }   
 
                         var cant_enlaces    = vistas.length;
-                        var espaciado_vista = (d.destino.ancho-2*MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio       = d.destino.x - d.destino.ancho/2 + MARGEN_TEXTO;
+                        var espaciado_vista = d.destino.ancho/cant_enlaces;
+                        var posInicio       = d.destino.x - d.destino.ancho/2;
 
                         if (d.origen.y >= d.destino.y - d.destino.altura &&  d.origen.y <= d.destino.y) {
                             yDest = d.destino.y - d.destino.altura/2;
@@ -2432,25 +2277,108 @@ mvcModule.controller('VDiagramaController', [
                         return puntos;
                     });
 
-        enlaceVE.filter(function(d) {return d.origen.selected;})
-                    .append("line")
-                    .attr("class", "enlaceVE")
-                    .attr("x1", function(d) { return d.origen.x; })
-                    .attr("y1", function(d) { return d.origen.y; })
-                    .attr("x2", function(d) { return d.destino.x; })
-                    .attr("y2", function(d) { return d.destino.y; });
-
-        enlaceVE.filter(function(d) {return d.destino.selected;})
-                    .append("line")
-                    .attr("class", "enlaceVE")
-                    .attr("x1", function(d) { return d.origen.x; })
-                    .attr("y1", function(d) { return d.origen.y; })
-                    .attr("x2", function(d) { return d.destino.x; })
-                    .attr("y2", function(d) { return d.destino.y; });
-
-        enlaceEA.filter(function(d) {return d.origen.selected;})
-                    .attr("d", function(d, i) {
+        enlaceVE.attr("d", function(d, i) {
                         var id_salida = d.id_salida;
+
+                        for (var j = 0; j < d.origen.atributos.length; j++) {
+                            if (d.origen.atributos[j].id === id_salida) {
+                                num = j;
+                            }
+                        }
+
+                        // Obtenemos el puerto asignado a este enlace.
+                        var externos = [];
+
+                        if (d.origen.x <= d.destino.x) {
+                            externos = info_externos[d.destino.id].rela_izq;
+                        } else {
+                            externos = info_externos[d.destino.id].rela_der;
+                        }
+
+                        var nro_puerto = 0;
+                        for (var k = 0; k < externos.length; k++) {
+                            if (externos[k].id == d.origen.id && externos[k].id_salida == id_salida) {
+                                nro_puerto = externos[k].puerto;
+                            }
+                        }
+
+                        // Posicion de salida del enlace en y.
+                        yOrig = d.origen.y - d.origen.altura/2 + 1.4*ALTURA_LETRA + (num+1)*ALTURA_LETRA; 
+
+                        var tamLineaHoriz;
+
+                        if (d.origen.y <= d.destino.y) {
+                         tamLineaHoriz = 50*(d.origen.atributos.length-num);
+                        } else {
+                         tamLineaHoriz = 50*(num+1);
+                        }
+
+                        var cant_enlaces = externos.length;
+                        var espaciado    = d.destino.radio/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.radio/2;
+
+                        if (d.origen.x >= d.destino.x-1.5*d.destino.radio && d.origen.x <= d.destino.x) {
+                            xOrig = d.origen.x - d.origen.ancho/2;
+                            xPto  = xOrig - tamLineaHoriz;
+                        
+                        } else if (d.origen.x < d.destino.x+1.5*d.destino.radio && d.origen.x > d.destino.x) {
+                            xOrig = d.origen.x + d.origen.ancho/2;
+                            xPto = xOrig + tamLineaHoriz;
+                            
+                        } else if (d.origen.x < d.destino.x-1.5*d.destino.radio) {
+                            xOrig = d.origen.x + d.origen.ancho/2;
+                            xPto  = xOrig + tamLineaHoriz;
+
+                        } else {
+                            xOrig = d.origen.x - d.origen.ancho/2;
+                            xPto  = xOrig - tamLineaHoriz;                        
+                        }
+
+                        yDest = posInicio+nro_puerto*espaciado; 
+
+                        if (cant_enlaces == 1) { 
+                            yDest = d.destino.y; 
+                        }
+
+                        //Guardamos la posicion donde parte el enlace.
+                        d.origen.atributos[num]["x1"]=xOrig;
+                        d.origen.atributos[num]["y1"]=yOrig;
+                        d.origen.atributos[num]["xPto"]=xPto;
+                        
+                        xDest = d.destino.x;
+
+                        linea = "M"+xOrig+","+yOrig+
+                                " L"+xPto+","+yOrig+
+                                " L"+xPto+","+yDest+
+                                " L"+xDest+","+yDest;
+
+                        //Guardamos la posicion donde llega el enlace.
+                        d.origen.atributos[num]["x2"]=xDest;
+                        d.origen.atributos[num]["y2"]=yDest;
+
+                        return linea;
+                    });
+
+        flechaC2.attr("points", function(d, i) {
+                        var xDest;
+                        var yDest = d.destino.y;
+
+                        if (d.origen.x <= d.destino.x) {
+                            xDest = d.destino.x - d.destino.radio - 2;
+                        } else {
+                            xDest = d.destino.x + d.destino.radio + 2;
+                        }
+
+                        if (d.origen.x <= d.destino.x) {
+                            puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                       
+                        } else {
+                            puntos = xDest+","+yDest+" "+(xDest+ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest+ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);
+                        }
+                        return puntos;
+                    });
+
+        enlaceEA.attr("d", function(d, i) {
+                         var id_salida = d.id_salida;
                         // Obtenemos el puerto asignado a este enlace.
                         var acciones = [];
 
@@ -2462,7 +2390,7 @@ mvcModule.controller('VDiagramaController', [
 
                         var nro_puerto = 0;
                         for (var k = 0; k < acciones.length; k++) {
-                            if (acciones[k].id == d.origen.id && acciones[k].id_salida == id_salida) {
+                            if (acciones[k].id == d.origen.id) {
                                 nro_puerto = acciones[k].puerto;
                             }
                         }
@@ -2480,32 +2408,28 @@ mvcModule.controller('VDiagramaController', [
                         yOrig = d.origen.y; 
                         xOrig = d.origen.x;
 
-                        var tamLineaHoriz;
-
-                        if (d.origen.y <= d.destino.y) {
-                            tamLineaHoriz = 50*(acciones.length-i);
+                        if (d.origen.x <= d.destino.x - d.destino.ancho) {
+                            xPto  = xOrig + 1.5*d.origen.radio;
                         } else {
-                            tamLineaHoriz = -50*(acciones.length-i);
+                            xPto  = xOrig - 1.5*d.origen.radio;
                         }
 
                         var cant_enlaces = acciones.length;
                         var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.altura/2+MARGEN_TEXTO/2;
+                        var posInicio    = d.destino.y-d.destino.altura/2
 
-                        xPto  = xOrig + tamLineaHoriz;
                         yDest = posInicio+nro_puerto*espaciado; 
 
                         if (cant_enlaces == 1) { 
                             yDest = d.destino.y; 
                         }
 
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
+                        xDest = d.destino.x;
+
                         //Guardamos la posicion donde parte el enlace.
                         d["x1"]=xOrig;
                         d["y1"]=yOrig;
                         d["xPto"]=xPto;
-                        
-                        xDest = d.destino.x;
 
                         linea = "M"+xOrig+","+yOrig+
                                 " L"+xPto+","+yOrig+
@@ -2517,78 +2441,7 @@ mvcModule.controller('VDiagramaController', [
                         d["y2"]=yDest;
 
                         return linea;
-        });
-
-        enlaceEA.filter(function(d) {return d.destino.selected;})
-                    .attr("d", function(d, i) {
-                        var id_salida = d.id_salida;
-                        // Obtenemos el puerto asignado a este enlace.
-                        var acciones = [];
-
-                        if (d.origen.x <= d.destino.x) {
-                            acciones = info_acciones[d.destino.id].rela_izq;
-                        } else {
-                            acciones = info_acciones[d.destino.id].rela_der;
-                        }
-
-                        var nro_puerto = 0;
-                        for (var k = 0; k < acciones.length; k++) {
-                            if (acciones[k].id == d.origen.id && acciones[k].id_salida == id_salida) {
-                                nro_puerto = acciones[k].puerto;
-                            }
-                        }
-
-                        var externos = [];
-
-                        if (d.origen.x <= d.destino.x) {
-                            acciones = info_acciones[d.destino.id].rela_izq;
-                        } else {
-                            acciones = info_acciones[d.destino.id].rela_der;
-                        }
-
-
-                        // Posicion de salida del enlace en y.
-                        yOrig = d.origen.y; 
-                        xOrig = d.origen.x;
-
-                        var tamLineaHoriz;
-
-                        if (d.origen.y <= d.destino.y) {
-                            tamLineaHoriz = 50*(acciones.length-i);
-                        } else {
-                            tamLineaHoriz = -50*(acciones.length-i);
-                        }
-
-                        var cant_enlaces = acciones.length;
-                        var espaciado    = (d.destino.altura-MARGEN_TEXTO)/cant_enlaces;
-                        var posInicio    = d.destino.y-d.destino.altura/2+MARGEN_TEXTO/2;
-
-                        xPto  = xOrig + tamLineaHoriz;
-                        yDest = posInicio+nro_puerto*espaciado; 
-
-                        if (cant_enlaces == 1) { 
-                            yDest = d.destino.y; 
-                        }
-
-                        // console.log("nombre",d.origen.nombre,"salida",id_salida,"puerto",nro_puerto, "altura", d.destino.altura, nro_puerto*espaciado);
-                        //Guardamos la posicion donde parte el enlace.
-                        d["x1"]=xOrig;
-                        d["y1"]=yOrig;
-                        d["xPto"]=xPto;
-                        
-                        xDest = d.destino.x;
-
-                        linea = "M"+xOrig+","+yOrig+
-                                " L"+xPto+","+yOrig+
-                                " L"+xPto+","+yDest+
-                                " L"+xDest+","+yDest;
-
-                        //Guardamos la posicion donde llega el enlace.
-                        d["x2"]=xDest;
-                        d["y2"]=yDest;
-
-                        return linea;
-        });
+                });
 
         flechaA2.attr("points", function(d) {
                         var id_salida = d.id_salida;
@@ -2616,13 +2469,115 @@ mvcModule.controller('VDiagramaController', [
                         return puntos;
                     });
 
-        enlaceAE.filter(function(d) {return d.origen.selected;})
-            .attr("x1", function(d) {return d.origen.x;})
-            .attr("y1", function(d) {return d.origen.y;});
+        enlaceAE.attr("d", function(d, i) { 
+                        var acciones = [];
 
-        enlaceAE.filter(function(d) {return d.destino.selected;})
-            .attr("x2", function(d) {return d.destino.x;})
-            .attr("y2", function(d) {return d.destino.y;});
+                        if (d.origen.x <= d.destino.x) {
+                            acciones = info_acciones[d.origen.id].rela_der;
+                        } else {
+                            acciones = info_acciones[d.origen.id].rela_izq;
+                        }
+
+                        cant_enlaces = acciones.length;
+                        espaciado_accion = d.origen.altura/cant_enlaces;
+                        posInicio    = d.origen.y-d.origen.altura/2;
+                        
+                        var nro_puerto = 0;
+                        for (var k = 0; k < acciones.length; k++) {
+                            if (acciones[k].id == d.destino.id) {
+                                nro_puerto = acciones[k].puerto;
+                            }
+                        }
+
+                        var externos = [];
+
+                        if (d.origen.x <= d.destino.x) {
+                            acciones = info_externos[d.destino.id].rela_izq;
+                        } else {
+                            acciones = info_externos[d.destino.id].rela_der;
+                        }
+
+
+                        //  Posicion de salida en y desde a accion.
+                        yOrig = posInicio+nro_puerto*espaciado_accion;
+                        xOrig = d.origen.x;
+
+                        if (cant_enlaces == 1) {
+                            yOrig = d.origen.y
+                        } 
+
+                        var tamLineaHoriz;
+
+                        if (d.origen.x <= d.destino.x) {
+                            tamLineaHoriz = d.origen.ancho/3*(acciones.length-i);
+                        } else {
+                            tamLineaHoriz = -d.origen.ancho/3*(acciones.length-i);
+                        }
+
+                        // Buscamos el puerto asignado en el externo.
+                        externos = []
+
+                        if (d.origen.x <= d.destino.x) {
+                            externos = info_externos[d.destino.id].rela_izq;
+                        } else {
+                            externos = info_externos[d.destino.id].rela_der;
+                        }
+
+                        var nro_puerto = 0;
+                        for (var k = 0; k < externos.length; k++) {
+                            if (externos[k].id == d.origen.id) {
+                                nro_puerto = externos[k].puerto;
+                            }
+                        }   
+
+                        var cant_enlaces = externos.length;
+                        var espaciado    = (d.destino.radio)/cant_enlaces;
+                        var posInicio    = d.destino.y-d.destino.radio;
+
+                        xPto  = xOrig + tamLineaHoriz;
+                        yDest = posInicio+nro_puerto*espaciado; 
+
+                        if (cant_enlaces == 1) { 
+                            yDest = d.destino.y; 
+                        }
+
+                        //Guardamos la posicion donde parte el enlace.
+                        d["x1"]=xOrig;
+                        d["y1"]=yOrig;
+                        d["xPto"]=xPto;
+                        
+                        xDest = d.destino.x;
+
+                        linea = "M"+xOrig+","+yOrig+
+                                " L"+xPto+","+yOrig+
+                                " L"+xPto+","+yDest+
+                                " L"+xDest+","+yDest;
+
+                        //Guardamos la posicion donde llega el enlace.
+                        d["x2"]=xDest;
+                        d["y2"]=yDest;
+
+                        return linea;
+                    });
+
+        flechaC1.attr("points", function(d, i) {
+                        var xDest;
+                        var yDest = d.y2;
+
+                        if (d.xPto <= d.destino.x) {
+                            // xDest = d.destino.x - d.destino.radio;
+                            xDest = d.destino.x - d.destino.radio - 2;
+                        } else {
+                            xDest = d.destino.x + d.destino.radio + 2;
+                        }
+
+                        if (d.origen.x <= d.destino.x) {
+                            puntos = xDest+","+yDest+" "+(xDest-ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest-ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);                       
+                        } else {
+                            puntos = xDest+","+yDest+" "+(xDest+ALTURA_FLECHA)+","+(yDest+ALTURA_FLECHA/3)+" "+(xDest+ALTURA_FLECHA)+","+(yDest-ALTURA_FLECHA/3);
+                        }
+                        return puntos;
+                    });
 
         enlaceAO.filter(function(d) {return d.origen.selected;})
                 .attr("x1", function(d) {return d.origen.x;})
@@ -2633,12 +2588,26 @@ mvcModule.controller('VDiagramaController', [
                 .attr("y2", function(d) {return d.destino.y;});
         }
 
-
     //-----------------------------------------------------------------------------
     //                               FIN DIAGRAMA
     //-----------------------------------------------------------------------------
 
         });
+
+        $scope.ARespaldo = function() {
+                var url = 'data:application/octet-stream;charset=utf8,' + encodeURIComponent($scope.json);
+                var link = document.createElement("a");
+                link.href = url;
+
+                link.style = "visibility:hidden";
+                link.download = "Respaldo - " + $scope.fDiagrama.nombre + ".json";
+
+                console.log($scope.fDiagrama);
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+        }
 
         const TAMANO_MAX_ATRIBUTO = 28;
 
@@ -2784,6 +2753,7 @@ mvcModule.controller('VDiagramaController', [
                 atributos.splice(i-1,1);
             }
         }
+        
         $scope.agregar3 = function() {
             if ($scope.fAccion.vista_interna != 0) {
                 

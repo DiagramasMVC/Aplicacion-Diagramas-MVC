@@ -8,7 +8,7 @@
 import sys
 import unittest
 
-from flask import current_app
+from flask import current_app, json
 from app   import create_app, db
 
 # Permite importar el modulo claseDiseno.
@@ -33,6 +33,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
         self.nombre      = 'Diseno '
         self.descripcion = 'Diseno para una aplicacion web'
+        self.idCreador   = 1
         self.propiedades = {'prop1':'valor1', 'prop2':'valor2'}
 
 
@@ -49,80 +50,80 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testCrearDisenoValido(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoRepetido(self):
         oDiseno    = Diseno()
-        resultado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
-        resultado2 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        resultado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
+        resultado2 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado2)
 
 
     def testCrearDisenoNombreTamanoCero(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno('', self.descripcion, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno('', self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoNombreTamanoMaximo(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoNombreTamanoMayorAlMaximo(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE + 1), self.descripcion, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE + 1), self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertFalse(resultado)
 
 
     def testCrearDisenoNombreNone(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(None, self.descripcion, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno(None, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         self.assertFalse(resultado)
 
 
     def testCrearDisenoDescripcionTamCero(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(self.nombre, '', json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno(self.nombre, '', self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoDescripcionNone(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(self.nombre, None, json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno(self.nombre, None, self.idCreador, json.dumps(self.propiedades))
         self.assertFalse(resultado)
 
 
     def testCrearDisenoPropiedadesVacio(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps({}))
+        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps({}))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoPropiedadesNone(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, None)
+        resultado = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, None)
         self.assertFalse(resultado)
 
 
     def testCrearDisenoNombreTamCeroDescripcionTamCero(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno('', '', json.dumps(self.propiedades))
+        resultado = oDiseno.crearDiseno('', '', self.idCreador, json.dumps(self.propiedades))
         self.assertTrue(resultado)
 
 
     def testCrearDisenoNombreTamCeroDescripcionTamCeroPropiedadesNone(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno('', '', None)
+        resultado = oDiseno.crearDiseno('', '', self.idCreador, None)
         self.assertFalse(resultado)
 
 
     def testCrearDisenoNombreNoneDescripcionNonePropiedadesNone(self):
         oDiseno   = Diseno() 
-        resultado = oDiseno.crearDiseno(None, None, None)
+        resultado = oDiseno.crearDiseno(None, None, self.idCreador, None)
         self.assertFalse(resultado)
 
 
@@ -133,7 +134,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosResultadoTamano1(self):
         oDiseno    = Diseno()
-        resultado1 = oDiseno.crearDiseno(self.nombre+str(1), self.descripcion, json.dumps(self.propiedades))
+        resultado1 = oDiseno.crearDiseno(self.nombre+str(1), self.descripcion, self.idCreador, json.dumps(self.propiedades))
        
         disenos = oDiseno.obtenerDisenos()
         self.assertEqual(len(disenos),1)
@@ -141,9 +142,9 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosResultadoTamano3(self):
         oDiseno    = Diseno()
-        resultado1 = oDiseno.crearDiseno(self.nombre+str(1), self.descripcion, json.dumps(self.propiedades))
-        resultado2 = oDiseno.crearDiseno(self.nombre+str(2), self.descripcion, json.dumps(self.propiedades))
-        resultado3 = oDiseno.crearDiseno(self.nombre+str(3), self.descripcion, json.dumps(self.propiedades))
+        resultado1 = oDiseno.crearDiseno(self.nombre+str(1), self.descripcion, self.idCreador, json.dumps(self.propiedades))
+        resultado2 = oDiseno.crearDiseno(self.nombre+str(2), self.descripcion, self.idCreador, json.dumps(self.propiedades))
+        resultado3 = oDiseno.crearDiseno(self.nombre+str(3), self.descripcion, self.idCreador, json.dumps(self.propiedades))
 		
         disenos = oDiseno.obtenerDisenos()
         self.assertEqual(len(disenos),3)
@@ -156,7 +157,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testExisteDisenoValido(self):
         oDiseno    = Diseno()
-        resultado1 = oDiseno.crearDiseno(self.nombre+str(4), self.descripcion, json.dumps(self.propiedades))
+        resultado1 = oDiseno.crearDiseno(self.nombre+str(4), self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno     = oDiseno.obtenerDisenosPorNombreYDescripcion(self.nombre+str(4), self.descripcion)
         idDiseno   = diseno[0].idDiseno
 
@@ -189,7 +190,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenoPorIDValido(self):
         oDiseno    = Diseno()
-        resultado1 = oDiseno.crearDiseno(self.nombre+str(5), self.descripcion, json.dumps(self.propiedades))
+        resultado1 = oDiseno.crearDiseno(self.nombre+str(5), self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno     = oDiseno.obtenerDisenosPorNombreYDescripcion(self.nombre+str(5), self.descripcion)
         idDiseno   = diseno[0].idDiseno
 
@@ -222,36 +223,36 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosValidoResultadoTamano1(self):
         oDiseno = Diseno() 
-        creado  = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombre(self.nombre)
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosValidoResultadoTamano2(self):
         oDiseno = Diseno() 
-        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
-        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
+        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombre(self.nombre)
         self.assertEqual(len(disenos), 2)
 
 
     def testObtenerDisenosPorNombreTamanoCero(self):
         oDiseno = Diseno() 
-        creado  = oDiseno.crearDiseno('', self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('', self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombre('')
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosPorNombreTamanoMaximo(self):
         oDiseno = Diseno() 
-        creado  = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombre('X'*TAM_MAX_NOMBRE)
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosPorNombreTamanoMayorAlMaximo(self):
         oDiseno = Diseno() 
-        creado  = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE+1), self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE+1), self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombre('X'*(TAM_MAX_NOMBRE+1))
         self.assertEqual(len(disenos), 0)
 
@@ -270,36 +271,36 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosPorNombreYDescripcionValidoResultadoTamano1(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion(self.nombre, self.descripcion)
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosPorNombreYDescripcionValidoResultadoTamano2(self):
         oDiseno = Diseno()
-        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
-        creado2 = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado1 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
+        creado2 = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion(self.nombre, self.descripcion)
         self.assertEqual(len(disenos), 2)
 
 
     def testObtenerDisenosPorNombreYDescripcionNombreTamCero(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno('', self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('', self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion('', self.descripcion)
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosPorNombreYDescripcionNombreTamMaximo(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('X'*TAM_MAX_NOMBRE, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion('X'*TAM_MAX_NOMBRE, self.descripcion)
         self.assertEqual(len(disenos), 1)
 
 
     def testObtenerDisenosPorNombreYDescripcionNombreMayorAlMaximo(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE+1), self.descripcion, json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('X'*(TAM_MAX_NOMBRE+1), self.descripcion, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion('X'*(TAM_MAX_NOMBRE+1), self.descripcion)
         self.assertEqual(len(disenos), 0)
 
@@ -312,7 +313,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosPorNombreYDescripcionDescripcionTamCero(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno(self.nombre, '', json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno(self.nombre, '', self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion(self.nombre, '')
         self.assertEqual(len(disenos), 1)
 
@@ -324,7 +325,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testObtenerDisenosPorNombreYDescripcionNombreTamCeroDescTamanoCero(self):
         oDiseno = Diseno()
-        creado  = oDiseno.crearDiseno('', '', json.dumps(self.propiedades))
+        creado  = oDiseno.crearDiseno('', '', self.idCreador, self.idCreador, json.dumps(self.propiedades))
         disenos = oDiseno.obtenerDisenosPorNombreYDescripcion('', '')
         self.assertEqual(len(disenos), 1)
 
@@ -341,7 +342,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoValido(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -350,7 +351,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoRepetido(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -378,7 +379,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoNombreTamanoCero(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, '', self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -387,7 +388,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoNombreTamanoMaximo(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, 'X'*TAM_MAX_NOMBRE, self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -396,7 +397,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoNombreTamanoMayorAlMaximo(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, 'X'*(TAM_MAX_NOMBRE+1), self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -405,7 +406,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoNombreNone(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, None, self.descripcion+str(1), json.dumps({'prop3': 'valor3'}))
@@ -414,7 +415,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoDescripcionTamanoCero(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), '', json.dumps({'prop3': 'valor3'}))
@@ -423,7 +424,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoDescripcionNone(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), None, json.dumps({'prop3': 'valor3'}))
@@ -432,7 +433,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoPropiedadesVacia(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), self.descripcion+str(1), json.dumps({}))
@@ -441,7 +442,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoPropiedadesNone(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, self.nombre+str(1), self.descripcion+str(1), None)
@@ -486,7 +487,7 @@ class PruebaClaseDiseno(unittest.TestCase):
 
     def testActualizarDisenoNombreNoneDescripcionNone(self):
         oDiseno     = Diseno()
-        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado      = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno      = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno    = diseno[0].idDiseno
         actualizado = oDiseno.actualizarDiseno(idDiseno, None, None, json.dumps({'prop3': 'valor3'}))
@@ -504,28 +505,28 @@ class PruebaClaseDiseno(unittest.TestCase):
     #        Pruebas para eliminarDiseno        #
     #############################################
 
-    def testEliminarDisenoValido(self):
+    def testEliminarDisenoIDValido(self):
         oDiseno   = Diseno()
-        creado    = oDiseno.crearDiseno(self.nombre, self.descripcion, json.dumps(self.propiedades))
+        creado    = oDiseno.crearDiseno(self.nombre, self.descripcion, self.idCreador, json.dumps(self.propiedades))
         diseno    = oDiseno.obtenerDisenosPorNombre(self.nombre)
         idDiseno  = diseno[0].idDiseno
-        eliminado = oDiseno.eliminarDiseno(idDiseno)
+        eliminado = oDiseno.eliminarDisenoPorID(idDiseno)
         self.assertTrue(eliminado)
 
 
     def testEliminarDisenoIDCero(self):
         oDiseno   = Diseno()
-        eliminado = oDiseno.eliminarDiseno(0)
+        eliminado = oDiseno.eliminarDisenoPorID(0)
         self.assertFalse(eliminado)
 
 
     def testEliminarDisenoIDNegativo(self):
         oDiseno   = Diseno()
-        eliminado = oDiseno.eliminarDiseno(-1)
+        eliminado = oDiseno.eliminarDisenoPorID(-1)
         self.assertFalse(eliminado)
 
 
     def testEliminarDisenoIDNone(self):
         oDiseno   = Diseno()
-        eliminado = oDiseno.eliminarDiseno(None)
+        eliminado = oDiseno.eliminarDisenoPorID(None)
         self.assertFalse(eliminado)

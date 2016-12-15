@@ -8,7 +8,7 @@
 import sys
 import unittest
 
-from flask import current_app
+from flask import current_app, json
 from app   import create_app, db
 
 # Permite importar el modulo claseNodo.
@@ -35,7 +35,7 @@ class PruebaClaseNodo(unittest.TestCase):
         self.propiedades = {'prop1':'valor1', 'prop2':'valor2'}
 
         #Creamos un diseno.
-        nuevoDiseno = clsDiseno('Diseno', 'Diseno para una aplicacion web', json.dumps(self.propiedades))
+        nuevoDiseno = clsDiseno('Diseno', 'Diseno para una aplicacion web', 1,json.dumps(self.propiedades))
         db.session.add(nuevoDiseno)
         db.session.commit()
         diseno        = clsDiseno.query.filter_by(nombre='Diseno').first()
